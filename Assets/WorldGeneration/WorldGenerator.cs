@@ -13,7 +13,11 @@ public class WorldGenerator : MonoBehaviour
     
     [Header("Textures")]
     [SerializeField] private RenderTexture noiseRT;
+    [SerializeField] private RenderTexture colorRT;
 
+    [Header("Colour Deatils")]
+    [SerializeField] private TerrainType[] regions;
+    
     void Start()
     {
         GenerateTexture(500, 500);
@@ -22,6 +26,7 @@ public class WorldGenerator : MonoBehaviour
     
     void GenerateTexture(int width, int height)
     {
+        //Generate the noise map
         Color[] pix = new Color[width * height];
         Texture2D noiseTexture = new Texture2D(width, height);
         if(seed == 0){ seed = Random.Range(int.MinValue, int.MaxValue); }
@@ -39,7 +44,36 @@ public class WorldGenerator : MonoBehaviour
         }
         noiseTexture.SetPixels(pix);
         noiseTexture.Apply();
+        //Convert the noise map to a colour map + texture
+        Texture2D colourTexture = new Texture2D(width, height);
+        Color[] colourMap = new Color[width * height];
+        for (int x = 0; x < height; x++)
+        {
+            for (int y = 0; y < width; y++)
+            {
+                float currentHeight = noiseMap[x, y];
+                for (int i = 0; i < regions.Length; i++)
+                {
+                    if (currentHeight <= regions[i].height)
+                    {
+                        colourMap[y * width + x] = regions[i].color;
+                        break;
+                    }
+                }
+            }
+        }
+        colourTexture.SetPixels(colourMap);
+        colourTexture.Apply();
 
         Graphics.Blit(noiseTexture, noiseRT);
+        Graphics.Blit(colourTexture, colorRT);
     }
+}
+
+[System.Serializable]
+public struct TerrainType
+{
+    public string name;
+    public float height;
+    public Color color;
 }

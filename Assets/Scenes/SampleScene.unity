@@ -416,11 +416,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
   seed: 0
   offset: {x: 0, y: 0}
-  scale: 27.6
+  scale: 100
   octaves: 8
   lacunarity: 2
   persistence: 0.5
   noiseRT: {fileID: 8400000, guid: 3dd7c0ccb587a8e42913c5993f49b18f, type: 2}
+  colorRT: {fileID: 8400000, guid: 32fef66c80ba4ca4bb1d10457b83d0a6, type: 2}
+  regions:
+  - name: 
+    height: 0.4
+    color: {r: 0, g: 0.26159787, b: 1, a: 0}
+  - name: 
+    height: 0.45
+    color: {r: 0.045523323, g: 0.8773585, b: 0.79404974, a: 0}
+  - name: 
+    height: 0.5
+    color: {r: 0.9212953, g: 1, b: 0, a: 0}
+  - name: 
+    height: 1
+    color: {r: 0.13383985, g: 1, b: 0, a: 0}
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0
@@ -461,7 +475,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e9ee70e0fd01161498ebeaf73e83c9e6, type: 2}
+  - {fileID: 2100000, guid: d19cb7be1066d014d87e9e0e0794cf83, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
