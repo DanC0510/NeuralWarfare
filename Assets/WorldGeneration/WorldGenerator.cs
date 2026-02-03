@@ -10,6 +10,9 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private int octaves;
     [SerializeField] private int lacunarity;
     [SerializeField] private float persistence;
+    
+    [Header("Textures")]
+    [SerializeField] private RenderTexture noiseRT;
 
     void Start()
     {
@@ -36,5 +39,7 @@ public class WorldGenerator : MonoBehaviour
         }
         noiseTexture.SetPixels(pix);
         noiseTexture.Apply();
+
+        Graphics.Blit(noiseTexture, noiseRT);
     }
 }

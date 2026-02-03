@@ -414,14 +414,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69a0572b161b5ca4887e06e46c0a605b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
-  width: 500
-  height: 500
   seed: 0
   offset: {x: 0, y: 0}
   scale: 27.6
   octaves: 8
   lacunarity: 2
   persistence: 0.5
+  noiseRT: {fileID: 8400000, guid: 3dd7c0ccb587a8e42913c5993f49b18f, type: 2}
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0
@@ -462,7 +461,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: e9ee70e0fd01161498ebeaf73e83c9e6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
