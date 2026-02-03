@@ -416,25 +416,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
   seed: 0
   offset: {x: 0, y: 0}
-  scale: 100
+  scale: 125
   octaves: 8
   lacunarity: 2
   persistence: 0.5
   noiseRT: {fileID: 8400000, guid: 3dd7c0ccb587a8e42913c5993f49b18f, type: 2}
   colorRT: {fileID: 8400000, guid: 32fef66c80ba4ca4bb1d10457b83d0a6, type: 2}
   regions:
-  - name: 
+  - name: Deep Water
     height: 0.4
     color: {r: 0, g: 0.26159787, b: 1, a: 0}
-  - name: 
+  - name: Shallow Water
     height: 0.45
     color: {r: 0.045523323, g: 0.8773585, b: 0.79404974, a: 0}
-  - name: 
+  - name: Sand
     height: 0.5
     color: {r: 0.9212953, g: 1, b: 0, a: 0}
-  - name: 
-    height: 1
+  - name: Grass
+    height: 0.92
     color: {r: 0.13383985, g: 1, b: 0, a: 0}
+  - name: Snow
+    height: 1
+    color: {r: 1, g: 1, b: 1, a: 0}
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0
