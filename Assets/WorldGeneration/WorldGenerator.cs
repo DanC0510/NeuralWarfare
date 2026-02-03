@@ -4,8 +4,6 @@ using UnityEngine;
 public class WorldGenerator : MonoBehaviour
 {
     [Header("Texture Details")]
-    [SerializeField] private int width;
-    [SerializeField] private int height;
     [SerializeField] private int seed;
     [SerializeField] private Vector2 offset;
     [SerializeField] private float scale;
@@ -14,22 +12,20 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private float persistence;
     private Texture2D noiseTexture;
     private Renderer textureRenderer;
-    private Color[] pix;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private Color[] pix = new Color[500 * 500];
+
     void Start()
     {
-        textureRenderer = GetComponent<Renderer>();
-        noiseTexture = new Texture2D(width, height);
-        pix = new Color[noiseTexture.width * noiseTexture.height];
-        textureRenderer.material.mainTexture = noiseTexture;
-        if(seed == 0){ seed = Random.Range(int.MinValue, int.MaxValue); }
-        if(offset == Vector2.zero) { offset = new Vector2(Random.Range(-100000.0f, 100000.0f), Random.Range(-100000.0f, 100000.0f)); }
+        GetTexture();
     }
 
-    // Update is called once per frame
-    void Update()
+    
+    void GetTexture()
     {
-        float[,] noiseMap = Noise.CalculateNoiseMap(width, height, seed, scale, octaves, persistence, lacunarity, offset);
+        noiseTexture = new Texture2D(500, 500);
+        if(seed == 0){ seed = Random.Range(int.MinValue, int.MaxValue); }
+        if(offset == Vector2.zero) { offset = new Vector2(Random.Range(-100000.0f, 100000.0f), Random.Range(-100000.0f, 100000.0f)); }
+        float[,] noiseMap = Noise.CalculateNoiseMap(500, 500, seed, scale, octaves, persistence, lacunarity, offset);
         
         // Convert the noise map to a texture
         for (int y = 0; y < noiseTexture.height; y++)
