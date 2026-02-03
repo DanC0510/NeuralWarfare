@@ -394,6 +394,7 @@ GameObject:
   - component: {fileID: 488609765}
   - component: {fileID: 488609764}
   - component: {fileID: 488609766}
+  - component: {fileID: 488609767}
   m_Layer: 0
   m_Name: WorldGenerator
   m_TagString: Untagged
@@ -415,11 +416,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
   width: 500
   height: 500
-  xOrigin: 0
-  yOrigin: 0
-  scale: 100
-  octaves: 0
-  noiseTexture: {fileID: 0}
+  seed: 0
+  offset: {x: 0, y: 0}
+  scale: 27.6
+  octaves: 8
+  lacunarity: 2
+  persistence: 0.5
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0
@@ -484,6 +486,14 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &488609767
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 488609763}
+  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

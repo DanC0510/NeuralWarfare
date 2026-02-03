@@ -5,6 +5,8 @@ public class WorldGenerator : MonoBehaviour
     [Header("Texture Details")]
     [SerializeField] private int width;
     [SerializeField] private int height;
+    [SerializeField] private int seed;
+    [SerializeField] private Vector2 offset;
     [SerializeField] private float scale;
     [SerializeField] private int octaves;
     [SerializeField] private int lacunarity;
@@ -24,7 +26,7 @@ public class WorldGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float[,] noiseMap = Noise.CalculateNoiseMap(width, height, scale, octaves, persistence, lacunarity);
+        float[,] noiseMap = Noise.CalculateNoiseMap(width, height, seed, scale, octaves, persistence, lacunarity, offset);
         
         for (int y = 0; y < noiseTexture.height; y++)
         {
