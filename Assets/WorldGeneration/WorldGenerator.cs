@@ -10,22 +10,20 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private int octaves;
     [SerializeField] private int lacunarity;
     [SerializeField] private float persistence;
-    private Texture2D noiseTexture;
-    private Renderer textureRenderer;
-    private Color[] pix = new Color[500 * 500];
 
     void Start()
     {
-        GetTexture();
+        GetTexture(500, 500);
     }
 
     
-    void GetTexture()
+    void GetTexture(int width, int height)
     {
-        noiseTexture = new Texture2D(500, 500);
+        Color[] pix = new Color[width * height];
+        Texture2D noiseTexture = new Texture2D(width, height);
         if(seed == 0){ seed = Random.Range(int.MinValue, int.MaxValue); }
         if(offset == Vector2.zero) { offset = new Vector2(Random.Range(-100000.0f, 100000.0f), Random.Range(-100000.0f, 100000.0f)); }
-        float[,] noiseMap = Noise.CalculateNoiseMap(500, 500, seed, scale, octaves, persistence, lacunarity, offset);
+        float[,] noiseMap = Noise.CalculateNoiseMap(width, height, seed, scale, octaves, persistence, lacunarity, offset);
         
         // Convert the noise map to a texture
         for (int y = 0; y < noiseTexture.height; y++)
