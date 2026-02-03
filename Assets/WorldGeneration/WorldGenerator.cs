@@ -8,6 +8,7 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private float xOrigin;
     [SerializeField] private float yOrigin;
     [SerializeField] private float scale;
+    [SerializeField] private int octaves;
     private Texture2D noiseTexture;
     private Renderer textureRenderer;
     private Color[] pix;
@@ -18,20 +19,25 @@ public class WorldGenerator : MonoBehaviour
         noiseTexture = new Texture2D(width, height);
         pix = new Color[noiseTexture.width * noiseTexture.height];
         textureRenderer.material.mainTexture = noiseTexture;
+        CalculateNoise();
     }
 
     void CalculateNoise()
     {
-        for (float y = 0.0f; y < noiseTexture.height; y++)
+        for (int i = 0; i < octaves; i++)
         {
-            for (float x = 0.0f; x < noiseTexture.width; x++)
+            for (float y = 0.0f; y < noiseTexture.height; y++)
             {
-                float xCoord = xOrigin + (x / noiseTexture.width) * scale;
-                float yCoord = yOrigin + (y / noiseTexture.height) * scale;
-                float sample = Mathf.PerlinNoise(xCoord, yCoord);
-                pix[(int)(y * noiseTexture.width + x)] = new Color(sample, sample, sample);
+                for (float x = 0.0f; x < noiseTexture.width; x++)
+                {
+                    float xCoord = xOrigin + (x / noiseTexture.width) * scale;
+                    float yCoord = yOrigin + (y / noiseTexture.height) * scale;
+                    float sample = Mathf.PerlinNoise(xCoord, yCoord);
+                    pix[(int)(y * noiseTexture.width + x)] = new Color(sample, sample, sample);
+                }
             }
         }
+
         noiseTexture.SetPixels(pix);
         noiseTexture.Apply();
     }
@@ -39,6 +45,6 @@ public class WorldGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CalculateNoise();
+        
     }
 }
