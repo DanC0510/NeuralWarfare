@@ -16,11 +16,11 @@ public class WorldGenerator : MonoBehaviour
 
     void Start()
     {
-        GetTexture(500, 500);
+        GenerateTexture(500, 500);
     }
 
     
-    void GetTexture(int width, int height)
+    void GenerateTexture(int width, int height)
     {
         Color[] pix = new Color[width * height];
         Texture2D noiseTexture = new Texture2D(width, height);
