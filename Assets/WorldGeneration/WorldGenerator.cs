@@ -8,9 +8,9 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private float xOrigin;
     [SerializeField] private float yOrigin;
     [SerializeField] private float scale;
-    [SerializeField] private Texture2D noiseTexture;
-    [SerializeField] private Color[] pix;
-    [SerializeField] private Renderer textureRenderer;
+    private Texture2D noiseTexture;
+    private Renderer textureRenderer;
+    private Color[] pix;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
