@@ -1,3 +1,4 @@
+using Unity.Mathematics.Geometry;
 using UnityEngine;
 
 public class WorldGenerator : MonoBehaviour
@@ -21,6 +22,8 @@ public class WorldGenerator : MonoBehaviour
         noiseTexture = new Texture2D(width, height);
         pix = new Color[noiseTexture.width * noiseTexture.height];
         textureRenderer.material.mainTexture = noiseTexture;
+        if(seed == 0){ seed = Random.Range(int.MinValue, int.MaxValue); }
+        if(offset == Vector2.zero) { offset = new Vector2(Random.Range(-100000.0f, 100000.0f), Random.Range(-100000.0f, 100000.0f)); }
     }
 
     // Update is called once per frame
@@ -28,6 +31,7 @@ public class WorldGenerator : MonoBehaviour
     {
         float[,] noiseMap = Noise.CalculateNoiseMap(width, height, seed, scale, octaves, persistence, lacunarity, offset);
         
+        // Convert the noise map to a texture
         for (int y = 0; y < noiseTexture.height; y++)
         {
             for (int x = 0; x < noiseTexture.width; x++)
