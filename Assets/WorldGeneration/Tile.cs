@@ -1,8 +1,7 @@
-using UnityEngine;
-
+[System.Serializable]
 public class Tile
 {
-    private int[,,] position;
+    private int[,] position;
     private TileBiome biome;
     public enum TileBiome
     {
@@ -13,7 +12,7 @@ public class Tile
         Deep_Water,
     };
     
-    public Tile(int[,,] pos, TileBiome bio)
+    public Tile(int[,] pos, TileBiome bio)
     {
         position = pos;
         biome = bio;

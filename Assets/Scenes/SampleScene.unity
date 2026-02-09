@@ -414,6 +414,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69a0572b161b5ca4887e06e46c0a605b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
+  scaleFactor: 0.5
+  width: 500
+  height: 500
   seed: 0
   offset: {x: 0, y: 0}
   scale: 125
@@ -426,18 +429,23 @@ MonoBehaviour:
   - name: Deep Water
     height: 0.4
     color: {r: 0, g: 0.26159787, b: 1, a: 0}
+    biome: 4
   - name: Shallow Water
     height: 0.45
     color: {r: 0.045523323, g: 0.8773585, b: 0.79404974, a: 0}
+    biome: 3
   - name: Sand
     height: 0.5
     color: {r: 0.9212953, g: 1, b: 0, a: 0}
+    biome: 1
   - name: Grass
     height: 0.92
     color: {r: 0.13383985, g: 1, b: 0, a: 0}
+    biome: 0
   - name: Snow
     height: 1
     color: {r: 1, g: 1, b: 1, a: 0}
+    biome: 2
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0
