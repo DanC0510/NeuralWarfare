@@ -23,10 +23,12 @@ public class WorldGenerator : MonoBehaviour
 
     [Header("Tile Details")] 
     [SerializeField] private Tile[] tiles;
+    [SerializeField] private GameObject[] tilePrefabs;
     
     void Start()
     {
         GenerateTexture(Mathf.FloorToInt(width * scaleFactor), Mathf.FloorToInt(height * scaleFactor));
+        PlaceTiles();
     }
 
     
@@ -80,6 +82,13 @@ public class WorldGenerator : MonoBehaviour
         Graphics.Blit(colourTexture, colorRT);
     }
 
+    private void PlaceTiles()
+    {
+        foreach(Tile tile in tiles)
+        {
+            Instantiate(tilePrefabs[(int)tile.Biome], new Vector3(tile.Position.x, 0, tile.Position.y), Quaternion.identity);
+        }
+    }
     public void SaveWorld()
     {
         string path = Application.persistentDataPath + "/world.dat";
