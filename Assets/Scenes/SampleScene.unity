@@ -447,6 +447,12 @@ MonoBehaviour:
     color: {r: 1, g: 1, b: 1, a: 0}
     biome: 2
   tiles: []
+  tilePrefabs:
+  - {fileID: 3353348585238293648, guid: 29cd82dbaa10c85449c0666b7c456ee1, type: 3}
+  - {fileID: 919132149155446097, guid: 82fb641798c992f4aac2100de83a6576, type: 3}
+  - {fileID: 919132149155446097, guid: 82fb641798c992f4aac2100de83a6576, type: 3}
+  - {fileID: 919132149155446097, guid: 82fb641798c992f4aac2100de83a6576, type: 3}
+  - {fileID: 919132149155446097, guid: 82fb641798c992f4aac2100de83a6576, type: 3}
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0

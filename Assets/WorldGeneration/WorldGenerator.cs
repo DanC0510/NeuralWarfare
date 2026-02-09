@@ -86,7 +86,7 @@ public class WorldGenerator : MonoBehaviour
     {
         foreach(Tile tile in tiles)
         {
-            Instantiate(tilePrefabs[(int)tile.Biome], new Vector3(tile.Position.x, 0, tile.Position.y), Quaternion.identity);
+            Instantiate(tilePrefabs[(int)tile.Biome], new Vector3(tile.Position.x, 0, tile.Position.y), Quaternion.Euler(90, 0, 0));
         }
     }
     public void SaveWorld()
