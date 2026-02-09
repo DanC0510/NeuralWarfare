@@ -110,7 +110,8 @@ public class WorldGenerator : MonoBehaviour
         }
         if(!File.Exists(path)) { Debug.LogError("No world data found at " + path); return; }
         string json = File.ReadAllText(path);
-        tiles = JsonUtility.FromJson<Tile[]>(json);
+        TileArrayWrapper loaded = JsonUtility.FromJson<TileArrayWrapper>(json);
+        tiles = loaded.tileArr;
     }
 }
 
