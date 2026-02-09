@@ -1,8 +1,10 @@
+using UnityEngine;
+
 [System.Serializable]
 public class Tile
 {
-    private int[,] position;
-    private TileBiome biome;
+    [SerializeField] private Vector2 position;
+    [SerializeField] private TileBiome biome;
     public enum TileBiome
     {
         Grass,
@@ -12,7 +14,7 @@ public class Tile
         Deep_Water,
     };
     
-    public Tile(int[,] pos, TileBiome bio)
+    public Tile(Vector2 pos, TileBiome bio)
     {
         position = pos;
         biome = bio;

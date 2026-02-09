@@ -1,8 +1,5 @@
 using System.IO;
-using Unity.Mathematics;
-using Unity.Mathematics.Geometry;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class WorldGenerator : MonoBehaviour
 {
@@ -25,7 +22,7 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private TerrainType[] regions;
 
     [Header("Tile Details")] 
-    [SerializeField] private Tile[,] tiles;
+    [SerializeField] private Tile[] tiles;
     
     void Start()
     {
@@ -56,7 +53,8 @@ public class WorldGenerator : MonoBehaviour
         //Convert the noise map to a colour map + texture
         Texture2D colourTexture = new Texture2D(width, height);
         Color[] colourMap = new Color[width * height];
-        tiles = new Tile[width, height];
+        tiles = new Tile[width * height];
+        int tileIndex = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -67,7 +65,8 @@ public class WorldGenerator : MonoBehaviour
                     if (currentHeight <= regions[i].height)
                     {
                         colourMap[y * width + x] = regions[i].color;
-                        tiles[x,y] = new Tile( new int[x , y], regions[i].biome);
+                        tiles[tileIndex] = new Tile( new Vector2(x , y), regions[i].biome);
+                        tileIndex++;
                         break;
                     }
                 }
@@ -84,32 +83,43 @@ public class WorldGenerator : MonoBehaviour
     public void SaveWorld()
     {
         string path = Application.persistentDataPath + "/world.dat";
-        if(Application.isEditor) { path = "Assets/WorldGeneration/world.dat"; }
+        if (Application.isEditor)
+        {
+            path = "Assets/WorldGeneration/world.dat";
+        }
 
-        if(!File.Exists(path)) { File.Create(path); }
-        var data = new WorldData { tiles = tiles };
+        if (!File.Exists(path))
+        {
+            File.Create(path);
+        }
 
-        string json = JsonUtility.ToJson(data);
-        Debug.Log(json);
+        TileArrayWrapper tileArray = new TileArrayWrapper
+        {
+            tileArr = tiles
+        };
+        string json = JsonUtility.ToJson(tileArray); 
         File.WriteAllText(path, json);
     }
 
     public void LoadWorld()
     {
         string path = Application.persistentDataPath + "/world.dat";
-        if(Application.isEditor) { path = "Assets/WorldGeneration/world.dat"; }
-        
-        StreamReader reader = new StreamReader(path);
-        string json = reader.ReadToEnd();
-        tiles = JsonUtility.FromJson<Tile[,]>(json);
-        reader.Close();
+        if (Application.isEditor)
+        {
+            path = "Assets/WorldGeneration/world.dat";
+        }
+        if(!File.Exists(path)) { Debug.LogError("No world data found at " + path); return; }
+        string json = File.ReadAllText(path);
+        tiles = JsonUtility.FromJson<Tile[]>(json);
     }
 }
 
-public class WorldData
+[System.Serializable]
+public class TileArrayWrapper
 {
-    public Tile[,] tiles;
+    public Tile[] tileArr;
 }
+
 
 [System.Serializable]
 public struct TerrainType
