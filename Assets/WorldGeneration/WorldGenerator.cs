@@ -86,9 +86,32 @@ public class WorldGenerator : MonoBehaviour
     {
         foreach(Tile tile in tiles)
         {
-            Vector3 pos = new Vector3(tile.Position.x - (tile.Position.x % 2 == 0 ? 0f : 0.5f), 0, tile.Position.y - (tile.Position.y % 2 == 0 ? 0f : 0.5f));
-            Instantiate(tilePrefabs[(int)tile.Biome], pos, Quaternion.Euler(-90, 0, 0));
+            if (tile.Equals(default(Tile))) continue; // skip empty/default tiles
+
+            int q = Mathf.RoundToInt(tile.Position.x); // column / axial q
+            int r = Mathf.RoundToInt(tile.Position.y); // row    / axial r
+
+            Vector3 pos = HexToWorld(q, r, 0.5f, false);
+            Instantiate(tilePrefabs[(int)tile.Biome], pos, Quaternion.identity, transform);
         }
+    }
+    
+    private Vector3 HexToWorld(int q, int r, float size, bool pointy)
+    {
+        float x, z;
+        if (pointy)
+        {
+            // pointy-top orientation
+            x = size * Mathf.Sqrt(3f) * (q + r / 2f);
+            z = size * 1.5f * r;
+        }
+        else
+        {
+            // flat-top orientation
+            x = size * 1.5f * q;
+            z = size * Mathf.Sqrt(3f) * (r + q / 2f);
+        }
+        return new Vector3(x, 0f, z);
     }
     public void SaveWorld()
     {
