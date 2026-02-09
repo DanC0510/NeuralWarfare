@@ -97,7 +97,7 @@ public class WorldGenerator : MonoBehaviour
         {
             tileArr = tiles
         };
-        string json = JsonUtility.ToJson(tileArray); 
+        string json = JsonUtility.ToJson(tileArray, true); 
         File.WriteAllText(path, json);
     }
 
