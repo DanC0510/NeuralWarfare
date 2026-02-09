@@ -446,6 +446,7 @@ MonoBehaviour:
     height: 1
     color: {r: 1, g: 1, b: 1, a: 0}
     biome: 2
+  tiles: []
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0
