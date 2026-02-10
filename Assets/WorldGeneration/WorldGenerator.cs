@@ -25,10 +25,14 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private Tile[] tiles;
     [SerializeField] private GameObject[] tilePrefabs;
     
+    [Header("Chunking")]
+    [SerializeField] private GameObject chunkPrefab;
+    [SerializeField] private float hexSize = 0.5f;
+    
     void Start()
     {
         GenerateTexture(Mathf.FloorToInt(width * scaleFactor), Mathf.FloorToInt(height * scaleFactor));
-        PlaceTiles();
+        CreateChunks();
     }
 
     
@@ -81,38 +85,65 @@ public class WorldGenerator : MonoBehaviour
         Graphics.Blit(noiseTexture, noiseRT);
         Graphics.Blit(colourTexture, colorRT);
     }
-
-    private void PlaceTiles()
+    
+    void CreateChunks()
     {
-        foreach(Tile tile in tiles)
+        int chunksQ = Mathf.CeilToInt(width / (float)HexChunkRenderer.chunkSize);
+        int chunksR = Mathf.CeilToInt(height / (float)HexChunkRenderer.chunkSize);
+
+        for (int q = 0; q < chunksQ; q++)
         {
-            if (tile.Equals(default(Tile))) continue; // skip empty/default tiles
+            for (int r = 0; r < chunksR; r++)
+            {
+                GameObject chunkGO = Instantiate(chunkPrefab, Vector3.zero, Quaternion.identity, transform);
+                HexChunkRenderer chunk = chunkGO.GetComponent<HexChunkRenderer>();
 
-            int q = Mathf.RoundToInt(tile.Position.x); // column / axial q
-            int r = Mathf.RoundToInt(tile.Position.y); // row    / axial r
-
-            Vector3 pos = HexToWorld(q, r, 0.5f, false);
-            Instantiate(tilePrefabs[(int)tile.Biome], pos, Quaternion.identity, transform);
+                chunk.hexSize = hexSize;
+                chunk.Init(tiles, width, q, r);
+            }
         }
     }
     
-    private Vector3 HexToWorld(int q, int r, float size, bool pointy)
+    private Vector3 HexToWorld(int q, int r, float size)
     {
         float x, z;
-        if (pointy)
-        {
-            // pointy-top orientation
-            x = size * Mathf.Sqrt(3f) * (q + r / 2f);
-            z = size * 1.5f * r;
-        }
-        else
-        {
-            // flat-top orientation
-            x = size * 1.5f * q;
-            z = size * Mathf.Sqrt(3f) * (r + q / 2f);
-        }
+        x = size * 1.5f * q;
+        z = size * Mathf.Sqrt(3f) * (r + q / 2f);
         return new Vector3(x, 0f, z);
     }
+    
+    public static Vector2Int WorldToHex(Vector3 pos, float size)
+    {
+        float q = (2f / 3f * pos.x) / size;
+        float r = (-1f / 3f * pos.x + Mathf.Sqrt(3f) / 3f * pos.z) / size;
+        return HexRound(q, r);
+    }
+
+    
+    static Vector2Int HexRound(float q, float r)
+    {
+        float x = q;
+        float z = r;
+        float y = -x - z;
+
+        int rx = Mathf.RoundToInt(x);
+        int ry = Mathf.RoundToInt(y);
+        int rz = Mathf.RoundToInt(z);
+
+        float xDiff = Mathf.Abs(rx - x);
+        float yDiff = Mathf.Abs(ry - y);
+        float zDiff = Mathf.Abs(rz - z);
+
+        if (xDiff > yDiff && xDiff > zDiff)
+            rx = -ry - rz;
+        else if (yDiff > zDiff)
+            ry = -rx - rz;
+        else
+            rz = -rx - ry;
+
+        return new Vector2Int(rx, rz);
+    }
+
     public void SaveWorld()
     {
         string path = Application.persistentDataPath + "/world.dat";
