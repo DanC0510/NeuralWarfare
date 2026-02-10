@@ -417,7 +417,7 @@ MonoBehaviour:
   height: 512
   seed: 0
   offset: {x: 0, y: 0}
-  scale: 125
+  scale: 75
   octaves: 8
   lacunarity: 2
   persistence: 0.5

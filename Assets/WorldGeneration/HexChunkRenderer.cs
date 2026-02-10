@@ -17,15 +17,17 @@ public class HexChunkRenderer : MonoBehaviour
 
     private Tile[] tiles;
     private int mapWidth;
+    private int mapHeight;
     
     [Header("Atlas")]
     public int atlasColumns = 4;
     public int atlasRows = 4;
 
-    public void Init(Tile[] tiles, int mapWidth, int chunkQ, int chunkR)
+    public void Init(Tile[] tiles, int mapWidth, int mapHeight, int chunkQ, int chunkR)
     {
         this.tiles = tiles;
         this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
         this.chunkQ = chunkQ;
         this.chunkR = chunkR;
 
@@ -33,6 +35,8 @@ public class HexChunkRenderer : MonoBehaviour
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
 
         GetComponent<MeshFilter>().mesh = mesh;
+        
+        gameObject.transform.position = OffsetToWorld(chunkQ * chunkSize, chunkR * chunkSize, hexSize);
 
         BuildMesh();
     }
@@ -43,23 +47,24 @@ public class HexChunkRenderer : MonoBehaviour
         triangles = new List<int>();
         uvs = new List<Vector2>();
 
-        int baseQ = chunkQ * chunkSize;
-        int baseR = chunkR * chunkSize;
+        int baseCol = chunkQ * chunkSize;
+        int baseRow = chunkR * chunkSize;
 
-        for (int dq = 0; dq < chunkSize; dq++)
+        for (int col = 0; col < chunkSize; col++)
         {
-            for (int dr = 0; dr < chunkSize; dr++)
+            for (int row = 0; row < chunkSize; row++)
             {
-                int q = baseQ + dq;
-                int r = baseR + dr;
-
-                int index = q + r * mapWidth;
+                int worldCol = baseCol + col;
+                int worldRow = baseRow + row;
+                
+                if (worldCol >= mapWidth || worldRow >= mapHeight)
+                    continue;
+                
+                int index = worldCol * mapHeight + worldRow;
                 if (index < 0 || index >= tiles.Length)
                     continue;
-
-                int localQ = dq;
-                int localR = dr;
-                AddHex(tiles[index], localQ, localR);
+                
+                AddHex(tiles[index], col, row);
             }
         }
 
@@ -70,13 +75,9 @@ public class HexChunkRenderer : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    void AddHex(Tile tile, int q, int r)
+    void AddHex(Tile tile, int col, int row)
     {
-        gameObject.transform.position = HexToWorld(chunkQ*chunkSize, chunkR*chunkSize, hexSize);
-
-        int localQ = q - chunkQ * chunkSize;
-        int localR = r - chunkR * chunkSize;
-        Vector3 center = HexToWorld(localQ, localR, hexSize);
+        Vector3 center = OffsetToWorld(col, row, hexSize);
 
         int vertStart = vertices.Count;
         vertices.Add(center);
@@ -100,7 +101,7 @@ public class HexChunkRenderer : MonoBehaviour
 
     static Vector3 HexCorner(int i, float size)
     {
-        float angle = Mathf.Deg2Rad * (60 * i);
+        float angle = Mathf.Deg2Rad * (60 * i + 30);
         return new Vector3(
             size * Mathf.Cos(angle),
             0f,
@@ -112,6 +113,24 @@ public class HexChunkRenderer : MonoBehaviour
     {
         float x = size * 1.5f * q;
         float z = size * Mathf.Sqrt(3f) * (r + q * 0.5f);
+        return new Vector3(x, 0f, z);
+    }
+
+    static Vector3 OffsetToWorld(int col, int row, float size)
+    {
+        
+        float hexWidth = Mathf.Sqrt(3f) * size;
+        float hexHeight = 2f * size;
+        
+        float x = col * hexWidth;
+        float z = row * hexHeight * 0.75f;
+        
+        // Shift odd rows to the right by half hex width
+        if (row % 2 == 1)
+        {
+            x += hexWidth * 0.5f;
+        }
+        
         return new Vector3(x, 0f, z);
     }
 

@@ -28,6 +28,10 @@ public class WorldGenerator : MonoBehaviour
     [Header("Chunking")]
     [SerializeField] private GameObject chunkPrefab;
     [SerializeField] private float hexSize = 0.5f;
+
+    // Actual generated map size (after scaling)
+    private int actualWidth;
+    private int actualHeight;
     
     void Start()
     {
@@ -38,6 +42,10 @@ public class WorldGenerator : MonoBehaviour
     
     private void GenerateTexture(int width, int height)
     {
+        // Store the actual generated dimensions
+        actualWidth = width;
+        actualHeight = height;
+        
         //Generate the noise map
         Color[] pix = new Color[width * height];
         Texture2D noiseTexture = new Texture2D(width, height);
@@ -88,8 +96,8 @@ public class WorldGenerator : MonoBehaviour
     
     void CreateChunks()
     {
-        int chunksQ = Mathf.CeilToInt(width / (float)HexChunkRenderer.chunkSize);
-        int chunksR = Mathf.CeilToInt(height / (float)HexChunkRenderer.chunkSize);
+        int chunksQ = Mathf.CeilToInt(actualWidth / (float)HexChunkRenderer.chunkSize);
+        int chunksR = Mathf.CeilToInt(actualHeight / (float)HexChunkRenderer.chunkSize);
 
         for (int q = 0; q < chunksQ; q++)
         {
@@ -99,51 +107,11 @@ public class WorldGenerator : MonoBehaviour
                 HexChunkRenderer chunk = chunkGO.GetComponent<HexChunkRenderer>();
 
                 chunk.hexSize = hexSize;
-                chunk.Init(tiles, width, q, r);
+                chunk.Init(tiles, actualWidth, actualHeight, q, r);
             }
         }
     }
     
-    private Vector3 HexToWorld(int q, int r, float size)
-    {
-        float x, z;
-        x = size * 1.5f * q;
-        z = size * Mathf.Sqrt(3f) * (r + q / 2f);
-        return new Vector3(x, 0f, z);
-    }
-    
-    public static Vector2Int WorldToHex(Vector3 pos, float size)
-    {
-        float q = (2f / 3f * pos.x) / size;
-        float r = (-1f / 3f * pos.x + Mathf.Sqrt(3f) / 3f * pos.z) / size;
-        return HexRound(q, r);
-    }
-
-    
-    static Vector2Int HexRound(float q, float r)
-    {
-        float x = q;
-        float z = r;
-        float y = -x - z;
-
-        int rx = Mathf.RoundToInt(x);
-        int ry = Mathf.RoundToInt(y);
-        int rz = Mathf.RoundToInt(z);
-
-        float xDiff = Mathf.Abs(rx - x);
-        float yDiff = Mathf.Abs(ry - y);
-        float zDiff = Mathf.Abs(rz - z);
-
-        if (xDiff > yDiff && xDiff > zDiff)
-            rx = -ry - rz;
-        else if (yDiff > zDiff)
-            ry = -rx - rz;
-        else
-            rz = -rx - ry;
-
-        return new Vector2Int(rx, rz);
-    }
-
     public void SaveWorld()
     {
         string path = Application.persistentDataPath + "/world.dat";
