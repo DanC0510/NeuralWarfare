@@ -17,6 +17,10 @@ public class HexChunkRenderer : MonoBehaviour
 
     private Tile[] tiles;
     private int mapWidth;
+    
+    [Header("Atlas")]
+    public int atlasColumns = 4;
+    public int atlasRows = 4;
 
     public void Init(Tile[] tiles, int mapWidth, int chunkQ, int chunkR)
     {
@@ -53,7 +57,9 @@ public class HexChunkRenderer : MonoBehaviour
                 if (index < 0 || index >= tiles.Length)
                     continue;
 
-                AddHex(tiles[index], q, r);
+                int localQ = dq;
+                int localR = dr;
+                AddHex(tiles[index], localQ, localR);
             }
         }
 
@@ -66,7 +72,11 @@ public class HexChunkRenderer : MonoBehaviour
 
     void AddHex(Tile tile, int q, int r)
     {
-        Vector3 center = HexToWorld(q, r, hexSize);
+        gameObject.transform.position = HexToWorld(chunkQ*chunkSize, chunkR*chunkSize, hexSize);
+
+        int localQ = q - chunkQ * chunkSize;
+        int localR = r - chunkR * chunkSize;
+        Vector3 center = HexToWorld(localQ, localR, hexSize);
 
         int vertStart = vertices.Count;
         vertices.Add(center);
@@ -79,8 +89,8 @@ public class HexChunkRenderer : MonoBehaviour
         for (int i = 0; i < 6; i++)
         {
             triangles.Add(vertStart);
-            triangles.Add(vertStart + 1 + i);
             triangles.Add(vertStart + 1 + ((i + 1) % 6));
+            triangles.Add(vertStart + 1 + i);
         }
 
         Vector2 uv = GetBiomeUV(tile.Biome);
@@ -107,8 +117,18 @@ public class HexChunkRenderer : MonoBehaviour
 
     Vector2 GetBiomeUV(Tile.TileBiome biome)
     {
-        // TEMP: assumes a 1D atlas (you’ll improve this later)
-        float step = 1f / System.Enum.GetValues(typeof(Tile.TileBiome)).Length;
-        return new Vector2(step * (int)biome + step * 0.5f, 0.5f);
+        int index = (int)biome;
+
+        int x = index % atlasColumns;
+        int y = index / atlasColumns;
+
+        float cellWidth = 1f / atlasColumns;
+        float cellHeight = 1f / atlasRows;
+
+        float u = (x + 0.5f) * cellWidth;
+        float v = 1f - (y + 0.5f) * cellHeight;
+
+        return new Vector2(u, v);
     }
+
 }

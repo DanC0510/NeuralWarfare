@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: a3b2e0a9e6b3dde48ae07a0af26537fd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -106,3 +106,5 @@ MonoBehaviour:
   hexSize: 0.5
   chunkQ: 0
   chunkR: 0
+  atlasColumns: 4
+  atlasRows: 4

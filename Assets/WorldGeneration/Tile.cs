@@ -7,11 +7,11 @@ public class Tile
     [SerializeField] private TileBiome biome;
     public enum TileBiome
     {
-        Grass,
-        Sand,
-        Snow,
-        Water,
-        Deep_Water,
+        Grass = 0,
+        Sand = 1,
+        Snow = 2,
+        Water = 3,
+        Deep_Water = 4,
     };
     
     public Vector2 Position { get { return position; } }
