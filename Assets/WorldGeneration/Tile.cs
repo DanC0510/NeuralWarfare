@@ -3,6 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class Tile
 {
+    private bool[] hasRiverOnEdge = new bool[6];
     [SerializeField] private Vector2 position;
     [SerializeField] private TileBiome biome;
     public enum TileBiome
@@ -22,4 +23,6 @@ public class Tile
         position = pos;
         biome = bio;
     }
+    public bool HasRiverOnEdge(int edgeIndex) { return HasRiverOnEdge[edgeIndex]; }
+    public void SetRiverOnEdge(int edgeIndex, bool hasRiver) { hasRiverOnEdge[edgeIndex] = hasRiver; }
 }
