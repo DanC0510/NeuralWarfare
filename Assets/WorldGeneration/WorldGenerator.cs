@@ -35,6 +35,7 @@ public class WorldGenerator : MonoBehaviour
     [Header("Rivers")]
     [Range(0, 25)] [SerializeField] private int riverFrequency;
     [Range(0, 25)] [SerializeField] private int turnFrequency;
+    [SerializeField] private int maxRiverLength = 100;
 
     
     void Start()
@@ -109,128 +110,138 @@ public class WorldGenerator : MonoBehaviour
     void CreateRiver(Tile currentTile, int riverEdge)
     {
         Tile neighbour = GetNeighbour(currentTile, riverEdge);
-        if(neighbour == currentTile) { return; }
+        if(neighbour == null || neighbour == currentTile) { return; }
 
         int oppositeEdge = (riverEdge + 3) % 6;
         neighbour.SetRiverOnEdge(oppositeEdge, true);
-        FindPathToOcean(currentTile, neighbour,  riverEdge);
+        FindPathToOcean(currentTile, neighbour, riverEdge, 0);
     }
 
-    void FindPathToOcean(Tile current, Tile neighbour, int riverEdge)
+    void FindPathToOcean(Tile current, Tile neighbour, int riverEdge, int depth)
     {
-        bool leftOrRight = Random.Range(0, 1) % 2 == 0;
+        // Prevent infinite recursion
+        if (depth >= maxRiverLength)
+        {
+            return;
+        }
+        
+        bool leftOrRight = Random.Range(0, 2) == 0;
         bool turn = Random.Range(0, 100) % turnFrequency == 0;
         if (leftOrRight)
         {
-            //going left
-            Vector2 leftPos = current.Position + new Vector2(0, 1);
-            Tile leftTile = GetTile(leftPos);
-            if (leftTile != null && leftTile.Biome <= current.Biome && (leftTile.Biome != Tile.TileBiome.Water || leftTile.Biome != Tile.TileBiome.Deep_Water))
+            //going left (counterclockwise around hex)
+            int leftEdge = (riverEdge + 1) % 6;
+            Tile leftTile = GetNeighbour(current, leftEdge);
+            if (leftTile == null || leftTile == current) { return; }
+
+            if (leftTile.Biome == Tile.TileBiome.Water || leftTile.Biome == Tile.TileBiome.Deep_Water)
+            {
+                // Reached water, stop
+                return;
+            }
+
+            if (leftTile.Biome <= current.Biome)
             {
                 if (turn)
                 {
-                    riverEdge = (riverEdge + 1)% 6;
-                    int oppositeEdge = (riverEdge + 3) % 6;
+                    int oppositeEdge = (leftEdge + 3) % 6;
                     leftTile.SetRiverOnEdge(oppositeEdge, true);
-                    neighbour.SetRiverOnEdge(riverEdge, true);
-                    FindPathToOcean(neighbour, leftTile, riverEdge);
+                    neighbour.SetRiverOnEdge(leftEdge, true);
+                    FindPathToOcean(neighbour, leftTile, leftEdge, depth + 1);
                 }
                 else
                 {
-                    riverEdge = (riverEdge + 5) % 6;
-                    int oppositeEdge = (riverEdge + 3) % 6;
+                    int oppositeEdge = (leftEdge + 3) % 6;
                     leftTile.SetRiverOnEdge(oppositeEdge, true);
-                    current.SetRiverOnEdge(riverEdge, true);
-                    FindPathToOcean(current, leftTile, riverEdge);
+                    current.SetRiverOnEdge(leftEdge, true);
+                    FindPathToOcean(current, leftTile, leftEdge, depth + 1);
                 }
             }
-            else if(leftTile.Biome == Tile.TileBiome.Deep_Water || leftTile.Biome == Tile.TileBiome.Water)
+        }
+        else
+        {
+            //going right (clockwise around hex)
+            int rightEdge = (riverEdge + 5) % 6;
+            Tile rightTile = GetNeighbour(current, rightEdge);
+            if (rightTile == null || rightTile == current) { return; }
+            
+            if (rightTile.Biome == Tile.TileBiome.Water || rightTile.Biome == Tile.TileBiome.Deep_Water)
             {
+                // Reached water, stop
                 return;
             }
-        }
-        else if (!leftOrRight)
-        {
-            //going right
-            Vector2 rightPos = current.Position + new Vector2(0, -1);
-            Tile rightTile = GetTile(rightPos);
-            if (rightTile != null && rightTile.Biome <= current.Biome && (rightTile.Biome != Tile.TileBiome.Water || rightTile.Biome != Tile.TileBiome.Deep_Water))
+            
+            if (rightTile.Biome <= current.Biome)
             {
                 if (turn)
                 {
-                    riverEdge = (riverEdge + 1)% 6;
-                    int oppositeEdge = (riverEdge + 3) % 6;
+                    int oppositeEdge = (rightEdge + 3) % 6;
                     rightTile.SetRiverOnEdge(oppositeEdge, true);
-                    neighbour.SetRiverOnEdge(riverEdge, true);
-                    FindPathToOcean(neighbour, rightTile, riverEdge);
+                    neighbour.SetRiverOnEdge(rightEdge, true);
+                    FindPathToOcean(neighbour, rightTile, rightEdge, depth + 1);
                 }
                 else
                 {
-                    riverEdge = (riverEdge + 5) % 6;
-                    int oppositeEdge = (riverEdge + 3) % 6;
+                    int oppositeEdge = (rightEdge + 3) % 6;
                     rightTile.SetRiverOnEdge(oppositeEdge, true);
-                    current.SetRiverOnEdge(riverEdge, true);
-                    FindPathToOcean(current, rightTile, riverEdge);
+                    current.SetRiverOnEdge(rightEdge, true);
+                    FindPathToOcean(current, rightTile, rightEdge, depth + 1);
                 }
             }
-            if(rightTile.Biome == Tile.TileBiome.Deep_Water || rightTile.Biome == Tile.TileBiome.Water)
-            {
-                return;
-            }
         }
-    }
-
-    Tile GetTile(Vector2 pos)
-    {
-        foreach (Tile tile in tiles)
-        {
-            if (tile.Position == pos)
-            {
-                return tile;
-            }
-        }
-
-        return null;
     }
 
     Tile GetNeighbour(Tile currentTile, int riverEdge)
     {
         Vector2 neighbourPos = Vector2.zero;
+        int col = (int)currentTile.Position.x;
+        int row = (int)currentTile.Position.y;
         
-        if (riverEdge == 0)
+        // Offset coordinates: even rows and odd rows have different neighbor offsets
+        bool isOddRow = row % 2 == 1;
+        
+        // Direction vectors for offset coordinates (pointy-top hexes)
+        // Edge numbering: 0=NE, 1=E, 2=SE, 3=SW, 4=W, 5=NW
+        if (riverEdge == 0) // NE
         {
-            neighbourPos = currentTile.Position + new Vector2(1, 1);
+            neighbourPos = new Vector2(col + (isOddRow ? 1 : 0), row + 1);
         }
-        else if (riverEdge == 1)
+        else if (riverEdge == 1) // E
         {
-            neighbourPos = currentTile.Position + new Vector2(1, 0);
+            neighbourPos = new Vector2(col + 1, row);
         }
-        else if (riverEdge == 2)
+        else if (riverEdge == 2) // SE
         {
-            neighbourPos = currentTile.Position + new Vector2(1, -1);
+            neighbourPos = new Vector2(col + (isOddRow ? 1 : 0), row - 1);
         }
-        else if (riverEdge == 3)
+        else if (riverEdge == 3) // SW
         {
-            neighbourPos = currentTile.Position + new Vector2(-1, -1);
+            neighbourPos = new Vector2(col + (isOddRow ? 0 : -1), row - 1);
         }
-        else if (riverEdge == 4)
+        else if (riverEdge == 4) // W
         {
-            neighbourPos = currentTile.Position + new Vector2(-1, 0);
+            neighbourPos = new Vector2(col - 1, row);
         }
-        else if (riverEdge == 5)
+        else if (riverEdge == 5) // NW
         {
-            neighbourPos = currentTile.Position + new Vector2(-1, 1);
-        }
-
-        foreach (Tile tile in tiles)
-        {
-            if (tile.Position == neighbourPos)
-            {
-                return tile;
-            }
+            neighbourPos = new Vector2(col + (isOddRow ? 0 : -1), row + 1);
         }
 
-        return currentTile;
+        // Check bounds
+        if (neighbourPos.x < 0 || neighbourPos.x >= actualWidth || 
+            neighbourPos.y < 0 || neighbourPos.y >= actualHeight)
+        {
+            return null;
+        }
+
+        // Use direct array indexing instead of iteration for performance
+        int index = (int)neighbourPos.x * actualHeight + (int)neighbourPos.y;
+        if (index >= 0 && index < tiles.Length)
+        {
+            return tiles[index];
+        }
+
+        return null;
     }
     
     void CreateChunks()
