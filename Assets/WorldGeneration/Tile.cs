@@ -8,11 +8,11 @@ public class Tile
     [SerializeField] private TileBiome biome;
     public enum TileBiome
     {
-        Grass = 0,
-        Sand = 1,
-        Snow = 2,
-        Water = 3,
-        Deep_Water = 4,
+        Water = 0,
+        Deep_Water = 1,
+        Grass = 2,
+        Snow = 3,
+        Sand = 4,
     };
     
     public Vector2 Position { get { return position; } }
@@ -23,6 +23,6 @@ public class Tile
         position = pos;
         biome = bio;
     }
-    public bool HasRiverOnEdge(int edgeIndex) { return HasRiverOnEdge[edgeIndex]; }
+    public bool HasRiverOnEdge(int edgeIndex) { return hasRiverOnEdge[edgeIndex]; }
     public void SetRiverOnEdge(int edgeIndex, bool hasRiver) { hasRiverOnEdge[edgeIndex] = hasRiver; }
 }

@@ -80,6 +80,7 @@ public class WorldGenerator : MonoBehaviour
                     {
                         colourMap[y * width + x] = regions[i].color;
                         tiles[tileIndex] = new Tile( new Vector2(x , y), regions[i].biome);
+                        if(Random.Range(0, 100) % 6 == 0) { tiles[tileIndex].SetRiverOnEdge(Random.Range(0, 6), true); }
                         tileIndex++;
                         break;
                     }

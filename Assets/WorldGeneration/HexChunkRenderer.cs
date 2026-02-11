@@ -33,9 +33,7 @@ public class HexChunkRenderer : MonoBehaviour
 
         mesh = new Mesh();
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-
         GetComponent<MeshFilter>().mesh = mesh;
-        
         gameObject.transform.position = OffsetToWorld(chunkQ * chunkSize, chunkR * chunkSize, hexSize);
 
         BuildMesh();
@@ -107,13 +105,6 @@ public class HexChunkRenderer : MonoBehaviour
             0f,
             size * Mathf.Sin(angle)
         );
-    }
-
-    static Vector3 HexToWorld(int q, int r, float size)
-    {
-        float x = size * 1.5f * q;
-        float z = size * Mathf.Sqrt(3f) * (r + q * 0.5f);
-        return new Vector3(x, 0f, z);
     }
 
     static Vector3 OffsetToWorld(int col, int row, float size)
