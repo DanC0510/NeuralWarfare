@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -108,13 +109,88 @@ public class WorldGenerator : MonoBehaviour
     void CreateRiver(Tile currentTile, int riverEdge)
     {
         Tile neighbour = GetNeighbour(currentTile, riverEdge);
-        if (neighbour == currentTile)
-        {
-            return;
-        }
+        if(neighbour == currentTile) { return; }
 
         int oppositeEdge = (riverEdge + 3) % 6;
         neighbour.SetRiverOnEdge(oppositeEdge, true);
+        FindPathToOcean(currentTile, neighbour,  riverEdge);
+    }
+
+    void FindPathToOcean(Tile current, Tile neighbour, int riverEdge)
+    {
+        bool leftOrRight = Random.Range(0, 1) % 2 == 0;
+        bool turn = Random.Range(0, 100) % turnFrequency == 0;
+        if (leftOrRight)
+        {
+            //going left
+            Vector2 leftPos = current.Position + new Vector2(0, 1);
+            Tile leftTile = GetTile(leftPos);
+            if (leftTile != null && leftTile.Biome <= current.Biome && (leftTile.Biome != Tile.TileBiome.Water || leftTile.Biome != Tile.TileBiome.Deep_Water))
+            {
+                if (turn)
+                {
+                    riverEdge = (riverEdge + 1)% 6;
+                    int oppositeEdge = (riverEdge + 3) % 6;
+                    leftTile.SetRiverOnEdge(oppositeEdge, true);
+                    neighbour.SetRiverOnEdge(riverEdge, true);
+                    FindPathToOcean(neighbour, leftTile, riverEdge);
+                }
+                else
+                {
+                    riverEdge = (riverEdge + 5) % 6;
+                    int oppositeEdge = (riverEdge + 3) % 6;
+                    leftTile.SetRiverOnEdge(oppositeEdge, true);
+                    current.SetRiverOnEdge(riverEdge, true);
+                    FindPathToOcean(current, leftTile, riverEdge);
+                }
+            }
+            else if(leftTile.Biome == Tile.TileBiome.Deep_Water || leftTile.Biome == Tile.TileBiome.Water)
+            {
+                return;
+            }
+        }
+        else if (!leftOrRight)
+        {
+            //going right
+            Vector2 rightPos = current.Position + new Vector2(0, -1);
+            Tile rightTile = GetTile(rightPos);
+            if (rightTile != null && rightTile.Biome <= current.Biome && (rightTile.Biome != Tile.TileBiome.Water || rightTile.Biome != Tile.TileBiome.Deep_Water))
+            {
+                if (turn)
+                {
+                    riverEdge = (riverEdge + 1)% 6;
+                    int oppositeEdge = (riverEdge + 3) % 6;
+                    rightTile.SetRiverOnEdge(oppositeEdge, true);
+                    neighbour.SetRiverOnEdge(riverEdge, true);
+                    FindPathToOcean(neighbour, rightTile, riverEdge);
+                }
+                else
+                {
+                    riverEdge = (riverEdge + 5) % 6;
+                    int oppositeEdge = (riverEdge + 3) % 6;
+                    rightTile.SetRiverOnEdge(oppositeEdge, true);
+                    current.SetRiverOnEdge(riverEdge, true);
+                    FindPathToOcean(current, rightTile, riverEdge);
+                }
+            }
+            if(rightTile.Biome == Tile.TileBiome.Deep_Water || rightTile.Biome == Tile.TileBiome.Water)
+            {
+                return;
+            }
+        }
+    }
+
+    Tile GetTile(Vector2 pos)
+    {
+        foreach (Tile tile in tiles)
+        {
+            if (tile.Position == pos)
+            {
+                return tile;
+            }
+        }
+
+        return null;
     }
 
     Tile GetNeighbour(Tile currentTile, int riverEdge)

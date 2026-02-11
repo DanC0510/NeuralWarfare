@@ -10,9 +10,9 @@ public class Tile
     {
         Water = 0,
         Deep_Water = 1,
-        Grass = 2,
-        Snow = 3,
-        Sand = 4,
+        Sand = 2,
+        Grass = 3,
+        Snow = 4,
     };
     
     public Vector2 Position { get { return position; } }
