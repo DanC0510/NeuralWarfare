@@ -452,10 +452,10 @@ MonoBehaviour:
   - {fileID: 7008148831958395801, guid: b94b5506b954ef74e92df2f7d4a71f08, type: 3}
   - {fileID: 4111338925750891962, guid: 7a53cd556615ee74e994f1e3be060544, type: 3}
   chunkPrefab: {fileID: 3549554827697500331, guid: 55208b827d535f747b800548ea7ecc4b, type: 3}
-  hexSize: 0.5
-  riverFrequency: 94
+  hexSize: 0.57735
+  riverFrequency: 522
   turnFrequency: 19
-  maxRiverLength: 12
+  maxRiverLength: 100
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0

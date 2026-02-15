@@ -34,10 +34,10 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private float hexSize = 0.5f;
     
     [Header("Rivers")]
-    [Range(0, 25)] [SerializeField] private int riverFrequency;
+    [Range(0, 1000)] [SerializeField] private int riverFrequency;
     [Range(0, 25)] [SerializeField] private int turnFrequency;
     [SerializeField] private int maxRiverLength = 100;
-    [SerializeField] private Dictionary<int, List<Tile>> edgeToTileMap = new Dictionary<int, List<Tile>>(); 
+    [SerializeField] private Dictionary<int, HashSet<Tile>> edgeToTileMap = new Dictionary<int, HashSet<Tile>>(); 
 
     
     void Start()
@@ -88,7 +88,7 @@ public class WorldGenerator : MonoBehaviour
                         colourMap[y * width + x] = regions[i].color;
                         Tile currentTile = new Tile( new Vector2(x , y), regions[i].biome);
                         tiles[tileIndex] = currentTile;
-                        if (Random.Range(0, 100) % riverFrequency == 0)
+                        if (Random.Range(0, riverFrequency) == 0)
                         {
                             if (currentTile.Biome != Tile.TileBiome.Deep_Water && currentTile.Biome != Tile.TileBiome.Water && currentTile.Biome != Tile.TileBiome.Sand)
                             {
@@ -115,26 +115,35 @@ public class WorldGenerator : MonoBehaviour
 
     void CreateRivers()
     {
+        HashSet<Tile> tilesToStartFrom = new HashSet<Tile>();
         foreach (Tile currentTile in tiles)
         {
             if (currentTile.HasRiver())
             {
-                for (int i = 0; i < 6; i++)
-                {
-                    if (currentTile.HasRiverOnEdge(i))
-                    {
-                        FindRiverPath(currentTile, i, 0);
-                    }
-                }
+                tilesToStartFrom.Add(currentTile);
             }
         }
 
-        foreach (KeyValuePair<int, List<Tile>> entry in edgeToTileMap)
+        foreach (Tile currentTile in tilesToStartFrom)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (currentTile.HasRiverOnEdge(i))
+                {
+                    FindRiverPath(currentTile, i, 0);
+                }
+            }
+        }
+        
+        foreach (KeyValuePair<int, HashSet<Tile>> entry in edgeToTileMap)
         {
             int edge = entry.Key;
-            List<Tile> tilesWithRiver = entry.Value;
+            HashSet<Tile> tilesWithRiver = entry.Value;
             foreach (Tile tile in tilesWithRiver)
             {
+                if(tile == null) { continue; }
+
+                if (edge == -1) edge = 0;
                 tile.SetRiverOnEdge(edge, true);
             }
         }
@@ -144,30 +153,39 @@ public class WorldGenerator : MonoBehaviour
     {
         if (!edgeToTileMap.ContainsKey(edge))
         {
-            edgeToTileMap[edge] = new List<Tile>();
+            edgeToTileMap[edge] = new HashSet<Tile>();
         }
         edgeToTileMap[edge].Add(tile);
+        tile.SetRiverBeenVisited(edge, true);
     }
 
     //The Idea for this function is to "rotate" the river to be flat when viewed, then go left or right, incorporating turns occasionally until we get to the ocean or max river length.
     void FindRiverPath(Tile current, int riverEdge, int depth)
     {
         // Prevent infinite recursion and null reference exceptions
-        if(current == null) { return; }
+        if (current == null) { return; }
         if (depth >= maxRiverLength) { return; }
         
-        AddToEdgeMap(current, riverEdge);
         
-        int leftOrRight = Random.Range(-1, 1); //return -1 or 0  due to minIncluse, maxExclusive
-        if (leftOrRight == 0)
+        int edgeToGetTo = mod(Random.Range(0, 2) + riverEdge, 6);
+        int turnDirection = Random.Range(0, 2) == 0 ? -1 : 1; // -1 for left, 1 for right
+        
+        while(riverEdge != edgeToGetTo)
         {
-            leftOrRight = 1; //makes path go one way if we randomly generate 0
+            AddToEdgeMap(current, riverEdge);
+            riverEdge = mod(riverEdge + turnDirection, 6);
+            depth++;
         }
-        Tile tile1 = GetNeighbour(current, (riverEdge + leftOrRight) % 6);
-        //Tile tile2 = GetNeighbour(neighbour, oppositeEdge - leftOrRight);
         
-        FindRiverPath(tile1, riverEdge, depth + 1);
+        Tile next = GetNeighbour(current, riverEdge);
+        FindRiverPath(next, riverEdge, depth + 1);
     }
+    
+
+    int mod(int x, int m) {
+        return (x%m + m)%m;
+    }
+
 
     Tile GetNeighbour(Tile currentTile, int riverEdge)
     {
@@ -175,11 +193,8 @@ public class WorldGenerator : MonoBehaviour
         int col = (int)currentTile.Position.x;
         int row = (int)currentTile.Position.y;
         
-        // Offset coordinates: even rows and odd rows have different neighbor offsets
         bool isOddRow = row % 2 == 1;
         
-        // Direction vectors for offset coordinates (pointy-top hexes)
-        // Edge numbering: 0=NE, 1=E, 2=SE, 3=SW, 4=W, 5=NW
         if (riverEdge == 0) // NE
         {
             neighbourPos = new Vector2(col + (isOddRow ? 1 : 0), row + 1);
@@ -206,8 +221,7 @@ public class WorldGenerator : MonoBehaviour
         }
 
         // Check bounds
-        if (neighbourPos.x < 0 || neighbourPos.x >= actualWidth || 
-            neighbourPos.y < 0 || neighbourPos.y >= actualHeight)
+        if (neighbourPos.x < 0 || neighbourPos.x >= actualWidth || neighbourPos.y < 0 || neighbourPos.y >= actualHeight)
         {
             return null;
         }
