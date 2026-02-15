@@ -108,3 +108,8 @@ MonoBehaviour:
   chunkR: 0
   atlasColumns: 4
   atlasRows: 4
+  renderRivers: 1
+  riverMaterial: {fileID: 2100000, guid: 035c7290225078d46952bd63b23d7c32, type: 2}
+  riverWidth: 0.08
+  riverYOffset: 0.01
+  riversDoubleSided: 1

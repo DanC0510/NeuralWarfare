@@ -88,10 +88,13 @@ public class WorldGenerator : MonoBehaviour
                         tiles[tileIndex] = currentTile;
                         if (Random.Range(0, 100) % riverFrequency == 0)
                         {
-                            int riverEdge = Random.Range(0, 6);
-                            currentTile.SetRiverOnEdge(riverEdge, true);
-                            //check neighbour and set river on edge for them too
-                            CreateRiver(currentTile, riverEdge);
+                            if (currentTile.Biome != Tile.TileBiome.Deep_Water && currentTile.Biome != Tile.TileBiome.Water && currentTile.Biome != Tile.TileBiome.Sand)
+                            {
+                                int riverEdge = Random.Range(0, 6);
+                                currentTile.SetRiverOnEdge(riverEdge, true);
+                                //check neighbour and set river on edge for them too
+                                CreateRiver(currentTile, riverEdge);
+                            }
                         }
                         tileIndex++;
                         break;

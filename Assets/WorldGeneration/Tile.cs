@@ -26,4 +26,8 @@ public class Tile
     }
     public bool HasRiverOnEdge(int edgeIndex) { return hasRiverOnEdge[edgeIndex]; }
     public void SetRiverOnEdge(int edgeIndex, bool hasRiver) { hasRiverOnEdge[edgeIndex] = hasRiver; hasRiverAdjecent = hasRiver; }
+    
+    public bool HasRiver() { return hasRiverAdjecent; }
+    
+    public bool[] GetRiverEdges() { return hasRiverOnEdge; }
 }
