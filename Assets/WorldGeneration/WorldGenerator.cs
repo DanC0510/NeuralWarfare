@@ -37,7 +37,7 @@ public class WorldGenerator : MonoBehaviour
     [Range(0, 1000)] [SerializeField] private int riverFrequency;
     [Range(0, 25)] [SerializeField] private int turnFrequency;
     [SerializeField] private int maxRiverLength = 100;
-    [SerializeField] private Dictionary<int, HashSet<Tile>> edgeToTileMap = new Dictionary<int, HashSet<Tile>>(); 
+    private Dictionary<int, HashSet<Tile>> edgeToTileMap = new Dictionary<int, HashSet<Tile>>(); 
 
     
     void Start()
@@ -167,8 +167,13 @@ public class WorldGenerator : MonoBehaviour
         if (current == null) { return; }
         if (depth >= maxRiverLength) { return; }
         if (current.Biome == Tile.TileBiome.Deep_Water || current.Biome == Tile.TileBiome.Water) { return; }
+        if (current.HasRiverBeenVisited(riverEdge)) { return; }
         turnDirection = -turnDirection; // Alternate turn direction for each river segment
         int edgeToGetTo = mod((2 * turnDirection) + riverEdge, 6);
+        if (mod(depth, turnFrequency) == 0)
+        {
+            edgeToGetTo = mod((3 * turnDirection) + riverEdge, 6);
+        }
         AddToEdgeMap(current, riverEdge);
         while(riverEdge != edgeToGetTo)
         {
