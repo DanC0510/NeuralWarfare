@@ -197,27 +197,27 @@ public class WorldGenerator : MonoBehaviour
         
         if (riverEdge == 0) // NE
         {
-            neighbourPos = new Vector2(row + 1, col + (isOddRow ? 1 : 0));
+            neighbourPos = new Vector2(col + (isOddRow ? 1 : 0), row + 1);
         }
         else if (riverEdge == 1) // E
         {
-            neighbourPos = new Vector2(row, col + 1);
+            neighbourPos = new Vector2(col + 1, row);
         }
         else if (riverEdge == 2) // SE
         {
-            neighbourPos = new Vector2(row - 1, col + (isOddRow ? 1 : 0));
+            neighbourPos = new Vector2(col + (isOddRow ? 1 : 0), row - 1);
         }
         else if (riverEdge == 3) // SW
         {
-            neighbourPos = new Vector2(row - 1, col + (isOddRow ? 0 : -1));
+            neighbourPos = new Vector2(col + (isOddRow ? 0 : -1), row - 1);
         }
         else if (riverEdge == 4) // W
         {
-            neighbourPos = new Vector2(row, col - 1);
+            neighbourPos = new Vector2(col - 1, row);
         }
         else if (riverEdge == 5) // NW
         {
-            neighbourPos = new Vector2(row + 1, col + (isOddRow ? 0 : -1));
+            neighbourPos = new Vector2(col + (isOddRow ? 0 : -1), row + 1);
         }
 
         // Check bounds
