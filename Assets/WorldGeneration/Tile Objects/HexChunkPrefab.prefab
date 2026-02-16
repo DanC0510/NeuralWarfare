@@ -106,10 +106,10 @@ MonoBehaviour:
   hexSize: 0.5
   chunkQ: 0
   chunkR: 0
+  mesh: {fileID: 0}
+  tiles: []
   atlasColumns: 4
   atlasRows: 4
-  renderRivers: 1
-  riverMaterial: {fileID: 2100000, guid: 035c7290225078d46952bd63b23d7c32, type: 2}
-  riverWidth: 0.08
-  riverYOffset: 0.01
-  riversDoubleSided: 1
+  uvInnerMargin: 0.087
+  degOffset: 30
+  showBiomeColours: 0
