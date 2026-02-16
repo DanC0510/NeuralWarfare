@@ -103,7 +103,7 @@ public class HexChunkRenderer : MonoBehaviour
         }
         else
         {
-            Vector2[] hexUVs = GetHexUVs(tile.Biome);
+            Vector2[] hexUVs = GetHexUVs(tile);
             for (int i = 0; i < 7; i++)
                 uvs.Add(hexUVs[i]);
         }
@@ -150,9 +150,9 @@ public class HexChunkRenderer : MonoBehaviour
         return new Vector2(u, v);
     }
     
-    Vector2[] GetHexUVs(Tile.TileBiome biome)
+    Vector2[] GetHexUVs(Tile tile)
     {
-        int index = (int)biome;
+        int index = (int)tile.Biome;
         int cellX = index % atlasColumns;
         int cellY = index / atlasColumns;
 
@@ -178,14 +178,16 @@ public class HexChunkRenderer : MonoBehaviour
             uv[1 + i] = new Vector2(u, v);
         }
 
-        // Rotate first: apply degOffset once here
+        if (tile.IsStartingRiver && tile.RiverTiles.Count >= 7)
+        {
+            foreach (Tile riverTile in tile.RiverTiles)
+            {
+                riverTile.Biome = Tile.TileBiome.River;
+            }
+        }
+
+        
         return RotateHexUVs(uv, degOffset);
-    }
-    
-    static Vector3 HexCornerRotated(int i, float size, float degs)
-    {
-        float angle = Mathf.Deg2Rad * (60 * i + 30 + degs);
-        return new Vector3(size * Mathf.Cos(angle), 0f, size * Mathf.Sin(angle));
     }
     
     static Vector2[] RotateHexUVs(Vector2[] uv, float degs)

@@ -88,7 +88,9 @@ public class WorldGenerator : MonoBehaviour
                         {
                             if (currentTile.Biome != Tile.TileBiome.Deep_Water && currentTile.Biome != Tile.TileBiome.Water && currentTile.Biome != Tile.TileBiome.Sand)
                             {
-                                FindRiverPath(currentTile, 0, Random.Range(0, 6));
+                                FindRiverPath(currentTile, currentTile, 0, Random.Range(0, 6));
+                                currentTile.IsStartingRiver = true;
+                                
                             }
                         }
                         break;
@@ -106,14 +108,14 @@ public class WorldGenerator : MonoBehaviour
     }
 
     //The Idea for this function is to "rotate" the river to be flat when viewed, then go left or right, incorporating turns occasionally until we get to the ocean or max river length.
-    void FindRiverPath(Tile current,  int depth, int lastTurnDirection = 0)
+    void FindRiverPath(Tile startingTile, Tile current,  int depth, int lastTurnDirection = 0)
     {
         // Prevent infinite recursion and null reference exceptions
         if (current == null) { return; }
         if (depth >= maxRiverLength) { return; }
         if (current.Biome == Tile.TileBiome.Deep_Water || current.Biome == Tile.TileBiome.Water) { return; }
         
-        current.Biome = Tile.TileBiome.River;
+        startingTile.RiverTiles.Add(current);
         
         int currentDirection = lastTurnDirection;
         bool doTurn = Random.Range(0, Mathf.Max(1, turnFrequency)) == 0;
@@ -144,7 +146,7 @@ public class WorldGenerator : MonoBehaviour
         Tile next = GetNeighbour(current, currentDirection);
         if (next != null)
         {
-            FindRiverPath(next, depth + 1, currentDirection);
+            FindRiverPath(startingTile, next, depth + 1, currentDirection);
         }
     }
     
