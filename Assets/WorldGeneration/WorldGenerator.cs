@@ -160,25 +160,25 @@ public class WorldGenerator : MonoBehaviour
     }
 
     //The Idea for this function is to "rotate" the river to be flat when viewed, then go left or right, incorporating turns occasionally until we get to the ocean or max river length.
+    private int turnDirection = 1;
     void FindRiverPath(Tile current, int riverEdge, int depth)
     {
         // Prevent infinite recursion and null reference exceptions
         if (current == null) { return; }
         if (depth >= maxRiverLength) { return; }
-        
-        
-        int edgeToGetTo = mod(Random.Range(0, 2) + riverEdge, 6);
-        int turnDirection = Random.Range(0, 2) == 0 ? -1 : 1; // -1 for left, 1 for right
-        
+        if (current.Biome == Tile.TileBiome.Deep_Water || current.Biome == Tile.TileBiome.Water) { return; }
+        turnDirection = -turnDirection; // Alternate turn direction for each river segment
+        int edgeToGetTo = mod((2 * turnDirection) + riverEdge, 6);
+        AddToEdgeMap(current, riverEdge);
         while(riverEdge != edgeToGetTo)
         {
-            AddToEdgeMap(current, riverEdge);
             riverEdge = mod(riverEdge + turnDirection, 6);
             depth++;
+            AddToEdgeMap(current, riverEdge);
         }
         
         Tile next = GetNeighbour(current, riverEdge);
-        FindRiverPath(next, riverEdge, depth + 1);
+        FindRiverPath(next, mod(riverEdge + 3, 6), depth + 1);
     }
     
 
