@@ -423,6 +423,7 @@ MonoBehaviour:
   persistence: 0.5
   noiseRT: {fileID: 8400000, guid: 3dd7c0ccb587a8e42913c5993f49b18f, type: 2}
   colorRT: {fileID: 8400000, guid: 32fef66c80ba4ca4bb1d10457b83d0a6, type: 2}
+  tiles: []
   regions:
   - name: Deep Water
     height: 0.4
@@ -434,7 +435,7 @@ MonoBehaviour:
     biome: 0
   - name: Sand
     height: 0.5
-    color: {r: 0.9212953, g: 1, b: 0, a: 0}
+    color: {r: 1, g: 0.16212645, b: 0, a: 1}
     biome: 2
   - name: Grass
     height: 0.92
@@ -448,17 +449,10 @@ MonoBehaviour:
     height: 1.5
     color: {r: 0.07088822, g: 0.31397668, b: 0.5566038, a: 0}
     biome: 5
-  tiles: []
-  tilePrefabs:
-  - {fileID: 8029547182911051556, guid: 10c909be886337842897311b211b6673, type: 3}
-  - {fileID: 6887505471944521484, guid: f232647ad9ee7c74ebece8643bba0a44, type: 3}
-  - {fileID: 3853427309416839434, guid: 5842fb656ec29ad4e95f27e7fe2e3e3b, type: 3}
-  - {fileID: 7008148831958395801, guid: b94b5506b954ef74e92df2f7d4a71f08, type: 3}
-  - {fileID: 4111338925750891962, guid: 7a53cd556615ee74e994f1e3be060544, type: 3}
   chunkPrefab: {fileID: 3549554827697500331, guid: 55208b827d535f747b800548ea7ecc4b, type: 3}
   hexSize: 0.57735
   riverFrequency: 500
-  turnFrequency: 25
+  turnFrequency: 6
   maxRiverLength: 100
 --- !u!4 &488609765
 Transform:

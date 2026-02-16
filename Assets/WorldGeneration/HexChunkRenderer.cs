@@ -56,7 +56,7 @@ public class HexChunkRenderer : MonoBehaviour
                 if (worldCol >= mapWidth || worldRow >= mapHeight)
                     continue;
                 
-                int index = worldCol * mapHeight + worldRow;
+                int index = worldRow * mapWidth + worldCol;
                 if (index < 0 || index >= tiles.Length)
                     continue;
                 

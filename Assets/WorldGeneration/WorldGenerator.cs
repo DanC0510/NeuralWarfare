@@ -21,15 +21,10 @@ public class WorldGenerator : MonoBehaviour
     [Header("Textures")]
     [SerializeField] private RenderTexture noiseRT;
     [SerializeField] private RenderTexture colorRT;
-
-    [Header("Colour Deatils")]
-    [SerializeField] private TerrainType[] regions;
-
-    [Header("Tile Details")] 
-    [SerializeField] private Tile[] tiles;
-    [SerializeField] private GameObject[] tilePrefabs;
     
-    [Header("Chunking")]
+    [Header("Tiles and Chunking")]
+    [SerializeField] private Tile[] tiles;
+    [SerializeField] private TerrainType[] regions;
     [SerializeField] private GameObject chunkPrefab;
     [SerializeField] private float hexSize = 0.5f;
     
@@ -70,11 +65,11 @@ public class WorldGenerator : MonoBehaviour
         }
         noiseTexture.SetPixels(pix);
         noiseTexture.Apply();
-        //Convert the noise map to a colour map + texture
+        // Convert the noise map to a colour map + texture
         Texture2D colourTexture = new Texture2D(width, height);
         Color[] colourMap = new Color[width * height];
+        // Initialise the tile array
         tiles = new Tile[width * height];
-        int tileIndex = 0;
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -84,18 +79,18 @@ public class WorldGenerator : MonoBehaviour
                 {
                     if (currentHeight <= regions[i].height)
                     {
-                        colourMap[y * width + x] = regions[i].color;
+                        int tileIndex = y * width + x;
+                        colourMap[tileIndex] = regions[i].color;
+                        
                         Tile currentTile = new Tile( new Vector2(x , y), regions[i].biome);
                         tiles[tileIndex] = currentTile;
                         if (Random.Range(0, riverFrequency) == 0)
                         {
                             if (currentTile.Biome != Tile.TileBiome.Deep_Water && currentTile.Biome != Tile.TileBiome.Water && currentTile.Biome != Tile.TileBiome.Sand)
                             {
-                                currentTile.Biome = Tile.TileBiome.River;
                                 FindRiverPath(currentTile, 0, Random.Range(0, 6));
                             }
                         }
-                        tileIndex++;
                         break;
                     }
                 }
@@ -198,7 +193,7 @@ public class WorldGenerator : MonoBehaviour
         }
 
         // Use direct array indexing instead of iteration for performance
-        int index = (int)neighbourPos.x * actualHeight + (int)neighbourPos.y;
+        int index = (int)neighbourPos.y * actualWidth + (int)neighbourPos.x;
         if (index >= 0 && index < tiles.Length)
         {
             return tiles[index];
