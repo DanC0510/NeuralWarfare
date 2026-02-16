@@ -444,6 +444,10 @@ MonoBehaviour:
     height: 1
     color: {r: 1, g: 1, b: 1, a: 0}
     biome: 4
+  - name: River
+    height: 1.5
+    color: {r: 0.07088822, g: 0.31397668, b: 0.5566038, a: 0}
+    biome: 5
   tiles: []
   tilePrefabs:
   - {fileID: 8029547182911051556, guid: 10c909be886337842897311b211b6673, type: 3}
@@ -454,9 +458,8 @@ MonoBehaviour:
   chunkPrefab: {fileID: 3549554827697500331, guid: 55208b827d535f747b800548ea7ecc4b, type: 3}
   hexSize: 0.57735
   riverFrequency: 500
-  turnFrequency: 9
+  turnFrequency: 25
   maxRiverLength: 100
-  straightnessBias: 0.85
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0

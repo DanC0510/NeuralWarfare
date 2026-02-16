@@ -37,7 +37,6 @@ public class WorldGenerator : MonoBehaviour
     [Range(0, 1000)] [SerializeField] private int riverFrequency;
     [Range(0, 25)] [SerializeField] private int turnFrequency;
     [SerializeField] private int maxRiverLength = 100;
-    private Dictionary<int, HashSet<Tile>> edgeToTileMap = new Dictionary<int, HashSet<Tile>>(); 
 
     
     void Start()
@@ -92,8 +91,8 @@ public class WorldGenerator : MonoBehaviour
                         {
                             if (currentTile.Biome != Tile.TileBiome.Deep_Water && currentTile.Biome != Tile.TileBiome.Water && currentTile.Biome != Tile.TileBiome.Sand)
                             {
-                                int riverEdge = Random.Range(0, 6);
-                                tiles[tileIndex].SetRiverOnEdge(riverEdge, true);
+                                currentTile.Biome = Tile.TileBiome.River;
+                                FindRiverPath(currentTile, 0, Random.Range(0, 6));
                             }
                         }
                         tileIndex++;
@@ -102,8 +101,6 @@ public class WorldGenerator : MonoBehaviour
                 }
             }
         }
-
-        CreateRivers();
         
         colourTexture.SetPixels(colourMap);
         colourTexture.Apply();
@@ -113,86 +110,55 @@ public class WorldGenerator : MonoBehaviour
         Graphics.Blit(colourTexture, colorRT);
     }
 
-    void CreateRivers()
-    {
-        HashSet<Tile> tilesToStartFrom = new HashSet<Tile>();
-        foreach (Tile currentTile in tiles)
-        {
-            if (currentTile.HasRiver())
-            {
-                tilesToStartFrom.Add(currentTile);
-            }
-        }
-
-        foreach (Tile currentTile in tilesToStartFrom)
-        {
-            for (int i = 0; i < 6; i++)
-            {
-                if (currentTile.HasRiverOnEdge(i))
-                {
-                    FindRiverPath(currentTile, i, 0);
-                }
-            }
-        }
-        
-        foreach (KeyValuePair<int, HashSet<Tile>> entry in edgeToTileMap)
-        {
-            int edge = entry.Key;
-            HashSet<Tile> tilesWithRiver = entry.Value;
-            foreach (Tile tile in tilesWithRiver)
-            {
-                if(tile == null) { continue; }
-
-                if (edge == -1) edge = 0;
-                tile.SetRiverOnEdge(edge, true);
-            }
-        }
-    }
-
-    void AddToEdgeMap(Tile tile, int edge)
-    {
-        if (!edgeToTileMap.ContainsKey(edge))
-        {
-            edgeToTileMap[edge] = new HashSet<Tile>();
-        }
-        edgeToTileMap[edge].Add(tile);
-        tile.SetRiverBeenVisited(edge, true);
-    }
-
     //The Idea for this function is to "rotate" the river to be flat when viewed, then go left or right, incorporating turns occasionally until we get to the ocean or max river length.
-    private int turnDirection = 1;
-    void FindRiverPath(Tile current, int riverEdge, int depth)
+    void FindRiverPath(Tile current,  int depth, int lastTurnDirection = 0)
     {
         // Prevent infinite recursion and null reference exceptions
         if (current == null) { return; }
         if (depth >= maxRiverLength) { return; }
         if (current.Biome == Tile.TileBiome.Deep_Water || current.Biome == Tile.TileBiome.Water) { return; }
-        if (current.HasRiverBeenVisited(riverEdge)) { return; }
-        turnDirection = -turnDirection; // Alternate turn direction for each river segment
-        int edgeToGetTo = mod((2 * turnDirection) + riverEdge, 6);
-        if (mod(depth, turnFrequency) == 0)
+        
+        current.Biome = Tile.TileBiome.River;
+        
+        int currentDirection = lastTurnDirection;
+        bool doTurn = Random.Range(0, Mathf.Max(1, turnFrequency)) == 0;
+
+        if (doTurn)
         {
-            edgeToGetTo = mod((3 * turnDirection) + riverEdge, 6);
+            int turn = Random.Range(0, 100) < 80
+                ? (Random.value < 0.5f ? -1 : 1)
+                : (Random.value < 0.5f ? -2 : 2);
+
+            currentDirection = mod(currentDirection + turn, 6);
         }
-        AddToEdgeMap(current, riverEdge);
-        while(riverEdge != edgeToGetTo)
+        else
         {
-            riverEdge = mod(riverEdge + turnDirection, 6);
-            depth++;
-            AddToEdgeMap(current, riverEdge);
+            // Tiny jitter to avoid perfect straight lines
+            if (Random.Range(0, 10) == 0)
+            {
+                currentDirection = mod(currentDirection + (Random.value < 0.5f ? -1 : 1), 6);
+            }
         }
         
-        Tile next = GetNeighbour(current, riverEdge);
-        FindRiverPath(next, mod(riverEdge + 3, 6), depth + 1);
+        int back = mod(lastTurnDirection + 3, 6);
+        if (currentDirection == back)
+        {
+            currentDirection = mod(currentDirection + (Random.value < 0.5f ? 1 : -1), 6);
+        }
+        
+        Tile next = GetNeighbour(current, currentDirection);
+        if (next != null)
+        {
+            FindRiverPath(next, depth + 1, currentDirection);
+        }
     }
     
-
     int mod(int x, int m) {
         return (x%m + m)%m;
     }
 
 
-    Tile GetNeighbour(Tile currentTile, int riverEdge)
+    Tile GetNeighbour(Tile currentTile, int direction)
     {
         Vector2 neighbourPos = Vector2.zero;
         int col = (int)currentTile.Position.x;
@@ -200,27 +166,27 @@ public class WorldGenerator : MonoBehaviour
         
         bool isOddRow = row % 2 == 1;
         
-        if (riverEdge == 0) // NE
+        if (direction == 0) // NE
         {
             neighbourPos = new Vector2(col + (isOddRow ? 1 : 0), row + 1);
         }
-        else if (riverEdge == 1) // E
+        else if (direction == 1) // E
         {
             neighbourPos = new Vector2(col + 1, row);
         }
-        else if (riverEdge == 2) // SE
+        else if (direction == 2) // SE
         {
             neighbourPos = new Vector2(col + (isOddRow ? 1 : 0), row - 1);
         }
-        else if (riverEdge == 3) // SW
+        else if (direction == 3) // SW
         {
             neighbourPos = new Vector2(col + (isOddRow ? 0 : -1), row - 1);
         }
-        else if (riverEdge == 4) // W
+        else if (direction == 4) // W
         {
             neighbourPos = new Vector2(col - 1, row);
         }
-        else if (riverEdge == 5) // NW
+        else if (direction == 5) // NW
         {
             neighbourPos = new Vector2(col + (isOddRow ? 0 : -1), row + 1);
         }

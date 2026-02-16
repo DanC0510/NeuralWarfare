@@ -4,8 +4,6 @@ using UnityEngine;
 public class Tile
 {
     [SerializeField] private bool hasRiverAdjecent;
-    private bool[] hasRiverOnEdge = new bool[6];
-    private bool[] riverHasBeenVisited = new bool[6];
     [SerializeField] private Vector2 position;
     [SerializeField] private TileBiome biome;
     public enum TileBiome
@@ -15,24 +13,18 @@ public class Tile
         Sand = 2,
         Grass = 3,
         Snow = 4,
+        River = 5
     };
     
     public Vector2 Position { get { return position; } }
-    public TileBiome Biome { get { return biome; } }
+    public TileBiome Biome { get { return biome; } set { biome = value; } }
     
     public Tile(Vector2 pos, TileBiome bio)
     {
         position = pos;
         biome = bio;
     }
-    public bool HasRiverOnEdge(int edgeIndex) { return hasRiverOnEdge[edgeIndex]; }
-    public void SetRiverOnEdge(int edgeIndex, bool hasRiver) { hasRiverOnEdge[edgeIndex] = hasRiver; hasRiverAdjecent = hasRiver; }
-    
-    public bool HasRiverBeenVisited(int edgeIndex) { return riverHasBeenVisited[edgeIndex]; }
-    
-    public void SetRiverBeenVisited(int edgeIndex, bool visited) { riverHasBeenVisited[edgeIndex] = visited; }
     
     public bool HasRiver() { return hasRiverAdjecent; }
     
-    public bool[] GetRiverEdges() { return hasRiverOnEdge; }
 }
