@@ -7,7 +7,7 @@ public class Tile
     [SerializeField] private bool hasRiverAdjecent;
     [SerializeField] private Vector2 position;
     [SerializeField] private TileBiome biome;
-    public LinkedList<Tile> riverTiles;
+    private LinkedList<Tile> riverTiles;
     [SerializeField] private bool isStartingRiver;
     [SerializeField] private Tile riverStart; // Reference to the starting tile of this river
     public enum TileBiome
@@ -31,6 +31,14 @@ public class Tile
         position = pos;
         biome = bio;
         RiverTiles = new LinkedList<Tile>();
+    }
+
+    public void NotRiver()
+    {
+        bool isStartingRiver = false;
+        bool hasRiverAdjecent = false;
+        RiverTiles.Clear();
+        riverStart = null;
     }
 
     public bool IsStartingRiver { get => isStartingRiver; set => isStartingRiver = value; } 

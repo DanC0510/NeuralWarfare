@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class WorldGenerator : MonoBehaviour
@@ -23,7 +22,7 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private RenderTexture colorRT;
     
     [Header("Tiles and Chunking")]
-    private Tile[] tiles; //making this serializefield slows down the inspector a lot
+    private Tile[] tiles; //making this [SerializeField] slows down the inspector to a crawl.
     [SerializeField] private TerrainType[] regions;
     [SerializeField] private GameObject chunkPrefab;
     [SerializeField] private float hexSize = 0.5f;
@@ -32,7 +31,7 @@ public class WorldGenerator : MonoBehaviour
     [Range(0, 1000)] [SerializeField] private int riverFrequency;
     [Range(0, 25)] [SerializeField] private int turnFrequency;
     [SerializeField] private int maxRiverLength = 100;
-    [SerializeField] private int minRiverLength = 3; // Minimum tiles for a valid river
+    [SerializeField] private int minRiverLength = 3; 
 
     
     void Start()
@@ -71,6 +70,8 @@ public class WorldGenerator : MonoBehaviour
         Color[] colourMap = new Color[width * height];
         // Initialise the tile array
         tiles = new Tile[width * height];
+        List<Tile> riverStartTiles = new List<Tile>();
+        
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -90,10 +91,7 @@ public class WorldGenerator : MonoBehaviour
                             if (currentTile.Biome != Tile.TileBiome.Deep_Water && currentTile.Biome != Tile.TileBiome.Water && currentTile.Biome != Tile.TileBiome.Sand)
                             {
                                 FindRiverPath(currentTile, currentTile, 0, Random.Range(0, 6));
-                                if (currentTile.RiverTiles.Count > minRiverLength)
-                                {
-                                    currentTile.IsStartingRiver = true;
-                                }
+                                riverStartTiles.Add(currentTile);
                             }
                         }
                         break;
@@ -102,47 +100,32 @@ public class WorldGenerator : MonoBehaviour
             }
         }
         
-        // After creating all tiles, clean up short rivers
-        for (int i = 0; i < tiles.Length; i++)
+        // After creating all tiles, validate and mark valid rivers
+        foreach (Tile startTile in riverStartTiles)
         {
-            if (tiles[i] != null && tiles[i].IsStartingRiver)
+            if (startTile.RiverTiles.Count >= minRiverLength)
             {
-                if (tiles[i].RiverTiles.Count < minRiverLength)
+                startTile.IsStartingRiver = true;
+                // Set all tiles in valid rivers to River biome
+                foreach (Tile riverTile in startTile.RiverTiles)
                 {
-                    // Clear the short river
-                    tiles[i].IsStartingRiver = false;
-                    
-                    // Remove RiverStart reference from all tiles in this river
-                    foreach (Tile riverTile in tiles[i].RiverTiles)
+                    if (riverTile != null)
                     {
-                        if (riverTile != null)
-                        {
-                            riverTile.RiverStart = null;
-                            // Reset biome if it was set to River
-                            if (riverTile.Biome == Tile.TileBiome.River)
-                            {
-                                // Find the original biome from the noise map
-                                int x = (int)riverTile.Position.x;
-                                int y = (int)riverTile.Position.y;
-                                if (x >= 0 && x < width && y >= 0 && y < height)
-                                {
-                                    int tileIndex = y * width + x;
-                                    float currentHeight = noiseMap[x, y];
-                                    for (int j = 0; j < regions.Length; j++)
-                                    {
-                                        if (currentHeight <= regions[j].height)
-                                        {
-                                            riverTile.Biome = regions[j].biome;
-                                            colourMap[tileIndex] = regions[j].color;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        riverTile.Biome = Tile.TileBiome.River;
                     }
-                    tiles[i].RiverTiles.Clear();
                 }
+            }
+            else
+            {
+                // Clear short rivers
+                foreach (Tile riverTile in startTile.RiverTiles)
+                {
+                    if (riverTile != null)
+                    {
+                        riverTile.RiverStart = null;
+                    }
+                }
+                startTile.RiverTiles.Clear();
             }
         }
         
@@ -153,8 +136,7 @@ public class WorldGenerator : MonoBehaviour
         Graphics.Blit(noiseTexture, noiseRT);
         Graphics.Blit(colourTexture, colorRT);
     }
-
-    //The Idea for this function is to "rotate" the river to be flat when viewed, then go left or right, incorporating turns occasionally until we get to the ocean or max river length.
+    
     void FindRiverPath(Tile startingTile, Tile current,  int depth, int lastTurnDirection = 0)
     {
         // Prevent infinite recursion and null reference exceptions
@@ -162,8 +144,13 @@ public class WorldGenerator : MonoBehaviour
         if (depth >= maxRiverLength) { return; }
         if (current.Biome == Tile.TileBiome.Deep_Water || current.Biome == Tile.TileBiome.Water) { return; }
         
-        // Don't add if already in the river (prevents loops)
         if (startingTile.RiverTiles.Contains(current) && depth > 0) { return; }
+        
+
+        if (depth > 0 && current.RiverStart != null && current.RiverStart != startingTile)
+        {
+            return;
+        }
         
         startingTile.RiverTiles.AddLast(current);
         current.RiverStart = startingTile; // Set reference to start tile
@@ -235,14 +222,12 @@ public class WorldGenerator : MonoBehaviour
         {
             neighbourPos = new Vector2(col + (isOddRow ? 0 : -1), row + 1);
         }
-
-        // Check bounds
+        
         if (neighbourPos.x < 0 || neighbourPos.x >= actualWidth || neighbourPos.y < 0 || neighbourPos.y >= actualHeight)
         {
             return null;
         }
-
-        // Use direct array indexing instead of iteration for performance
+        
         int index = (int)neighbourPos.y * actualWidth + (int)neighbourPos.x;
         if (index >= 0 && index < tiles.Length)
         {

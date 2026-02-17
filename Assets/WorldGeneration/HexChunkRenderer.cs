@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
@@ -228,9 +227,9 @@ public class HexChunkRenderer : MonoBehaviour
         var river = new List<Tile>(startTile.RiverTiles);
         
         // Don't render rivers that are too short
-        if (river.Count < 2)
+        if (river.Count < 7)
         {
-            return (3, rotation); // Return grass biome index
+            return (3, rotation);
         }
         
         int tileIndex = river.IndexOf(tile);
@@ -245,7 +244,7 @@ public class HexChunkRenderer : MonoBehaviour
             if (river.Count > 1)
             {
                 int dir = GetDirection(tile, river[1]);
-                rotation = dir * 60 + 30;
+                rotation = Helpers.mod(dir + 3, 6) * 60 + 30;
             }
             return (index, rotation);
         }
@@ -259,14 +258,14 @@ public class HexChunkRenderer : MonoBehaviour
         // River end (no next tile)
         if (next == null)
         {
-            index = 5; // Straight piece pointing toward previous
+            index = 5;
             rotation = prevDir * 60 + 30;
             return (index, rotation);
         }
         
         int nextDir = GetDirection(tile, next);
         
-        // Calculate the turn angle
+        // Calculate and apply the turn angle
         int dirDiff = Helpers.mod(nextDir - prevDir, 6);
         
         switch (dirDiff)
@@ -283,29 +282,21 @@ public class HexChunkRenderer : MonoBehaviour
                 
             case 1: // 60° clockwise turn
                 index = 6;
-                // The unflipped bend connects bottom-left (dir 3) to bottom-right (dir 2)
-                // After XY flip, it connects top-right (dir 0) to top-left (dir 5)
-                // We need to rotate so that dir 0 aligns with nextDir
                 rotation = Helpers.mod(nextDir - 0, 6) * 60 + 30;
                 break;
                 
             case 5: // 60° counter-clockwise turn
                 index = 6;
-                // Same logic but the bend is mirrored
-                // After flip, connections are reversed
                 rotation = Helpers.mod(nextDir - 5, 6) * 60 + 30;
                 break;
                 
             case 2: // 120° clockwise turn
                 index = 7;
-                // The unflipped 120° bend connects bottom-left (dir 3) to right (dir 1)
-                // After XY flip, it connects top-right (dir 0) to left (dir 4)
                 rotation = Helpers.mod(nextDir - 0, 6) * 60 + 30;
                 break;
                 
             case 4: // 120° counter-clockwise turn
                 index = 7;
-                // After flip, connections are reversed
                 rotation = Helpers.mod(nextDir - 4, 6) * 60 + 30;
                 break;
         }
@@ -339,7 +330,6 @@ public class HexChunkRenderer : MonoBehaviour
         // Direction 5: NW
         if (dRow == 1 && dCol == (isOddRow ? 0 : -1)) return 5;
         
-        Debug.LogWarning($"Could not determine direction from {from.Position} to {to.Position}");
         return 0;
     }
 
@@ -351,14 +341,6 @@ public class HexChunkRenderer : MonoBehaviour
         bool flipX = false;
         bool flipY = false;
         
-        if (tile.IsStartingRiver && tile.RiverTiles.Count >= 7)
-        {
-            foreach (Tile riverTile in tile.RiverTiles)
-            {
-                riverTile.Biome = Tile.TileBiome.River;
-            }
-        }
-        
         if (tile.Biome == Tile.TileBiome.River)
         {
             // Skip rendering if river is too short or invalid
@@ -366,6 +348,7 @@ public class HexChunkRenderer : MonoBehaviour
             {
                 // Render as grass instead
                 index = 3;
+                tile.NotRiver();
             }
             else if (!tile.IsStartingRiver && tile.RiverStart != null && !tile.RiverStart.IsStartingRiver)
             {
@@ -378,11 +361,15 @@ public class HexChunkRenderer : MonoBehaviour
                 index = result.Item1;
                 rotation = result.Item2;
                 
-                // Check if we need to flip bend tiles
                 if (index == 6 || index == 7) // 60° or 120° bends
                 {
                     flipX = true;
                     flipY = true;
+                }
+                else if (index == 8) // River start tile
+                {
+                    flipX = false;
+                    flipY = false;
                 }
             }
         }

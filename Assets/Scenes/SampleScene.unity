@@ -423,7 +423,6 @@ MonoBehaviour:
   persistence: 0.5
   noiseRT: {fileID: 8400000, guid: 3dd7c0ccb587a8e42913c5993f49b18f, type: 2}
   colorRT: {fileID: 8400000, guid: 32fef66c80ba4ca4bb1d10457b83d0a6, type: 2}
-  tiles: []
   regions:
   - name: Deep Water
     height: 0.4
@@ -451,9 +450,10 @@ MonoBehaviour:
     biome: 5
   chunkPrefab: {fileID: 3549554827697500331, guid: 55208b827d535f747b800548ea7ecc4b, type: 3}
   hexSize: 0.57735
-  riverFrequency: 500
+  riverFrequency: 945
   turnFrequency: 6
   maxRiverLength: 100
+  minRiverLength: 7
 --- !u!4 &488609765
 Transform:
   m_ObjectHideFlags: 0
