@@ -25,7 +25,8 @@ public class WorldGenerator : MonoBehaviour
     private Tile[] tiles; //making this [SerializeField] slows down the inspector to a crawl.
     [SerializeField] private TerrainType[] regions;
     [SerializeField] private GameObject chunkPrefab;
-    [SerializeField] private float hexSize = 0.5f;
+    [SerializeField] private float hexSize = 0.57735f;
+    [Range(0, 1000)] [SerializeField] private int resourceFrequency = 10; // Chance out of 1000 for a resource to spawn on a tile, set to 0 to disable resource spawning
     
     [Header("Rivers")]
     [Range(0, 1000)] [SerializeField] private int riverFrequency;
@@ -83,8 +84,40 @@ public class WorldGenerator : MonoBehaviour
                     {
                         int tileIndex = y * width + x;
                         colourMap[tileIndex] = regions[i].color;
+                        // Resource Generation
+                        List<Resource> resources = new List<Resource>();
+                        if (Helpers.mod(Random.Range(0, 100), resourceFrequency) == 0)
+                        {
+                            int ranNum = Random.Range(0, 100);
+                            if (ranNum < 40 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.Sand)
+                            {
+                                resources.Add(new Resource(Resource.ResourceType.Wheat));
+                            }
+                            else if (ranNum < 40 && (regions[i].biome == Tile.TileBiome.Deep_Water || regions[i].biome == Tile.TileBiome.Water))
+                            {
+                                resources.Add(new Resource(Resource.ResourceType.Fish));
+                            }
+                            else if (ranNum < 55)
+                            {
+                                resources.Add(new Resource(Resource.ResourceType.Cows));
+                            }
+                            else if (ranNum < 60)
+                            {
+                                resources.Add(new Resource(Resource.ResourceType.Horses));
+                            }
+                            else if (ranNum < 95)
+                            {
+                                resources.Add(new Resource(Resource.ResourceType.Stone));
+                            }
+                            else
+                            {
+                                resources.Add(new Resource(Resource.ResourceType.Iron));
+                            }
+                        }
                         
-                        Tile currentTile = new Tile( new Vector2(x , y), regions[i].biome);
+                        //------------------------------------------------------
+                        
+                        Tile currentTile = new Tile( new Vector2(x , y), regions[i].biome, resources);
                         tiles[tileIndex] = currentTile;
                         if (Random.Range(0, riverFrequency) == 0)
                         {

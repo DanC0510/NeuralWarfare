@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -10,6 +11,7 @@ public class Tile
     private LinkedList<Tile> riverTiles;
     [SerializeField] private bool isStartingRiver;
     [SerializeField] private Tile riverStart; // Reference to the starting tile of this river
+    [SerializeField] private List<Resource> resourcesOnThisTile; 
     public enum TileBiome
     {
         Water = 0,
@@ -26,11 +28,12 @@ public class Tile
     public Vector2 Position { get { return position; } }
     public TileBiome Biome { get { return biome; } set { biome = value; } }
     
-    public Tile(Vector2 pos, TileBiome bio)
+    public Tile(Vector2 pos, TileBiome bio, List<Resource> resources)
     {
         position = pos;
         biome = bio;
         RiverTiles = new LinkedList<Tile>();
+        resourcesOnThisTile = resources;
     }
 
     public void NotRiver()
@@ -39,6 +42,16 @@ public class Tile
         bool hasRiverAdjecent = false;
         RiverTiles.Clear();
         riverStart = null;
+    }
+    
+    public void AddResource(Resource resource)
+    {
+        resourcesOnThisTile.Add(resource);
+    }
+
+    public void RemoveResource(Resource resource)
+    {
+        resourcesOnThisTile.Remove(resource);
     }
 
     public bool IsStartingRiver { get => isStartingRiver; set => isStartingRiver = value; } 
