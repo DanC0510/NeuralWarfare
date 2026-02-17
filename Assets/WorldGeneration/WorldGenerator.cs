@@ -142,7 +142,7 @@ public class WorldGenerator : MonoBehaviour
         // Prevent infinite recursion and null reference exceptions
         if (current == null) { return; }
         if (depth >= maxRiverLength) { return; }
-        if (current.Biome == Tile.TileBiome.Deep_Water || current.Biome == Tile.TileBiome.Water) { return; }
+        if (current.Biome == Tile.TileBiome.Deep_Water || current.Biome == Tile.TileBiome.Water || current.Biome == Tile.TileBiome.Sand) { return; }
         
         if (startingTile.RiverTiles.Contains(current) && depth > 0) { return; }
         
