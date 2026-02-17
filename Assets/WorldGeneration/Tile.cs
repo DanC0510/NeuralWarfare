@@ -7,8 +7,9 @@ public class Tile
     [SerializeField] private bool hasRiverAdjecent;
     [SerializeField] private Vector2 position;
     [SerializeField] private TileBiome biome;
-    [SerializeField] private List<Tile> riverTiles;
+    public LinkedList<Tile> riverTiles;
     [SerializeField] private bool isStartingRiver;
+    [SerializeField] private Tile riverStart; // Reference to the starting tile of this river
     public enum TileBiome
     {
         Water = 0,
@@ -16,7 +17,10 @@ public class Tile
         Sand = 2,
         Grass = 3,
         Snow = 4,
-        River = 5
+        River = 5,
+        //river 60 deg = 6
+        //river 120 deg = 7
+        //river start = 8
     };
     
     public Vector2 Position { get { return position; } }
@@ -26,11 +30,12 @@ public class Tile
     {
         position = pos;
         biome = bio;
-        RiverTiles = new List<Tile>();
+        RiverTiles = new LinkedList<Tile>();
     }
 
     public bool IsStartingRiver { get => isStartingRiver; set => isStartingRiver = value; } 
-    public List<Tile> RiverTiles { get => riverTiles; set => riverTiles = value; }
+    public LinkedList<Tile> RiverTiles { get => riverTiles; set => riverTiles = value; }
+    public Tile RiverStart { get => riverStart; set => riverStart = value; }
     public bool HasRiver() { return hasRiverAdjecent; }
-    
+
 }
