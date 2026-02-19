@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [Header("Camera Settings")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float moveSpeed;
+    [SerializeField] private float moveDelta;
     [SerializeField] private float zoomSpeed;
     [SerializeField] private float camHeight;
     [SerializeField] private float camAngle;
@@ -34,7 +35,7 @@ public class PlayerController : MonoBehaviour
             Vector2 offset = new Vector2((mousePos.x - screenCenter.x) / screenCenter.x, (mousePos.y - screenCenter.y) / screenCenter.y);
 
             //Calculate distance
-            Vector3 targetOffset = new Vector3(offset.x, 0, offset.y) * 10f;
+            Vector3 targetOffset = new Vector3(offset.x, 0, offset.y) * moveDelta;
 
             moveTo = transform.position + targetOffset;
             moveTo.y = camHeight;
