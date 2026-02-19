@@ -7,8 +7,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float moveSpeed;
     [SerializeField] private float zoomSpeed;
+    [SerializeField] private float camHeight;
+    [SerializeField] private float camAngle;
     [SerializeField] private Vector2 mousePos;
-    [SerializeField] private Vector2 moveTo;
+    [SerializeField] private Vector3 moveTo;
     [SerializeField] private bool doMove;
     
     [SerializeField] private PlayerInputs playerInputs;
@@ -28,12 +30,14 @@ public class PlayerController : MonoBehaviour
         }
         if (playerInputs.ClickMove)
         {
-            moveTo = playerCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, playerCamera.nearClipPlane));
+            Vector3 screenToWorldPoint = playerCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, playerCamera.nearClipPlane));
+            moveTo = new Vector3(screenToWorldPoint.x, camHeight, screenToWorldPoint.z);
             doMove = true;
         }
         if (doMove)
         {
-            transform.position = Vector2.MoveTowards(transform.position, moveTo, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, moveTo, moveSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Euler(camAngle, 0, 0);
             if (Vector2.Distance(transform.position, moveTo) < 0.1f)
             {
                 doMove = false;
