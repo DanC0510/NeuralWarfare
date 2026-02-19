@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInputs
+public class PlayerInputs : MonoBehaviour
 {
     [Header("Player Input Values")] 
     public Vector2 Move;
@@ -20,10 +20,9 @@ public class PlayerInputs
     public Inputs Actions;
     [SerializeField] private InputActionAsset _inputActionAsset;
     public Inputs.PlayerActions PlayerActions => Actions.Player;
-
-    protected override void Awake()
+    
+    void Awake()
     {
-        base.Awake();
         Actions = new Inputs();
         Actions.Enable();
         Actions.Player.Move.started += OnMove;
