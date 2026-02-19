@@ -29,10 +29,15 @@ public class PlayerController : MonoBehaviour
         if (playerInputs.ClickMove)
         {
             mousePos = playerInputs.Move;
-            Ray ray = playerCamera.ScreenPointToRay(mousePos);
-            float t = (groundPlaneY - ray.origin.y) / ray.direction.y;
-            Vector3 hitPoint = ray.GetPoint(t);
-            moveTo = new Vector3(hitPoint.x, camHeight, hitPoint.z);
+            //Calculate the offset from the center of the screen
+            Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
+            Vector2 offset = new Vector2((mousePos.x - screenCenter.x) / screenCenter.x, (mousePos.y - screenCenter.y) / screenCenter.y);
+
+            //Calculate distance
+            Vector3 targetOffset = new Vector3(offset.x, 0, offset.y) * 10f;
+
+            moveTo = transform.position + targetOffset;
+            moveTo.y = camHeight;
 
             if (!doMove)
             {
