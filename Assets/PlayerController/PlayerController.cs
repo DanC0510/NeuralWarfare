@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
         }
         if (playerInputs.ClickMove)
         {
-            moveTo = playerCamera.ScreenToWorldPoint(mousePos);
+            moveTo = playerCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, playerCamera.nearClipPlane));
             doMove = true;
         }
         if (doMove)
