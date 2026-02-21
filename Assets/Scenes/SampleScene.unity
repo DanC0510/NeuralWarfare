@@ -273,12 +273,14 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   moveSpeed: 10
   moveDelta: 15
-  zoomSpeed: 0
+  zoomSpeed: 25
   camHeight: 10
   camAngle: 45
+  rotateSpeed: 62.5
   mousePos: {x: 0, y: 0}
   moveTo: {x: 0, y: 0, z: 0}
   doMove: 0
+  doRotate: 0
   groundPlaneY: 0
   playerInputs: {fileID: 0}
 --- !u!114 &330585550
@@ -295,6 +297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputs
   Move: {x: 0, y: 0}
   ClickMove: 0
+  Zoom: 0
   CursorInputForLook: 1
   _inputActionAsset: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1 &410087039

@@ -7,6 +7,7 @@ public class PlayerInputs : MonoBehaviour
     [Header("Player Input Values")] 
     public Vector2 Move;
     public bool ClickMove;
+    public float Zoom;
     
     [Header("Mouse Cursor Settings")]
     public bool CursorInputForLook = true;
@@ -31,6 +32,9 @@ public class PlayerInputs : MonoBehaviour
         Actions.Player.ClickMove.started += OnClickMove;
         Actions.Player.ClickMove.performed += OnClickMove;
         Actions.Player.ClickMove.canceled += OnClickMove;
+        Actions.Player.Zoom.started += OnZoom;
+        Actions.Player.Zoom.performed += OnZoom;
+        Actions.Player.Zoom.canceled += OnZoom;
     }
     
     public void OnMove(InputAction.CallbackContext context) {
@@ -41,6 +45,10 @@ public class PlayerInputs : MonoBehaviour
         ClickMoveInput(context.ReadValueAsButton());
     }
     
+    public void OnZoom(InputAction.CallbackContext context) {
+        ZoomInput(context.ReadValue<Vector2>());
+    }
+    
     public void MoveInput(Vector2 newMoveDirection)
     {
         Move = newMoveDirection;
@@ -49,5 +57,10 @@ public class PlayerInputs : MonoBehaviour
     public void ClickMoveInput(bool newClickMoveState)
     {
         ClickMove = newClickMoveState;
+    }
+    
+    public void ZoomInput(Vector2 newZoomDelta)
+    {
+        Zoom = newZoomDelta.y;
     }
 }

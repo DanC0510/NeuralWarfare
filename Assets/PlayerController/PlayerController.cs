@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float zoomSpeed;
     [SerializeField] private float camHeight;
     [SerializeField] private float camAngle;
+    [SerializeField] private float rotateSpeed;
     [SerializeField] private Vector2 mousePos;
     [SerializeField] private Vector3 moveTo;
     [SerializeField] private bool doMove;
@@ -37,6 +38,7 @@ public class PlayerController : MonoBehaviour
 
             //Calculate distance
             Vector3 targetOffset = new Vector3(offset.x, 0, offset.y) * moveDelta;
+            
 
             moveTo = transform.position + targetOffset;
             moveTo.y = camHeight;
@@ -45,6 +47,33 @@ public class PlayerController : MonoBehaviour
             {
                 StartCoroutine(MoveCam(moveTo));
             }
+            CalculateRotation();
+        }
+
+        if (playerInputs.Zoom != 0)
+        {
+            CalculateRotation();
+        }
+    }
+
+    void CalculateRotation()
+    {
+        camAngle -= playerInputs.Zoom * rotateSpeed * Time.deltaTime;
+        camAngle = Mathf.Clamp(camAngle, 45, 70);
+            
+        if (!doRotate)
+        {
+            StartCoroutine(RotateCam(Quaternion.Euler(camAngle, 0, 0)));
+        }
+        
+        camHeight -= playerInputs.Zoom * zoomSpeed * Time.deltaTime;
+        camHeight = Mathf.Clamp(camHeight, 10f, 20f);
+        
+        moveTo.y = camHeight;
+        
+        if (!doMove)
+        {
+            StartCoroutine(MoveCam(moveTo));
         }
     }
 
@@ -61,12 +90,12 @@ public class PlayerController : MonoBehaviour
     
     IEnumerator RotateCam(Quaternion rotateTowards)
     {
-        doMove = true;
+        doRotate = true;
         while (transform.rotation != rotateTowards)
         {
             transform.rotation = Quaternion.Lerp(transform.rotation, rotateTowards, zoomSpeed * Time.deltaTime);
             yield return null;
         }
-        doMove = false;
+        doRotate = false;
     }
 }
