@@ -82,6 +82,7 @@ public class PlayerController : MonoBehaviour
         doMove = true;
         while (Vector3.Distance(transform.position, moveTowards) > 0.1f)
         {
+            moveTowards.y = camHeight;
             transform.position = Vector3.MoveTowards(transform.position, moveTowards, moveSpeed * Time.deltaTime);
             yield return null;
         }
@@ -93,6 +94,7 @@ public class PlayerController : MonoBehaviour
         doRotate = true;
         while (transform.rotation != rotateTowards)
         {
+            rotateTowards = Quaternion.Euler(camAngle, 0, 0);
             transform.rotation = Quaternion.Lerp(transform.rotation, rotateTowards, zoomSpeed * Time.deltaTime);
             yield return null;
         }
