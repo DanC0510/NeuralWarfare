@@ -82,7 +82,9 @@ public class PlayerController : MonoBehaviour
         doMove = true;
         while (Vector3.Distance(transform.position, moveTowards) > 0.1f)
         {
+            moveTowards.x = moveTo.x;
             moveTowards.y = camHeight;
+            moveTowards.z = moveTo.z;
             transform.position = Vector3.MoveTowards(transform.position, moveTowards, moveSpeed * Time.deltaTime);
             yield return null;
         }
