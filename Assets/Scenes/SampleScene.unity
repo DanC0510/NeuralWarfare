@@ -279,6 +279,11 @@ MonoBehaviour:
   rotateSpeed: 62.5
   mousePos: {x: 0, y: 0}
   moveTo: {x: 0, y: 0, z: 0}
+  screenCorners:
+  - {x: 10, y: 10}
+  - {x: 100, y: 10}
+  - {x: 10, y: 100}
+  - {x: 100, y: 100}
   doMove: 0
   doRotate: 0
   groundPlaneY: 0

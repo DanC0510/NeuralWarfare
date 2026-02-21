@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float rotateSpeed;
     [SerializeField] private Vector2 mousePos;
     [SerializeField] private Vector3 moveTo;
+    [SerializeField] private Vector2[] screenCorners = new Vector2[4];
     [SerializeField] private bool doMove;
     [SerializeField] private bool doRotate;
     [SerializeField] private float groundPlaneY;
@@ -42,6 +43,27 @@ public class PlayerController : MonoBehaviour
 
             moveTo = transform.position + targetOffset;
             moveTo.y = camHeight;
+            
+            if (moveTo.x < screenCorners[0].x && moveTo.z < screenCorners[0].y) 
+            { 
+                moveTo.x = screenCorners[0].x;
+                moveTo.z = screenCorners[0].y;
+            }
+            else if (moveTo.x > screenCorners[1].x && moveTo.z < screenCorners[1].y) 
+            { 
+                moveTo.x = screenCorners[1].x;
+                moveTo.z = screenCorners[1].y;
+            }
+            else if (moveTo.x < screenCorners[2].x && moveTo.z > screenCorners[2].y) 
+            { 
+                moveTo.x = screenCorners[2].x;
+                moveTo.z = screenCorners[2].y;
+            }
+            else if (moveTo.x > screenCorners[3].x && moveTo.z > screenCorners[3].y) 
+            { 
+                moveTo.x = screenCorners[3].x;
+                moveTo.z = screenCorners[3].y;
+            }
 
             if (!doMove)
             {
