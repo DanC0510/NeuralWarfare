@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 mousePos;
     [SerializeField] private Vector3 moveTo;
     [SerializeField] private bool doMove;
+    [SerializeField] private bool doRotate;
     [SerializeField] private float groundPlaneY;
     
     [SerializeField] private PlayerInputs playerInputs;
@@ -42,21 +43,30 @@ public class PlayerController : MonoBehaviour
 
             if (!doMove)
             {
-                StartCoroutine(MoveCam(moveTo, Quaternion.Euler(camAngle, 0, 0)));
+                StartCoroutine(MoveCam(moveTo));
             }
         }
     }
 
-    IEnumerator MoveCam(Vector3 moveTowards, Quaternion rotateTowards)
+    IEnumerator MoveCam(Vector3 moveTowards)
     {
         doMove = true;
         while (Vector3.Distance(transform.position, moveTowards) > 0.1f)
         {
             transform.position = Vector3.MoveTowards(transform.position, moveTowards, moveSpeed * Time.deltaTime);
-            transform.rotation = rotateTowards;
             yield return null;
         }
         doMove = false;
-        
+    }
+    
+    IEnumerator RotateCam(Quaternion rotateTowards)
+    {
+        doMove = true;
+        while (transform.rotation != rotateTowards)
+        {
+            transform.rotation = Quaternion.Lerp(transform.rotation, rotateTowards, zoomSpeed * Time.deltaTime);
+            yield return null;
+        }
+        doMove = false;
     }
 }
