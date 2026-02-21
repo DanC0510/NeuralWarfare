@@ -44,25 +44,32 @@ public class PlayerController : MonoBehaviour
             moveTo = transform.position + targetOffset;
             moveTo.y = camHeight;
             
-            if (moveTo.x < screenCorners[0].x && moveTo.z < screenCorners[0].y) 
-            { 
-                moveTo.x = screenCorners[0].x;
-                moveTo.z = screenCorners[0].y;
-            }
-            else if (moveTo.x > screenCorners[1].x && moveTo.z < screenCorners[1].y) 
-            { 
-                moveTo.x = screenCorners[1].x;
-                moveTo.z = screenCorners[1].y;
-            }
-            else if (moveTo.x < screenCorners[2].x && moveTo.z > screenCorners[2].y) 
-            { 
-                moveTo.x = screenCorners[2].x;
-                moveTo.z = screenCorners[2].y;
-            }
-            else if (moveTo.x > screenCorners[3].x && moveTo.z > screenCorners[3].y) 
-            { 
-                moveTo.x = screenCorners[3].x;
-                moveTo.z = screenCorners[3].y;
+            
+            for (int i = 0; i < screenCorners.Length; i++)
+            {
+                if (i % 2 == 0)
+                {
+                    if (moveTo.x < screenCorners[i].x)
+                    {
+                        moveTo.x = screenCorners[i].x;
+                    }
+                }
+                else
+                {
+                    if (moveTo.x > screenCorners[i].x)
+                    {
+                        moveTo.x = screenCorners[i].x;
+                    }
+                }
+                if(i <= 1 && moveTo.z < screenCorners[i].y)
+                {
+                    moveTo.z = screenCorners[i].y;
+                }
+                else if(i >= 2 && moveTo.z > screenCorners[i].y)
+                {
+                    moveTo.z = screenCorners[i].y;
+                }
+                
             }
 
             if (!doMove)
