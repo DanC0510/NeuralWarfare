@@ -100,6 +100,7 @@ public class PlayerController : MonoBehaviour
             {
                 selectedObject = null;
             }
+            //bring up UI for selected object here
         }
     }
 
