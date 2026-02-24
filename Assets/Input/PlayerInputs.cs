@@ -8,9 +8,8 @@ public class PlayerInputs : MonoBehaviour
     public Vector2 Move;
     public bool ClickMove;
     public float Zoom;
+    public bool Interact;
     
-    [Header("Mouse Cursor Settings")]
-    public bool CursorInputForLook = true;
     public enum CursorLockState
     {
         Locked,
@@ -18,6 +17,7 @@ public class PlayerInputs : MonoBehaviour
         Unlocked,
     }
     
+    [Header("Input Actions")]
     public Inputs Actions;
     [SerializeField] private InputActionAsset _inputActionAsset;
     public Inputs.PlayerActions PlayerActions => Actions.Player;
@@ -35,6 +35,9 @@ public class PlayerInputs : MonoBehaviour
         Actions.Player.Zoom.started += OnZoom;
         Actions.Player.Zoom.performed += OnZoom;
         Actions.Player.Zoom.canceled += OnZoom;
+        Actions.Player.Interact.started += OnInteract;
+        Actions.Player.Interact.performed += OnInteract;
+        Actions.Player.Interact.canceled += OnInteract;
     }
     
     public void OnMove(InputAction.CallbackContext context) {
@@ -47,6 +50,10 @@ public class PlayerInputs : MonoBehaviour
     
     public void OnZoom(InputAction.CallbackContext context) {
         ZoomInput(context.ReadValue<Vector2>());
+    }
+    
+    public void OnInteract(InputAction.CallbackContext context) {
+        InteractInput(context.ReadValueAsButton());
     }
     
     public void MoveInput(Vector2 newMoveDirection)
@@ -62,5 +69,10 @@ public class PlayerInputs : MonoBehaviour
     public void ZoomInput(Vector2 newZoomDelta)
     {
         Zoom = newZoomDelta.y;
+    }
+    
+    public void InteractInput(bool newInteractState)
+    {
+        Interact = newInteractState;
     }
 }
