@@ -96,6 +96,10 @@ public class PlayerController : MonoBehaviour
                     selectedObject = hit.collider.gameObject;
                 }
             }
+            else 
+            {
+                selectedObject = null;
+            }
         }
     }
 
