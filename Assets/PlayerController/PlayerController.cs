@@ -18,7 +18,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool doMove;
     [SerializeField] private bool doRotate;
     [SerializeField] private float groundPlaneY;
-    
+    [SerializeField] private GameObject selectedObject;
+    [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -82,6 +83,19 @@ public class PlayerController : MonoBehaviour
         if (playerInputs.Zoom != 0)
         {
             CalculateRotation();
+        }
+
+        if (playerInputs.Interact)
+        {
+            mousePos = playerInputs.Move;
+            Ray ray = playerCamera.ScreenPointToRay(mousePos);
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+            {
+                if (hit.collider.CompareTag("Interactable"))
+                {
+                    selectedObject = hit.collider.gameObject;
+                }
+            }
         }
     }
 
