@@ -10,7 +10,6 @@ public class Unit : MonoBehaviour
         Settler,
     }
     [SerializeField] protected UnitType unitType;
-    [SerializeField] protected GameObject unitPrefab;
     [SerializeField] protected Vector2 position;
     [SerializeField] protected Player owningPlayer;
     [SerializeField] protected float health;
