@@ -1,15 +1,17 @@
+using System;
 using UnityEngine;
 
+[Serializable]
 public class City
 {
-    private Vector2 position;
-    private Player owningPlayer;
-    private int population;
-    private float productionRate;
-    private float productionProgress;
-    private GameObject cityPrefab;
-    private float cityHealth;
-    private float maxHealth;
+    [SerializeField] private Vector2 position;
+    [SerializeField] private Player owningPlayer;
+    [SerializeField] private int population;
+    [SerializeField] private float productionRate;
+    [SerializeField] private float productionProgress;
+    [SerializeField] private GameObject cityPrefab;
+    [SerializeField] private float cityHealth;
+    [SerializeField] private float maxHealth;
 
     public City(Vector2 startingPosition, Player player)
     {

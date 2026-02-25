@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private List<City> cities;
-    private City capital;
+    [SerializeField] private List<City> cities;
+    [SerializeField] private City capital;
 
     public List<City> Cities
     {

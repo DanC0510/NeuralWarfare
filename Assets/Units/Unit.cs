@@ -9,15 +9,15 @@ public class Unit : MonoBehaviour
         Melee,
         Settler,
     }
-    protected UnitType unitType;
-    protected GameObject unitPrefab;
-    protected Vector2 position;
-    protected Player owningPlayer;
-    protected float health;
-    protected float attackDamage;
-    protected float moveSpeed;
-    protected float attackRange;
-    protected bool canDamage;
+    [SerializeField] protected UnitType unitType;
+    [SerializeField] protected GameObject unitPrefab;
+    [SerializeField] protected Vector2 position;
+    [SerializeField] protected Player owningPlayer;
+    [SerializeField] protected float health;
+    [SerializeField] protected float attackDamage;
+    [SerializeField] protected float moveSpeed;
+    [SerializeField] protected float attackRange;
+    [SerializeField] protected bool canDamage;
 
     public void TakeDamage(float damage, Unit unitSource)
     {
