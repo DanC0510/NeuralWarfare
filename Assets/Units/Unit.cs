@@ -12,6 +12,7 @@ public class Unit : MonoBehaviour
     protected UnitType unitType;
     protected GameObject unitPrefab;
     protected Vector2 position;
+    protected Player owningPlayer;
     protected float health;
     protected float attackDamage;
     protected float moveSpeed;
@@ -29,7 +30,12 @@ public class Unit : MonoBehaviour
             }
         }
     }
-    
+
+    public Player OwningPlayer
+    {
+        get { return OwningPlayer; }
+    }
+
     public float DistanceTo(Unit unit1, Unit unit2)
     {
         return Vector2.Distance(unit1.position, unit2.position);
