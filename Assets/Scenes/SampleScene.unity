@@ -755,6 +755,7 @@ MonoBehaviour:
     cityHealth: 0
     maxHealth: 0
   settlerPrefab: {fileID: 3903185367480678098, guid: fa7e35f71056ebf4186b024694a4ad89, type: 3}
+  meleePrefab: {fileID: 6440523078510410403, guid: f7b92ecd9907cab4b9fa740bef52cbb3, type: 3}
 --- !u!1 &360201387
 GameObject:
   m_ObjectHideFlags: 0
@@ -1187,7 +1188,7 @@ MonoBehaviour:
     color: {r: 0.07088822, g: 0.31397668, b: 0.5566038, a: 0}
     biome: 5
   chunkPrefab: {fileID: 3549554827697500331, guid: 55208b827d535f747b800548ea7ecc4b, type: 3}
-  hexSize: 0.57735
+  hexSize: 1.1547
   resourceFrequency: 60
   riverFrequency: 945
   turnFrequency: 18

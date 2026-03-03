@@ -30,6 +30,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Button skipButton;
     [SerializeField] private Button sleepButton;
     [SerializeField] private Button settleCityButton;
+    [SerializeField] private Button meleeAttackButton;
+    [SerializeField] private Button rangedAttackButton;
     
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
@@ -139,6 +141,7 @@ public class PlayerController : MonoBehaviour
                             settlerUI.SetActive(false);
                             rangedUI.SetActive(false);
                             //add listeners here
+                            meleeAttackButton.onClick.AddListener(WaitForTarget);
                             break;
                         case(Unit.UnitType.Ranged):
                             rangedUI.SetActive(true);
@@ -165,6 +168,37 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void WaitForTarget()
+    {
+        StartCoroutine(SelectTarget());
+    }
+
+    IEnumerator SelectTarget()
+    {
+        Unit selectedTarget = null;
+        while (selectedTarget == null)
+        {
+            yield return null;
+            Ray ray = playerCamera.ScreenPointToRay(playerInputs.Move);
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+            {
+                if (hit.collider.CompareTag("Interactable") && hit.collider.gameObject != this.gameObject && playerInputs.Interact)
+                {
+                    selectedTarget = hit.collider.gameObject.GetComponent<Unit>();
+                }
+            }
+        }
+        Debug.Log("Attacking: " + selectedTarget.name);
+        selectedObject.GetComponent<Unit>().Attack(selectedTarget);
+        selectedObject = null;
+        genericUI.SetActive(false);
+        settlerUI.SetActive(false);
+        moveButton.onClick.RemoveAllListeners();
+        skipButton.onClick.RemoveAllListeners();
+        sleepButton.onClick.RemoveAllListeners();
+        settleCityButton.onClick.RemoveAllListeners();
+    }
+    
     void CalculateRotation()
     {
         camAngle -= playerInputs.Zoom * rotateSpeed * Time.deltaTime;

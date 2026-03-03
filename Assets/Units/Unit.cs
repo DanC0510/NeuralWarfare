@@ -14,6 +14,7 @@ public class Unit : MonoBehaviour
     [SerializeField] protected Vector2 position;
     [SerializeField] protected Player owningPlayer;
     [SerializeField] protected float health;
+    [SerializeField] protected float maxHealth;
     [SerializeField] protected float attackDamage;
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float attackRange;
@@ -30,6 +31,11 @@ public class Unit : MonoBehaviour
                 DoDeath();
             }
         }
+    }
+    
+    public Vector2 Position
+    {
+        get { return position; }
     }
 
     public UnitType Type
@@ -70,6 +76,14 @@ public class Unit : MonoBehaviour
     
         // Snap to exact position
         transform.position = targetPosition;
+    }
+    
+    public void Attack(Unit target)
+    {
+        if (DistanceTo(this, target) <= attackRange)
+        {
+            target.TakeDamage(attackDamage * (health / maxHealth), this);
+        }
     }
 
     public void Sleep()
