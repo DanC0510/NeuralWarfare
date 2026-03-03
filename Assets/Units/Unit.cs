@@ -18,6 +18,7 @@ public class Unit : MonoBehaviour
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float attackRange;
     [SerializeField] protected bool canDamage;
+    [SerializeField] protected bool isSleep;
 
     public void TakeDamage(float damage, Unit unitSource)
     {
@@ -64,5 +65,10 @@ public class Unit : MonoBehaviour
     
         // Snap to exact position
         transform.position = targetPosition;
+    }
+
+    public void Sleep()
+    {
+        isSleep = true;
     }
 }
