@@ -35,6 +35,8 @@ public class PlayerController : MonoBehaviour
     
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
+
+    private bool selectingTarget;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -99,7 +101,7 @@ public class PlayerController : MonoBehaviour
             CalculateRotation();
         }
 
-        if (playerInputs.Interact)
+        if (playerInputs.Interact && !selectingTarget)
         {
             if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
             {
@@ -176,6 +178,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator SelectTarget()
     {
+        selectingTarget = true;
         Unit selectedTarget = null;
         while (selectedTarget == null)
         {
@@ -197,6 +200,7 @@ public class PlayerController : MonoBehaviour
         skipButton.onClick.RemoveAllListeners();
         sleepButton.onClick.RemoveAllListeners();
         settleCityButton.onClick.RemoveAllListeners();
+        selectingTarget = false;
     }
     
     void CalculateRotation()

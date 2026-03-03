@@ -21,15 +21,20 @@ public class Unit : MonoBehaviour
     [SerializeField] protected bool canDamage;
     [SerializeField] protected bool isSleep;
 
-    public void TakeDamage(float damage, Unit unitSource)
+    public void TakeDamage(float damage)
     {
-        if (unitSource.canDamage && DistanceTo(this, unitSource) <= unitSource.attackRange)
+        health -= damage;
+        if (health <= 0)
         {
-            health -= damage;
-            if (health <= 0)
-            {
-                DoDeath();
-            }
+            DoDeath();
+        }
+    }
+    
+    public void Attack(Unit target)
+    {
+        if (DistanceTo(this, target) <= attackRange && canDamage)
+        {
+            target.TakeDamage(attackDamage * (health / maxHealth));
         }
     }
     
@@ -50,12 +55,13 @@ public class Unit : MonoBehaviour
 
     public float DistanceTo(Unit unit1, Unit unit2)
     {
-        return Vector2.Distance(unit1.position, unit2.position);
+        return Vector2.Distance(unit1.position, unit2.position); //change this after I have the graph set up to calculate pathfinding distance instead of straight line distance
     }
 
     public void DoDeath()
     {
         //play death anim here
+        Destroy(this.gameObject);
     }
 
     public void Move()
@@ -76,14 +82,6 @@ public class Unit : MonoBehaviour
     
         // Snap to exact position
         transform.position = targetPosition;
-    }
-    
-    public void Attack(Unit target)
-    {
-        if (DistanceTo(this, target) <= attackRange)
-        {
-            target.TakeDamage(attackDamage * (health / maxHealth), this);
-        }
     }
 
     public void Sleep()
