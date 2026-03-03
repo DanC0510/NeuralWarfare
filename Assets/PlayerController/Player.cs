@@ -15,10 +15,12 @@ public class Player : MonoBehaviour
     public City Capital
     {
         get { return capital; }
+        set { capital = value; }
     }
 
     void Start()
     {
-        Instantiate(settlerPrefab, new Vector3(Random.Range(80, 460), 0.5f, Random.Range(80, 290)), Quaternion.identity);
+        GameObject go = Instantiate(settlerPrefab, Vector3.zero, Quaternion.identity);
+        go.GetComponent<Settler>().CreateSettler(0, this);
     }
 }

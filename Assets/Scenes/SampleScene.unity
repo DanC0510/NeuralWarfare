@@ -329,7 +329,7 @@ MonoBehaviour:
     cityPrefab: {fileID: 0}
     cityHealth: 0
     maxHealth: 0
-  settlerPrefab: {fileID: 0}
+  settlerPrefab: {fileID: 3903185367480678098, guid: fa7e35f71056ebf4186b024694a4ad89, type: 3}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,7 +526,7 @@ MonoBehaviour:
   hexSize: 0.57735
   resourceFrequency: 60
   riverFrequency: 945
-  turnFrequency: 6
+  turnFrequency: 18
   maxRiverLength: 100
   minRiverLength: 7
 --- !u!4 &488609765
