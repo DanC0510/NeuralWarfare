@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -19,6 +20,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool doRotate;
     [SerializeField] private float groundPlaneY;
     [SerializeField] private GameObject selectedObject;
+
+    [Header("UI Actions")] 
+    [SerializeField] private GameObject genericUI;
+    [SerializeField] private GameObject settlerUI;
+    [SerializeField] private GameObject meleeUI;
+    [SerializeField] private GameObject rangedUI;
+    [SerializeField] private Button moveButton;
+    [SerializeField] private Button skipButton;
+    [SerializeField] private Button sleepButton;
+    [SerializeField] private Button settleCityButton;
+    
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -94,11 +106,20 @@ public class PlayerController : MonoBehaviour
                 if (hit.collider.CompareTag("Interactable"))
                 {
                     selectedObject = hit.collider.gameObject;
+                    
                 }
             }
             else 
             {
                 selectedObject = null;
+                genericUI.SetActive(false);
+                meleeUI.SetActive(false);
+                rangedUI.SetActive(false);
+                settlerUI.SetActive(false);
+                moveButton.onClick.RemoveAllListeners();
+                skipButton.onClick.RemoveAllListeners();
+                sleepButton.onClick.RemoveAllListeners();
+                settleCityButton.onClick.RemoveAllListeners();
             }
             //bring up UI for selected object here
         }

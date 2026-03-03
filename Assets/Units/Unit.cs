@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    protected enum UnitType
+    public enum UnitType
     {
         Ranged,
         Melee,
@@ -32,6 +32,11 @@ public class Unit : MonoBehaviour
         }
     }
 
+    public UnitType Type
+    {
+        get { return unitType; }
+    }
+
     public Player OwningPlayer
     {
         get { return OwningPlayer; }
@@ -47,9 +52,9 @@ public class Unit : MonoBehaviour
         //play death anim here
     }
 
-    public void Move(Vector2 moveTowards)
+    public void Move()
     {
-        StartCoroutine(DoMove(moveTowards));
+        StartCoroutine(DoMove(position));
     }
 
     public IEnumerator DoMove(Vector2 moveTowards)
@@ -70,5 +75,10 @@ public class Unit : MonoBehaviour
     public void Sleep()
     {
         isSleep = true;
+    }
+
+    public void Skip()
+    {
+        // add blank to execution queue
     }
 }
