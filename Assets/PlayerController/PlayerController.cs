@@ -141,6 +141,7 @@ public class PlayerController : MonoBehaviour
                             settlerUI.SetActive(false);
                             rangedUI.SetActive(false);
                             //add listeners here
+                            meleeAttackButton.onClick.RemoveAllListeners();
                             meleeAttackButton.onClick.AddListener(WaitForTarget);
                             break;
                         case(Unit.UnitType.Ranged):
@@ -188,7 +189,6 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Attacking: " + selectedTarget.name);
         selectedObject.GetComponent<Unit>().Attack(selectedTarget);
         selectedObject = null;
         genericUI.SetActive(false);

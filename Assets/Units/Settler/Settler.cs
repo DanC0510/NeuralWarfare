@@ -7,6 +7,7 @@ public class Settler : Unit
         owningPlayer = player;
         unitType = UnitType.Settler;
         health = 1;
+        maxHealth = health;
         if (startingCityIndex != 0)
         {
             position = owningPlayer.Cities[startingCityIndex].GetSpawnPosition();
