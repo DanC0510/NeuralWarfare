@@ -99,6 +99,11 @@ public class PlayerController : MonoBehaviour
 
         if (playerInputs.Interact)
         {
+            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+            {
+                return; //this checks if the mouse is over a UI element, if it is, we don't want to interact with the world
+            }
+            
             mousePos = playerInputs.Move;
             Ray ray = playerCamera.ScreenPointToRay(mousePos);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
@@ -107,6 +112,41 @@ public class PlayerController : MonoBehaviour
                 {
                     selectedObject = hit.collider.gameObject;
                     
+                    genericUI.SetActive(true);
+                    moveButton.onClick.AddListener(selectedObject.GetComponent<Unit>().Move);
+                    skipButton.onClick.AddListener(selectedObject.GetComponent<Unit>().Skip);
+                    sleepButton.onClick.AddListener(selectedObject.GetComponent<Unit>().Sleep);
+                    switch(selectedObject.GetComponent<Unit>().Type)
+                    {
+                        case(Unit.UnitType.Settler):
+                            settlerUI.SetActive(true);
+                            meleeUI.SetActive(false);
+                            rangedUI.SetActive(false);
+                            //add listeners here
+                            settleCityButton.onClick.AddListener(() => {
+                                selectedObject.GetComponent<Settler>().PlaceCity();
+                                selectedObject = null;
+                                genericUI.SetActive(false);
+                                settlerUI.SetActive(false);
+                                moveButton.onClick.RemoveAllListeners();
+                                skipButton.onClick.RemoveAllListeners();
+                                sleepButton.onClick.RemoveAllListeners();
+                                settleCityButton.onClick.RemoveAllListeners();
+                            });
+                            break;
+                        case(Unit.UnitType.Melee):
+                            meleeUI.SetActive(true);
+                            settlerUI.SetActive(false);
+                            rangedUI.SetActive(false);
+                            //add listeners here
+                            break;
+                        case(Unit.UnitType.Ranged):
+                            rangedUI.SetActive(true);
+                            settlerUI.SetActive(false);
+                            meleeUI.SetActive(false);
+                            //add listeners here
+                            break;
+                    }
                 }
             }
             else 

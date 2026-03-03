@@ -21,6 +21,11 @@ public class City
         productionRate = 1f;
         productionProgress = 0f;
     }
+    
+    public Player OwningPlayer
+    {
+        get { return owningPlayer; }
+    }
 
     public Vector2 GetSpawnPosition()
     {

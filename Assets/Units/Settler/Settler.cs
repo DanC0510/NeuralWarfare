@@ -23,12 +23,15 @@ public class Settler : Unit
 
     public void PlaceCity()
     {
-        if (owningPlayer.Capital != null)
+        if (owningPlayer.Capital.OwningPlayer != owningPlayer)
         {
             owningPlayer.Capital = new City(position, owningPlayer);
             owningPlayer.Cities.Add(owningPlayer.Capital);
-            return;
         }
-        owningPlayer.Cities.Add(new City(position, owningPlayer));
+        else
+        {
+            owningPlayer.Cities.Add(new City(position, owningPlayer));
+        }
+        Destroy(this.gameObject);
     }
 }
