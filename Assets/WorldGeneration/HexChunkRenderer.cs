@@ -39,6 +39,11 @@ public class HexChunkRenderer : MonoBehaviour
         gameObject.transform.position = OffsetToWorld(chunkQ * chunkSize, chunkR * chunkSize, hexSize);
         BuildMesh();
     }
+    
+    public void Refresh()
+    {
+        BuildMesh();
+    }
 
     void BuildMesh()
     {

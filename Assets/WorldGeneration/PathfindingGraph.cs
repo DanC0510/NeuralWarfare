@@ -22,7 +22,7 @@ public class PathfindingGraph
             for (int direction = 0; direction < 6; direction++)
             {
                 Tile neighbour = GetNeighbour(tile, direction);
-                if(neighbour != null) { tile.NeighbourTiles.Add(neighbour); }
+                tile.NeighbourTiles[direction] = neighbour;
             }
         }
     }
@@ -121,10 +121,10 @@ public class PathfindingGraph
     }
     
     private float GetMoveCost(Tile tile)
-    {
+    { //higher cost means slower movement, 0 means free movement 
         return tile.Biome switch
         {
-            Tile.TileBiome.Deep_Water => 0f, //add conditional logic for when deep sea travel is unlocked
+            Tile.TileBiome.Deep_Water => 9999f, //add conditional logic for when deep sea travel is unlocked
             Tile.TileBiome.Water => 1f, 
             Tile.TileBiome.Snow => 1.5f,
             Tile.TileBiome.River => 2.25f,
@@ -154,6 +154,7 @@ public class PathfindingGraph
 
     private List<Tile> ReconstructPath(Dictionary<Tile, Tile> cameFrom, Tile current)
     {
+        Debug.Log("Found Path");
         List<Tile> path = new List<Tile>();
         while (cameFrom.ContainsKey(current))
         {

@@ -28,6 +28,9 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private float hexSize = 0.57735f;
     [Range(0, 1000)] [SerializeField] private int resourceFrequency = 10; // Chance out of 1000 for a resource to spawn on a tile, set to 0 to disable resource spawning
     private PathfindingGraph pathfindingGraph;
+    [SerializeField] private Vector2 startPosition;
+    [SerializeField] private Vector2 targetPosition;
+    [SerializeField] private List<Tile> movementPath;
     
     [Header("Rivers")]
     [Range(0, 1000)] [SerializeField] private int riverFrequency;
@@ -39,12 +42,47 @@ public class WorldGenerator : MonoBehaviour
     void Start()
     {
         GenerateTexture(Mathf.FloorToInt(width * scaleFactor), Mathf.FloorToInt(height * scaleFactor));
+        CreateChunks();
         pathfindingGraph = new PathfindingGraph(tiles, actualWidth, actualHeight);
         pathfindingGraph.BuildGraph();
-        CreateChunks();
     }
 
+    public void FindPath()
+    {
+        movementPath = pathfindingGraph.FindPath(GetTileAtPos(startPosition), GetTileAtPos(targetPosition));
+        foreach (Tile tile in movementPath)
+        {
+            tile.Biome = Tile.TileBiome.Deep_Water;
+        }
+        RefreshChunks();
+    }
     
+    public void RefreshChunks()
+    {
+        foreach (HexChunkRenderer chunk in GetComponentsInChildren<HexChunkRenderer>())
+        {
+            chunk.Refresh();
+        }
+    }
+
+    public Tile GetTileAtPos(Vector2 worldPos)
+    {
+        float hexWidth = Mathf.Sqrt(3f) * hexSize;
+        float hexHeight = 2f * hexSize;
+
+        // Estimate row first (without offset correction)
+        int row = Mathf.RoundToInt(worldPos.y / (hexHeight * 0.75f));
+
+        // Correct x for odd row offset
+        float xCorrected = worldPos.x - (Helpers.mod(row, 2) == 1 ? hexWidth * 0.5f : 0f);
+        int col = Mathf.RoundToInt(xCorrected / hexWidth);
+
+        if (col < 0 || col >= actualWidth || row < 0 || row >= actualHeight) { return null; }
+
+        int index = row * actualWidth + col;
+        return tiles[index];
+    }
+
     private void GenerateTexture(int width, int height)
     {
         // Store the actual generated dimensions
