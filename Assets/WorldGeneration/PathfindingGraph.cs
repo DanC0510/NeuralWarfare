@@ -3,11 +3,16 @@ using UnityEngine;
 
 public class PathfindingGraph
 {
+    private static PathfindingGraph _instance;
+    public static PathfindingGraph Instance => _instance;
+    
+    private List<Tile> movementPath;
     private Tile[] tiles;
     private int width;
     private int height;
+    
 
-    public PathfindingGraph(Tile[] tiles, int width, int height)
+    public void Init(Tile[] tiles, int width, int height)
     {
         this.tiles = tiles;
         this.width = width;
@@ -73,6 +78,12 @@ public class PathfindingGraph
         return null;
     }
 
+    public void GetPath(Vector2 startPosition, Vector2 targetPosition)
+    {
+        movementPath = FindPath(Helpers.GetTileAtPos(startPosition, tiles, 0.57735f, 512, 384), 
+            Helpers.GetTileAtPos(targetPosition, tiles, 0.57735f, 512, 384));
+    }
+    
     public List<Tile> FindPath(Tile start, Tile target)
     {
         if(start == null || target == null) { return null; }
