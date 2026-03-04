@@ -9,6 +9,7 @@ public class Tile
     [SerializeField] private Vector2 position;
     [SerializeField] private TileBiome biome;
     private LinkedList<Tile> riverTiles;
+    private List<Tile> neighbourTiles;
     [SerializeField] private bool isStartingRiver;
     [SerializeField] private Tile riverStart; // Reference to the starting tile of this river
     [SerializeField] private List<Resource> resourcesOnThisTile; 
@@ -27,6 +28,8 @@ public class Tile
     
     public Vector2 Position { get { return position; } }
     public TileBiome Biome { get { return biome; } set { biome = value; } }
+    
+    public List<Tile> NeighbourTiles { get => neighbourTiles; set => neighbourTiles = value; }
     
     public Tile(Vector2 pos, TileBiome bio, List<Resource> resources)
     {

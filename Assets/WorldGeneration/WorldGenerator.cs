@@ -27,6 +27,7 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private GameObject chunkPrefab;
     [SerializeField] private float hexSize = 0.57735f;
     [Range(0, 1000)] [SerializeField] private int resourceFrequency = 10; // Chance out of 1000 for a resource to spawn on a tile, set to 0 to disable resource spawning
+    private PathfindingGraph pathfindingGraph;
     
     [Header("Rivers")]
     [Range(0, 1000)] [SerializeField] private int riverFrequency;
@@ -38,6 +39,8 @@ public class WorldGenerator : MonoBehaviour
     void Start()
     {
         GenerateTexture(Mathf.FloorToInt(width * scaleFactor), Mathf.FloorToInt(height * scaleFactor));
+        pathfindingGraph = new PathfindingGraph(tiles, actualWidth, actualHeight);
+        pathfindingGraph.BuildGraph();
         CreateChunks();
     }
 
@@ -115,8 +118,6 @@ public class WorldGenerator : MonoBehaviour
                             }
                         }
                         
-                        //------------------------------------------------------
-                        
                         Tile currentTile = new Tile( new Vector2(x , y), regions[i].biome, resources);
                         tiles[tileIndex] = currentTile;
                         if (Random.Range(0, riverFrequency) == 0)
@@ -133,7 +134,6 @@ public class WorldGenerator : MonoBehaviour
             }
         }
         
-        // After creating all tiles, validate and mark valid rivers
         foreach (Tile startTile in riverStartTiles)
         {
             if (startTile.RiverTiles.Count >= minRiverLength)
@@ -193,10 +193,7 @@ public class WorldGenerator : MonoBehaviour
 
         if (doTurn)
         {
-            int turn = Random.Range(0, 100) < 80
-                ? (Random.value < 0.5f ? -1 : 1)
-                : (Random.value < 0.5f ? -2 : 2);
-
+            int turn = Random.Range(0, 100) < 80 ? (Random.value < 0.5f ? -1 : 1) : (Random.value < 0.5f ? -2 : 2);
             currentDirection = Helpers.mod(currentDirection + turn, 6);
         }
         else
@@ -223,7 +220,7 @@ public class WorldGenerator : MonoBehaviour
     
 
 
-    Tile GetNeighbour(Tile currentTile, int direction)
+    private Tile GetNeighbour(Tile currentTile, int direction)
     {
         Vector2 neighbourPos = Vector2.zero;
         int col = (int)currentTile.Position.x;
