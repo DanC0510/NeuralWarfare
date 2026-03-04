@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PathfindingGraph
@@ -17,9 +18,11 @@ public class PathfindingGraph
     {
         foreach (Tile tile in tiles)
         {
-            for (int i = 0; i < 6; i++)
+            if (tile == null) { continue; } //stops errors at edges of map
+            for (int direction = 0; direction < 6; direction++)
             {
-                tile.NeighbourTiles.Add(GetNeighbour(tile, i));
+                Tile neighbour = GetNeighbour(tile, direction);
+                if(neighbour != null) { tile.NeighbourTiles.Add(neighbour); }
             }
         }
     }
@@ -29,7 +32,7 @@ public class PathfindingGraph
         int col = (int)currentTile.Position.x;
         int row = (int)currentTile.Position.y;
         
-        bool isOddRow = row % 2 == 1;
+        bool isOddRow = Helpers.mod(row,2) == 1;
         
         if (direction == 0) // NE
         {
@@ -68,5 +71,97 @@ public class PathfindingGraph
         }
 
         return null;
+    }
+
+    public List<Tile> FindPath(Tile start, Tile target)
+    {
+        if(start == null || target == null) { return null; }
+        
+        Dictionary<Tile, float> gCost = new Dictionary<Tile, float>();
+        Dictionary<Tile, float> fCost = new Dictionary<Tile, float>();
+        Dictionary<Tile, Tile> cameFrom = new Dictionary<Tile, Tile>();
+        
+        List<Tile> openSet = new List<Tile>();
+        HashSet<Tile> closedSet = new HashSet<Tile>();
+
+        gCost[start] = 0;
+        fCost[start] = Heuristic(start, target);
+        openSet.Add(start);
+
+        while (openSet.Count > 0)
+        {
+            Tile current = GetLowestFCost(openSet, fCost);
+
+            if (current == target) { return ReconstructPath(cameFrom, current); }
+
+            openSet.Remove(current);
+            closedSet.Add(current);
+            
+            foreach(Tile neighbour in current.NeighbourTiles)
+            {
+                if (neighbour == null || closedSet.Contains(neighbour)) { continue; }
+
+                float tentativeG = gCost[current] + GetMoveCost(neighbour);
+
+                if (!gCost.ContainsKey(neighbour) || tentativeG < gCost[neighbour])
+                {
+                    cameFrom[neighbour] = current;
+                    gCost[neighbour] = tentativeG;
+                    fCost[neighbour] = tentativeG + Heuristic(neighbour, target);
+
+                    if (!openSet.Contains(neighbour))
+                    {
+                        openSet.Add(neighbour);
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    private float GetMoveCost(Tile tile)
+    {
+        return tile.Biome switch
+        {
+            Tile.TileBiome.Deep_Water => 0f, //add conditional logic for when deep sea travel is unlocked
+            Tile.TileBiome.Water => 1f, 
+            Tile.TileBiome.Snow => 1.5f,
+            Tile.TileBiome.River => 2.25f,
+            Tile.TileBiome.Grass => 1f,
+            Tile.TileBiome.Sand => 1.25f,
+            _ => 0f
+        };
+    }
+
+    private float Heuristic(Tile a, Tile b)
+    {
+        return Vector2.Distance(a.Position, b.Position);
+    }
+
+    private Tile GetLowestFCost(List<Tile> openSet, Dictionary<Tile, float> fCost)
+    {
+        Tile lowest = openSet[0];
+        foreach (Tile tile in openSet)
+        {
+            if (fCost.ContainsKey(tile) && fCost[tile] < fCost[lowest])
+            {
+                lowest = tile;
+            }
+        }
+        return lowest;
+    }
+
+    private List<Tile> ReconstructPath(Dictionary<Tile, Tile> cameFrom, Tile current)
+    {
+        List<Tile> path = new List<Tile>();
+        while (cameFrom.ContainsKey(current))
+        {
+            path.Add(current);
+            current = cameFrom[current];
+        }
+        path.Add(current);
+        path.Reverse();
+        return path;
     }
 }
