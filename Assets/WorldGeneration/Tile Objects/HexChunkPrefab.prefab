@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1174852549596162913}
   - component: {fileID: 8367781805601684339}
   - component: {fileID: 4593335108369548868}
+  - component: {fileID: -6542308237789504509}
   m_Layer: 0
   m_Name: HexChunkPrefab
   m_TagString: Untagged
@@ -107,9 +108,30 @@ MonoBehaviour:
   chunkQ: 0
   chunkR: 0
   mesh: {fileID: 0}
-  tiles: []
   atlasColumns: 4
   atlasRows: 4
   uvInnerMargin: 0.087
   degOffset: 30
   showBiomeColours: 0
+--- !u!64 &-6542308237789504509
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3549554827697500331}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}

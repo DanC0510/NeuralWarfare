@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -21,7 +22,7 @@ public class Unit : MonoBehaviour
     [SerializeField] protected float attackRange;
     [SerializeField] protected bool canDamage;
     [SerializeField] protected bool isSleep;
-    [SerializeField] protected Queue<Tile> moveQueue;
+    [SerializeField] protected List<Tile> moveQueue;
 
     public void TakeDamage(float damage)
     {
@@ -68,10 +69,11 @@ public class Unit : MonoBehaviour
 
     public void Move(Vector2 newPosition)
     {
-        moveQueue = new Queue<Tile>(PathfindingGraph.Instance.GetPath(position, newPosition));
+        moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(position, newPosition));
         if (moveQueue.Count > 0)
         {
-            StartCoroutine(DoMove(moveQueue.Dequeue().Position));
+            StartCoroutine(DoMove(moveQueue[0].Position));
+            moveQueue.RemoveAt(0);
         }
     }
 

@@ -77,7 +77,8 @@ public class HexChunkRenderer : MonoBehaviour
         mesh.SetTriangles(triangles, 0);
         mesh.SetUVs(0, uvs);
         mesh.RecalculateNormals();
-        
+        GetComponent<MeshCollider>().sharedMesh = mesh;
+
     }
 
 

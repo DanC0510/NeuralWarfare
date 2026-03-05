@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
 
-    private bool selectingTarget;
+    [SerializeField] private bool selectingTarget;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -115,12 +115,13 @@ public class PlayerController : MonoBehaviour
                 if (hit.collider.CompareTag("Interactable"))
                 {
                     selectedObject = hit.collider.gameObject;
+                    Unit unit = selectedObject.GetComponent<Unit>();
                     
                     genericUI.SetActive(true);
-                    moveButton.onClick.AddListener(WaitForTile);
-                    skipButton.onClick.AddListener(selectedObject.GetComponent<Unit>().Skip);
-                    sleepButton.onClick.AddListener(selectedObject.GetComponent<Unit>().Sleep);
-                    switch(selectedObject.GetComponent<Unit>().Type)
+                    moveButton.onClick.AddListener(() => StartCoroutine(SelectTile()));
+                    skipButton.onClick.AddListener(unit.Skip);
+                    sleepButton.onClick.AddListener(unit.Sleep);
+                    switch(unit.Type)
                     {
                         case(Unit.UnitType.Settler):
                             settlerUI.SetActive(true);
@@ -144,7 +145,8 @@ public class PlayerController : MonoBehaviour
                             rangedUI.SetActive(false);
                             //add listeners here
                             meleeAttackButton.onClick.RemoveAllListeners();
-                            meleeAttackButton.onClick.AddListener(WaitForTarget);
+                            meleeAttackButton.onClick.AddListener(() => StartCoroutine(SelectTarget()));
+
                             break;
                         case(Unit.UnitType.Ranged):
                             rangedUI.SetActive(true);
@@ -169,16 +171,6 @@ public class PlayerController : MonoBehaviour
             }
             //bring up UI for selected object here
         }
-    }
-
-    void WaitForTarget()
-    {
-        StartCoroutine(SelectTarget());
-    }
-    
-    void WaitForTile()
-    {
-        StartCoroutine(SelectTile());
     }
 
     IEnumerator SelectTarget()
@@ -216,15 +208,28 @@ public class PlayerController : MonoBehaviour
         {
             yield return null;
             Ray ray = playerCamera.ScreenPointToRay(playerInputs.Move);
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+            if (playerInputs.Interact && Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
             {
-                if (hit.transform && playerInputs.Interact)
+                if (hit.transform)
                 {
-                    selectedTarget = Helpers.GetTileAtWorldPos(new Vector2(hit.transform.position.x, hit.transform.position.z));
+                    Vector2 hitPoint = new Vector2(Mathf.Round(hit.point.x), Mathf.Round(hit.point.z)); 
+                    selectedTarget = Helpers.GetTileAtWorldPos(hitPoint);
                 }
             }
         }
+
+        Debug.Log(selectedTarget.Position);
         selectedObject.GetComponent<Unit>().Move(selectedTarget.Position);
+        selectedObject = null;
+        genericUI.SetActive(false);
+        settlerUI.SetActive(false);
+        meleeUI.SetActive(false);
+        rangedUI.SetActive(false);
+        moveButton.onClick.RemoveAllListeners();
+        skipButton.onClick.RemoveAllListeners();
+        sleepButton.onClick.RemoveAllListeners();
+        settleCityButton.onClick.RemoveAllListeners();
+        selectingTarget = false;
     }
     
     void CalculateRotation()
