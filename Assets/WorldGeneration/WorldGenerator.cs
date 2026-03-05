@@ -1,9 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class WorldGenerator : MonoBehaviour
 {
+    private static WorldGenerator _instance;
+    public static WorldGenerator Instance => _instance;
+    
     [Header("Texture Details")]
     [SerializeField] private float scaleFactor;
     [SerializeField] private int width;
@@ -16,6 +21,8 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private float persistence;
     private int actualWidth;
     private int actualHeight;
+    [HideInInspector] public int ActualWidth => actualWidth;
+    [HideInInspector] public int ActualHeight => actualHeight;
     
     [Header("Textures")]
     [SerializeField] private RenderTexture noiseRT;
@@ -23,9 +30,11 @@ public class WorldGenerator : MonoBehaviour
     
     [Header("Tiles and Chunking")]
     private Tile[] tiles; //making this [SerializeField] slows down the inspector to a crawl.
+    [HideInInspector] public Tile[] Tiles => tiles; //same reason as above
     [SerializeField] private TerrainType[] regions;
     [SerializeField] private GameObject chunkPrefab;
     [SerializeField] private float hexSize = 0.57735f;
+    [HideInInspector] public float HexSize => hexSize;
     [Range(0, 1000)] [SerializeField] private int resourceFrequency = 10; // Chance out of 1000 for a resource to spawn on a tile, set to 0 to disable resource spawning
     
     [Header("Rivers")]

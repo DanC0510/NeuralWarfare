@@ -202,6 +202,25 @@ public class PlayerController : MonoBehaviour
         settleCityButton.onClick.RemoveAllListeners();
         selectingTarget = false;
     }
+
+    IEnumerator SelectTile()
+    {
+        selectingTarget = true;
+        Tile selectedTarget = null;
+        while (selectedTarget == null)
+        {
+            yield return null;
+            Ray ray = playerCamera.ScreenPointToRay(playerInputs.Move);
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+            {
+                if (hit.transform && playerInputs.Interact)
+                {
+                    selectedTarget = Helpers.GetTileAtWorldPos(new Vector2(hit.transform.position.x, hit.transform.position.z));
+                }
+            }
+        }
+        selectedObject.GetComponent<Unit>().Move();
+    }
     
     void CalculateRotation()
     {

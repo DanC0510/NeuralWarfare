@@ -6,8 +6,12 @@ public static class Helpers
         return (x%m + m)%m;
     }
     
-    public static Tile GetTileAtPos(Vector2 worldPos, Tile[] tiles, float hexSize, int height, int width)
+    public static Tile GetTileAtWorldPos(Vector2 worldPos)
     {
+        int width = WorldGenerator.Instance.ActualWidth;
+        int height = WorldGenerator.Instance.ActualHeight;
+        float hexSize = WorldGenerator.Instance.HexSize;
+        Tile[] tiles = WorldGenerator.Instance.Tiles;
         float hexWidth = Mathf.Sqrt(3f) * hexSize;
         float hexHeight = 2f * hexSize;
 

@@ -78,13 +78,13 @@ public class PathfindingGraph
         return null;
     }
 
-    public void GetPath(Vector2 startPosition, Vector2 targetPosition)
+    public List<Tile> GetPath(Vector2 startPosition, Vector2 targetPosition)
     {
-        movementPath = FindPath(Helpers.GetTileAtPos(startPosition, tiles, 0.57735f, 512, 384), 
-            Helpers.GetTileAtPos(targetPosition, tiles, 0.57735f, 512, 384));
+        return FindPath(Helpers.GetTileAtWorldPos(startPosition), 
+            Helpers.GetTileAtWorldPos(targetPosition));
     }
     
-    public List<Tile> FindPath(Tile start, Tile target)
+    private List<Tile> FindPath(Tile start, Tile target)
     {
         if(start == null || target == null) { return null; }
         

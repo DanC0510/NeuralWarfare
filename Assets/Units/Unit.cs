@@ -64,9 +64,9 @@ public class Unit : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public void Move()
+    public void Move(Vector2 newPosition)
     {
-        StartCoroutine(DoMove(position));
+        StartCoroutine(DoMove(newPosition));
     }
 
     public IEnumerator DoMove(Vector2 moveTowards)
