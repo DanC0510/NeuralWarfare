@@ -32,6 +32,16 @@ public class Unit : MonoBehaviour
             DoDeath();
         }
     }
+
+    protected void Start()
+    {
+        TurnController.Instance.OnNextTurn += nextTurn;
+    }
+
+    void nextTurn()
+    {
+        Move();
+    }
     
     public void Attack(Unit target)
     {
@@ -65,6 +75,15 @@ public class Unit : MonoBehaviour
     {
         //play death anim here
         Destroy(this.gameObject);
+    }
+
+    void Move()
+    {
+        if (moveQueue.Count > 0)
+        {
+            StartCoroutine(DoMove(moveQueue[0].Position));
+            moveQueue.RemoveAt(0);
+        }  
     }
 
     public void Move(Vector2 newPosition)
