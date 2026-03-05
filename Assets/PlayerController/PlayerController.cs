@@ -117,7 +117,7 @@ public class PlayerController : MonoBehaviour
                     selectedObject = hit.collider.gameObject;
                     
                     genericUI.SetActive(true);
-                    moveButton.onClick.AddListener(selectedObject.GetComponent<Unit>().Move);
+                    moveButton.onClick.AddListener(WaitForTile);
                     skipButton.onClick.AddListener(selectedObject.GetComponent<Unit>().Skip);
                     sleepButton.onClick.AddListener(selectedObject.GetComponent<Unit>().Sleep);
                     switch(selectedObject.GetComponent<Unit>().Type)
@@ -175,6 +175,11 @@ public class PlayerController : MonoBehaviour
     {
         StartCoroutine(SelectTarget());
     }
+    
+    void WaitForTile()
+    {
+        StartCoroutine(SelectTile());
+    }
 
     IEnumerator SelectTarget()
     {
@@ -219,7 +224,7 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        selectedObject.GetComponent<Unit>().Move();
+        selectedObject.GetComponent<Unit>().Move(selectedTarget.Position);
     }
     
     void CalculateRotation()

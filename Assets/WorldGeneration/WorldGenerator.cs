@@ -43,6 +43,10 @@ public class WorldGenerator : MonoBehaviour
     [SerializeField] private int maxRiverLength = 100;
     [SerializeField] private int minRiverLength = 3; 
 
+    private void Awake()
+    {
+        _instance = this;
+    }
     
     void Start()
     {

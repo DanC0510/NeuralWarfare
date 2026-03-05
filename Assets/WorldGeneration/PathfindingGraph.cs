@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathfindingGraph
+public class PathfindingGraph : MonoBehaviour
 {
     private static PathfindingGraph _instance;
     public static PathfindingGraph Instance => _instance;
@@ -11,6 +11,10 @@ public class PathfindingGraph
     private int width;
     private int height;
     
+    private void Awake()
+    {
+        _instance = this;
+    }
 
     public void Init(Tile[] tiles, int width, int height)
     {
