@@ -154,6 +154,7 @@ public class Unit : MonoBehaviour
         if(stamina - moveQueue[0].MovementCost >= 0)
         {
             StartCoroutine(DoMove(moveQueue[0].Position));
+            stamina -= moveQueue[0].MovementCost;
             moveQueue.RemoveAt(0);
         }
     }
@@ -166,6 +167,6 @@ public class Unit : MonoBehaviour
     public void Skip()
     {
         // add blank to execution queue
-        turnActions.Add(TurnAction.Skip);
+        turnActions.Insert(0, TurnAction.Skip);
     }
 }

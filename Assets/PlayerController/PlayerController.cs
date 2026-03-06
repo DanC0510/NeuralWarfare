@@ -42,6 +42,26 @@ public class PlayerController : MonoBehaviour
     {
         playerCamera = GetComponent<Camera>();
         playerInputs = GetComponent<PlayerInputs>();
+        
+        moveButton.onClick.AddListener(() =>
+        {
+            StartCoroutine(SelectTile());
+        });
+        skipButton.onClick.AddListener(() =>
+        {
+            selectedObject.GetComponent<Unit>().Skip();
+        });
+        sleepButton.onClick.AddListener(() =>
+        {
+            selectedObject.GetComponent<Unit>().Sleep();
+        });
+        settleCityButton.onClick.AddListener(() => {
+            selectedObject.GetComponent<Settler>().PlaceCity();
+        });
+        meleeAttackButton.onClick.AddListener(() =>
+        {
+            StartCoroutine(SelectTarget());
+        });
     }
 
     // Update is called once per frame
@@ -118,65 +138,44 @@ public class PlayerController : MonoBehaviour
                     Unit unit = selectedObject.GetComponent<Unit>();
                     
                     genericUI.SetActive(true);
-                    moveButton.onClick.AddListener(() => StartCoroutine(SelectTile()));
-                    skipButton.onClick.AddListener(unit.Skip);
-                    sleepButton.onClick.AddListener(unit.Sleep);
                     switch(unit.Type)
                     {
                         case(Unit.UnitType.Settler):
                             settlerUI.SetActive(true);
                             meleeUI.SetActive(false);
                             rangedUI.SetActive(false);
-                            //add listeners here
-                            settleCityButton.onClick.AddListener(() => {
-                                selectedObject.GetComponent<Settler>().PlaceCity();
-                                selectedObject = null;
-                                genericUI.SetActive(false);
-                                settlerUI.SetActive(false);
-                                moveButton.onClick.RemoveAllListeners();
-                                skipButton.onClick.RemoveAllListeners();
-                                sleepButton.onClick.RemoveAllListeners();
-                                settleCityButton.onClick.RemoveAllListeners();
-                            });
                             break;
                         case(Unit.UnitType.Melee):
                             meleeUI.SetActive(true);
                             settlerUI.SetActive(false);
                             rangedUI.SetActive(false);
-                            //add listeners here
-                            meleeAttackButton.onClick.RemoveAllListeners();
-                            meleeAttackButton.onClick.AddListener(() =>
-                            {
-                                StartCoroutine(SelectTarget());
-                                moveButton.onClick.RemoveAllListeners();
-                                skipButton.onClick.RemoveAllListeners();
-                                sleepButton.onClick.RemoveAllListeners();
-                            });
-
                             break;
                         case(Unit.UnitType.Ranged):
-                            rangedUI.SetActive(true);
-                            settlerUI.SetActive(false);
-                            meleeUI.SetActive(false);
-                            //add listeners here
                             break;
                     }
                 }
             }
             else 
             {
-                selectedObject = null;
-                genericUI.SetActive(false);
-                meleeUI.SetActive(false);
-                rangedUI.SetActive(false);
-                settlerUI.SetActive(false);
-                moveButton.onClick.RemoveAllListeners();
-                skipButton.onClick.RemoveAllListeners();
-                sleepButton.onClick.RemoveAllListeners();
-                settleCityButton.onClick.RemoveAllListeners();
+                ResetUI();
             }
             //bring up UI for selected object here
         }
+    }
+
+    void ResetUI()
+    {
+        selectedObject = null;
+        genericUI.SetActive(false);
+        meleeUI.SetActive(false);
+        rangedUI.SetActive(false);
+        settlerUI.SetActive(false);
+        moveButton.onClick.RemoveAllListeners();
+        skipButton.onClick.RemoveAllListeners();
+        sleepButton.onClick.RemoveAllListeners();
+        meleeAttackButton.onClick.RemoveAllListeners();
+        rangedAttackButton.onClick.RemoveAllListeners();
+        settleCityButton.onClick.RemoveAllListeners();
     }
 
     IEnumerator SelectTarget()
@@ -196,14 +195,8 @@ public class PlayerController : MonoBehaviour
             }
         }
         selectedObject.GetComponent<Unit>().Attack(selectedTarget);
-        selectedObject = null;
-        genericUI.SetActive(false);
-        settlerUI.SetActive(false);
-        moveButton.onClick.RemoveAllListeners();
-        skipButton.onClick.RemoveAllListeners();
-        sleepButton.onClick.RemoveAllListeners();
-        settleCityButton.onClick.RemoveAllListeners();
         selectingTarget = false;
+        ResetUI();
     }
 
     IEnumerator SelectTile()
@@ -224,16 +217,8 @@ public class PlayerController : MonoBehaviour
             }
         }
         selectedObject.GetComponent<Unit>().Move(selectedTarget.Position);
-        selectedObject = null;
-        genericUI.SetActive(false);
-        settlerUI.SetActive(false);
-        meleeUI.SetActive(false);
-        rangedUI.SetActive(false);
-        moveButton.onClick.RemoveAllListeners();
-        skipButton.onClick.RemoveAllListeners();
-        sleepButton.onClick.RemoveAllListeners();
-        settleCityButton.onClick.RemoveAllListeners();
         selectingTarget = false;
+        ResetUI();
     }
     
     void CalculateRotation()
