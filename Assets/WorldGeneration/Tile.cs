@@ -12,7 +12,8 @@ public class Tile
     private Tile[] neighbourTiles;
     [SerializeField] private bool isStartingRiver;
     [SerializeField] private Tile riverStart;
-    [SerializeField] private List<Resource> resourcesOnThisTile; 
+    [SerializeField] private List<Resource> resourcesOnThisTile;
+    [SerializeField] private float movementCost = 1f;
     public enum TileBiome
     {
         Water = 0,
@@ -30,6 +31,7 @@ public class Tile
     public TileBiome Biome { get { return biome; } set { biome = value; } }
 
     public Tile[] NeighbourTiles { get; set; } = new Tile[6];
+    public float MovementCost { get => movementCost; }
     
     public Tile(Vector2 pos, TileBiome bio, List<Resource> resources)
     {
@@ -37,6 +39,28 @@ public class Tile
         biome = bio;
         RiverTiles = new LinkedList<Tile>();
         resourcesOnThisTile = resources;
+
+        switch (biome)
+        {
+            case TileBiome.Deep_Water:
+                movementCost = 9999f; //change when player unlocks ocean travel
+                break;
+            case TileBiome.Water:
+                movementCost = 9999f; //change when player unlocks water travel
+                break;
+            case TileBiome.Sand:
+                movementCost = 1.25f;
+                break;
+            case TileBiome.River:
+                movementCost = 2f;
+                break;
+            case TileBiome.Snow:
+                movementCost = 1.5f;
+                break;
+            case TileBiome.Grass:
+                movementCost = 1f;
+                break;
+        }
     }
 
     public void NotRiver()

@@ -14,5 +14,6 @@ public class Melee : Unit
         moveSpeed = 3.0f;
         attackRange = 1.0f;
         transform.position = Helpers.TileToWorldPos(position);
+        stamina = maxStamina = 2f;
     }
 }

@@ -45,4 +45,19 @@ public static class Helpers
 
         return new Vector3(x, 0.5f, z);
     }
+    
+    public static Tile GetTileAtTilePos(Vector2 tilePos)
+    {
+        int width = WorldGenerator.Instance.ActualWidth;
+        int height = WorldGenerator.Instance.ActualHeight;
+        Tile[] tiles = WorldGenerator.Instance.Tiles;
+
+        int col = (int)tilePos.x;
+        int row = (int)tilePos.y;
+
+        if (col < 0 || col >= width || row < 0 || row >= height) { return null; }
+
+        int index = row * width + col;
+        return tiles[index];
+    }
 }

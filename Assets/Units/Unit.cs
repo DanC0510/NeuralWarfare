@@ -12,6 +12,7 @@ public class Unit : MonoBehaviour
     }
     public enum TurnAction
     {
+        No_Action,
         Move,
         Skip,
         Sleep,
@@ -28,9 +29,9 @@ public class Unit : MonoBehaviour
     [SerializeField] protected float attackDamage;
     [SerializeField] protected float moveSpeed;
     [SerializeField] protected float stamina;
+    [SerializeField] protected float maxStamina;
     [SerializeField] protected float attackRange;
     [SerializeField] protected bool canDamage;
-    [SerializeField] protected bool isSleep;
     [SerializeField] protected List<Tile> moveQueue;
     [SerializeField] protected List<TurnAction> turnActions;
 
@@ -50,28 +51,30 @@ public class Unit : MonoBehaviour
 
     void nextTurn()
     {
-        turnAction = turnActions.Count > 0 ? turnActions[0] : TurnAction.Skip; // Default to Skip if no actions queued
+        turnAction = turnActions.Count > 0 ? turnActions[0] : TurnAction.No_Action; // Default to Skip if no actions queued
         switch (turnAction)
         {
             case TurnAction.Move:
                 Move();
-                isSleep = false;
                 break;
             case TurnAction.Skip:
-                isSleep = false;
+                moveQueue.Clear();
+                turnActions.Clear();
+                turnAction = TurnAction.No_Action;
                 break;
             case TurnAction.Sleep:
+                moveQueue.Clear();
+                turnActions.Clear();
                 break;
             case TurnAction.Attack:
-                isSleep = false;
-                // Attack logic should be handled externally since it requires a target
+                stamina = 0;
                 break;
             case TurnAction.Settle:
-                isSleep = false;
-                // Settling logic should be handled externally since it requires a location
+                
                 break;
         }
-        turnActions.RemoveAt(0);
+        turnActions.Remove(turnAction);
+        stamina = maxStamina;
     }
     
     public void Attack(Unit target)
@@ -111,7 +114,7 @@ public class Unit : MonoBehaviour
 
     void Move()
     {
-        if (moveQueue.Count > 0 && !isSleep)
+        if (moveQueue.Count > 0 && turnAction != TurnAction.Sleep)
         {
             position = moveQueue[0].Position; 
             StartCoroutine(DoMove(moveQueue[0].Position));
@@ -126,7 +129,7 @@ public class Unit : MonoBehaviour
         Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(newPosition).x, Helpers.TileToWorldPos(newPosition).z);
         
         moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
-        if (moveQueue.Count > 0)
+        if (moveQueue.Count > 0 && stamina - moveQueue[0].MovementCost >= 0)
         {
             position = moveQueue[0].Position; 
             StartCoroutine(DoMove(moveQueue[0].Position));
@@ -147,11 +150,16 @@ public class Unit : MonoBehaviour
     
         // Snap to exact position
         transform.position = targetPosition;
+        stamina -= Helpers.GetTileAtTilePos(tilePos).MovementCost;
+        if(stamina - moveQueue[0].MovementCost >= 0)
+        {
+            StartCoroutine(DoMove(moveQueue[0].Position));
+            moveQueue.RemoveAt(0);
+        }
     }
 
     public void Sleep()
     {
-        isSleep = true;
         turnActions.Add(TurnAction.Sleep);
     }
 
