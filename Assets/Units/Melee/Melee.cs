@@ -13,6 +13,6 @@ public class Melee : Unit
         attackDamage = 3f;
         moveSpeed = 3.0f;
         attackRange = 1.0f;
-        transform.position = new Vector3(position.x, 0.5f, position.y);
+        transform.position = Helpers.TileToWorldPos(position);
     }
 }

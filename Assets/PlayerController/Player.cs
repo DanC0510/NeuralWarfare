@@ -7,16 +7,8 @@ public class Player : MonoBehaviour
     [SerializeField] private City capital;
     [SerializeField] private GameObject settlerPrefab;
     [SerializeField] private GameObject meleePrefab;
-    public List<City> Cities
-    {
-        get { return cities; }
-    }
-    
-    public City Capital
-    {
-        get { return capital; }
-        set { capital = value; }
-    }
+    public List<City> Cities { get { return cities; } set { cities = value; } } 
+    public City Capital { get { return capital; } set { capital = value; } }
 
     void Start()
     {

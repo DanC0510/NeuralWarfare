@@ -27,4 +27,22 @@ public static class Helpers
         int index = row * width + col;
         return tiles[index];
     }
+    
+    public static Vector3 TileToWorldPos(Vector2 tilePos)
+    {
+        float hexSize = WorldGenerator.Instance.HexSize;
+        float hexWidth = Mathf.Sqrt(3f) * hexSize;
+        float hexHeight = 2f * hexSize;
+
+        int col = (int)tilePos.x;
+        int row = (int)tilePos.y;
+
+        float x = col * hexWidth;
+        float z = row * hexHeight * 0.75f;
+
+        if (row % 2 == 1)
+            x += hexWidth * 0.5f;
+
+        return new Vector3(x, 0.5f, z);
+    }
 }

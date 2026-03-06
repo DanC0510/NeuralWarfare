@@ -145,7 +145,13 @@ public class PlayerController : MonoBehaviour
                             rangedUI.SetActive(false);
                             //add listeners here
                             meleeAttackButton.onClick.RemoveAllListeners();
-                            meleeAttackButton.onClick.AddListener(() => StartCoroutine(SelectTarget()));
+                            meleeAttackButton.onClick.AddListener(() =>
+                            {
+                                StartCoroutine(SelectTarget());
+                                moveButton.onClick.RemoveAllListeners();
+                                skipButton.onClick.RemoveAllListeners();
+                                sleepButton.onClick.RemoveAllListeners();
+                            });
 
                             break;
                         case(Unit.UnitType.Ranged):
@@ -212,13 +218,11 @@ public class PlayerController : MonoBehaviour
             {
                 if (hit.transform)
                 {
-                    Vector2 hitPoint = new Vector2(Mathf.Round(hit.point.x), Mathf.Round(hit.point.z)); 
+                    Vector2 hitPoint = new Vector2(hit.point.x, hit.point.z);
                     selectedTarget = Helpers.GetTileAtWorldPos(hitPoint);
                 }
             }
         }
-
-        Debug.Log(selectedTarget.Position);
         selectedObject.GetComponent<Unit>().Move(selectedTarget.Position);
         selectedObject = null;
         genericUI.SetActive(false);

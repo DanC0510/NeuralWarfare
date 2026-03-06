@@ -15,11 +15,12 @@ public class Settler : Unit
         else
         {
             position = Helpers.GetTileAtWorldPos(new Vector2(Random.Range(80, 460), Random.Range(80, 290))).Position;  // Random position if no cities exist
-            owningPlayer.transform.position = new Vector3(position.x, 10f, position.y);
+            Vector3 temp = Helpers.TileToWorldPos(position);
+            owningPlayer.transform.position = new Vector3(temp.x, 10f, temp.z);
         }
         canDamage = false;
         moveSpeed = 2.0f;
-        transform.position = new Vector3(position.x, 0.5f, position.y);
+        transform.position = Helpers.TileToWorldPos(position);
         
     }
 
