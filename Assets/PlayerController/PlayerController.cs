@@ -50,13 +50,16 @@ public class PlayerController : MonoBehaviour
         skipButton.onClick.AddListener(() =>
         {
             selectedObject.GetComponent<Unit>().Skip();
+            ResetUI();
         });
         sleepButton.onClick.AddListener(() =>
         {
             selectedObject.GetComponent<Unit>().Sleep();
+            ResetUI();
         });
         settleCityButton.onClick.AddListener(() => {
             selectedObject.GetComponent<Settler>().PlaceCity();
+            ResetUI();
         });
         meleeAttackButton.onClick.AddListener(() =>
         {
@@ -170,12 +173,6 @@ public class PlayerController : MonoBehaviour
         meleeUI.SetActive(false);
         rangedUI.SetActive(false);
         settlerUI.SetActive(false);
-        moveButton.onClick.RemoveAllListeners();
-        skipButton.onClick.RemoveAllListeners();
-        sleepButton.onClick.RemoveAllListeners();
-        meleeAttackButton.onClick.RemoveAllListeners();
-        rangedAttackButton.onClick.RemoveAllListeners();
-        settleCityButton.onClick.RemoveAllListeners();
     }
 
     IEnumerator SelectTarget()
