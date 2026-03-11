@@ -92,12 +92,10 @@ public class Unit : MonoBehaviour
     {
         get { return position; }
     }
-
     public UnitType Type
     {
         get { return unitType; }
     }
-
     public Player OwningPlayer
     {
         get { return OwningPlayer; }
@@ -105,7 +103,9 @@ public class Unit : MonoBehaviour
 
     public float DistanceTo(Unit unit1, Unit unit2)
     {
-        return Vector2.Distance(unit1.position, unit2.position); //change this after I have the graph set up to calculate pathfinding distance instead of straight line distance
+        float distance = PathfindingGraph.Instance.GetPath(unit1.position, unit2.position).Count - 1;
+        //Debug.Log(distance);
+        return distance; //unit1.position and unit2.position are tile positions, not world positions#
     }
 
     public void DoDeath()

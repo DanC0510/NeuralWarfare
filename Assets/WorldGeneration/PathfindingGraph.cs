@@ -169,7 +169,6 @@ public class PathfindingGraph : MonoBehaviour
 
     private List<Tile> ReconstructPath(Dictionary<Tile, Tile> cameFrom, Tile current)
     {
-        Debug.Log("Found Path");
         List<Tile> path = new List<Tile>();
         while (cameFrom.ContainsKey(current))
         {
