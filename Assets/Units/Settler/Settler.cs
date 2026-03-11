@@ -40,6 +40,6 @@ public class Settler : Unit
         {
             Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
         }
-        Destroy(this.gameObject);
+        DoDeath();
     }
 }

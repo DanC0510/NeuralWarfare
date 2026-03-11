@@ -110,6 +110,7 @@ public class Unit : MonoBehaviour
 
     public void DoDeath()
     {
+        TurnController.Instance.OnNextTurn -= nextTurn;
         //play death anim here
         Destroy(this.gameObject);
     }
