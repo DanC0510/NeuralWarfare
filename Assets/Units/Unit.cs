@@ -49,9 +49,11 @@ public class Unit : MonoBehaviour
         TurnController.Instance.OnNextTurn += nextTurn;
     }
 
-    void nextTurn()
+    protected void nextTurn()
     {
+        if (turnActions.Count == 0) { return; }
         turnAction = turnActions.Count > 0 ? turnActions[0] : TurnAction.No_Action; // Default to Skip if no actions queued
+        turnActions.RemoveAt(0);
         switch (turnAction)
         {
             case TurnAction.Move:
@@ -73,7 +75,6 @@ public class Unit : MonoBehaviour
                 
                 break;
         }
-        turnActions.Remove(turnAction);
         stamina = maxStamina;
     }
     
@@ -114,7 +115,7 @@ public class Unit : MonoBehaviour
 
     void Move()
     {
-        if (moveQueue.Count > 0 && turnAction != TurnAction.Sleep)
+        if (moveQueue.Count > 0)
         {
             position = moveQueue[0].Position; 
             StartCoroutine(DoMove(moveQueue[0].Position));
@@ -123,19 +124,13 @@ public class Unit : MonoBehaviour
         }  
     }
 
-    public void Move(Vector2 newPosition)
+    public void GetPath(Vector2 newPosition)
     {
         Vector2 worldPos = new Vector2(Helpers.TileToWorldPos(position).x, Helpers.TileToWorldPos(position).z);
         Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(newPosition).x, Helpers.TileToWorldPos(newPosition).z);
         
-        moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
-        if (moveQueue.Count > 0 && stamina - moveQueue[0].MovementCost >= 0)
-        {
-            position = moveQueue[0].Position; 
-            StartCoroutine(DoMove(moveQueue[0].Position));
-            moveQueue.RemoveAt(0);
-            turnActions.Add(TurnAction.Move);
-        }
+        moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos)); 
+        turnActions.Add(TurnAction.Move);
     }
 
     public IEnumerator DoMove(Vector2 tilePos)

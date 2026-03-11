@@ -213,7 +213,7 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
-        selectedObject.GetComponent<Unit>().Move(selectedTarget.Position);
+        selectedObject.GetComponent<Unit>().GetPath(selectedTarget.Position);
         selectingTarget = false;
         ResetUI();
     }
