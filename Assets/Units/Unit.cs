@@ -146,7 +146,7 @@ public class Unit : MonoBehaviour
         // Snap to exact position
         transform.position = targetPosition;
         stamina -= Helpers.GetTileAtTilePos(tilePos).MovementCost;
-        if(stamina - moveQueue[0].MovementCost >= 0)
+        if(moveQueue[0] != null && stamina - moveQueue[0].MovementCost >= 0)
         {
             StartCoroutine(DoMove(moveQueue[0].Position));
             stamina -= moveQueue[0].MovementCost;
