@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Settler : Unit
 {
+    [SerializeField] private GameObject cityPrefab;
     public void CreateSettler(int startingCityIndex, Player player)
     {
         owningPlayer = player;
@@ -33,6 +34,11 @@ public class Settler : Unit
         else
         {
             owningPlayer.Cities.Add(new City(position, owningPlayer));
+        }
+
+        if (cityPrefab != null)
+        {
+            Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
         }
         Destroy(this.gameObject);
     }

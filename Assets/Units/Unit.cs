@@ -67,6 +67,7 @@ public class Unit : MonoBehaviour
             case TurnAction.Sleep:
                 moveQueue.Clear();
                 turnActions.Clear();
+                turnActions.Add(TurnAction.Sleep);
                 break;
             case TurnAction.Attack:
                 stamina = 0;
@@ -146,7 +147,7 @@ public class Unit : MonoBehaviour
         // Snap to exact position
         transform.position = targetPosition;
         stamina -= Helpers.GetTileAtTilePos(tilePos).MovementCost;
-        if(moveQueue[0] != null && stamina - moveQueue[0].MovementCost >= 0)
+        if(moveQueue.Count != 0 && stamina - moveQueue[0].MovementCost >= 0)
         {
             StartCoroutine(DoMove(moveQueue[0].Position));
             stamina -= moveQueue[0].MovementCost;
