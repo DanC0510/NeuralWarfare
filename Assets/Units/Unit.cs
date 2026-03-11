@@ -17,7 +17,6 @@ public class Unit : MonoBehaviour
         Skip,
         Sleep,
         Attack,
-        Settle,
     }
     
     [SerializeField] protected UnitType unitType;
@@ -34,7 +33,6 @@ public class Unit : MonoBehaviour
     [SerializeField] protected bool canDamage;
     [SerializeField] protected List<Tile> moveQueue;
     [SerializeField] protected List<TurnAction> turnActions;
-
     public void TakeDamage(float damage)
     {
         health -= damage;
@@ -53,7 +51,7 @@ public class Unit : MonoBehaviour
     {
         if (turnActions.Count == 0) { return; }
         turnAction = turnActions.Count > 0 ? turnActions[0] : TurnAction.No_Action; // Default to Skip if no actions queued
-        turnActions.RemoveAt(0);
+        if (turnAction != TurnAction.Sleep) { turnActions.RemoveAt(0); }
         switch (turnAction)
         {
             case TurnAction.Move:
@@ -65,15 +63,9 @@ public class Unit : MonoBehaviour
                 turnAction = TurnAction.No_Action;
                 break;
             case TurnAction.Sleep:
-                moveQueue.Clear();
-                turnActions.Clear();
-                turnActions.Add(TurnAction.Sleep);
                 break;
             case TurnAction.Attack:
                 stamina = 0;
-                break;
-            case TurnAction.Settle:
-                
                 break;
         }
         stamina = maxStamina;
@@ -81,10 +73,11 @@ public class Unit : MonoBehaviour
     
     public void Attack(Unit target)
     {
+        if (turnAction != TurnAction.Attack) { turnActions.Clear(); }
         if (DistanceTo(this, target) <= attackRange && canDamage)
         {
             target.TakeDamage(attackDamage * (health / maxHealth));
-            turnActions.Add(TurnAction.Attack);
+            turnActions.Insert(0, TurnAction.Attack);
         }
     }
     
@@ -117,12 +110,13 @@ public class Unit : MonoBehaviour
 
     void Move()
     {
+        if (turnAction != TurnAction.Move) { turnActions.Clear(); }
         if (moveQueue.Count > 0)
         {
             position = moveQueue[0].Position; 
             StartCoroutine(DoMove(moveQueue[0].Position));
             moveQueue.RemoveAt(0);
-            turnActions.Add(TurnAction.Move);
+            turnActions.Insert(0, TurnAction.Move);
         }  
     }
 
@@ -131,8 +125,8 @@ public class Unit : MonoBehaviour
         Vector2 worldPos = new Vector2(Helpers.TileToWorldPos(position).x, Helpers.TileToWorldPos(position).z);
         Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(newPosition).x, Helpers.TileToWorldPos(newPosition).z);
         
-        moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos)); 
-        turnActions.Add(TurnAction.Move);
+        moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
+        Move();
     }
 
     public IEnumerator DoMove(Vector2 tilePos)
@@ -158,12 +152,14 @@ public class Unit : MonoBehaviour
 
     public void Sleep()
     {
-        turnActions.Add(TurnAction.Sleep);
+        moveQueue.Clear();
+        turnActions.Clear();
+        turnActions.Insert(0, TurnAction.Sleep);
     }
 
     public void Skip()
     {
-        // add blank to execution queue
+        if (turnAction != TurnAction.Skip) { turnActions.Clear(); }
         turnActions.Insert(0, TurnAction.Skip);
     }
 }
