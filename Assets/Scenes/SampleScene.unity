@@ -790,6 +790,7 @@ MonoBehaviour:
     maxHealth: 0
   settlerPrefab: {fileID: 3903185367480678098, guid: fa7e35f71056ebf4186b024694a4ad89, type: 3}
   meleePrefab: {fileID: 6440523078510410403, guid: f7b92ecd9907cab4b9fa740bef52cbb3, type: 3}
+  archerPrefab: {fileID: 584887197847065732, guid: 185232cf3ad9d514f9c49390df6e9907, type: 3}
 --- !u!1 &353548631
 GameObject:
   m_ObjectHideFlags: 0

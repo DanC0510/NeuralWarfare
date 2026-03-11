@@ -65,6 +65,10 @@ public class PlayerController : MonoBehaviour
         {
             StartCoroutine(SelectTarget());
         });
+        rangedAttackButton.onClick.AddListener(() =>
+        {
+            StartCoroutine(SelectTarget());
+        });
     }
 
     // Update is called once per frame
@@ -154,6 +158,9 @@ public class PlayerController : MonoBehaviour
                             rangedUI.SetActive(false);
                             break;
                         case(Unit.UnitType.Ranged):
+                            rangedUI.SetActive(true);
+                            settlerUI.SetActive(false);
+                            meleeUI.SetActive(false);
                             break;
                     }
                 }

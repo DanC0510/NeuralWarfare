@@ -6,14 +6,13 @@ public class Melee : Unit
     {
         owningPlayer = player;
         unitType = UnitType.Melee;
-        health = 10;
-        maxHealth = health;
-        position = startingPosition;
+        health = maxHealth = 10;
         canDamage = true;
         attackDamage = 3f;
-        moveSpeed = 3.0f;
         attackRange = 1.0f;
-        transform.position = Helpers.TileToWorldPos(position);
+        moveSpeed = 2.0f;
         stamina = maxStamina = 2f;
+        position = startingPosition;
+        transform.position = Helpers.TileToWorldPos(position);
     }
 }
