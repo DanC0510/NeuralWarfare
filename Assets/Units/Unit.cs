@@ -33,6 +33,7 @@ public class Unit : MonoBehaviour
     [SerializeField] protected float maxStamina;
     [SerializeField] protected float attackRange;
     [SerializeField] protected bool canDamage;
+    [SerializeField] protected Tile currentTile;
     [SerializeField] protected List<Tile> moveQueue;
     [SerializeField] protected List<TurnAction> turnActions;
     public void TakeDamage(float damage)
@@ -71,6 +72,7 @@ public class Unit : MonoBehaviour
                 break;
         }
         stamina = maxStamina;
+        currentTile = Helpers.GetTileAtTilePos(position);
     }
     
     public void Attack(Unit target)
@@ -99,7 +101,6 @@ public class Unit : MonoBehaviour
     public float DistanceTo(Unit unit1, Unit unit2)
     {
         float distance = PathfindingGraph.Instance.GetPath(unit1.position, unit2.position).Count - 1;
-        //Debug.Log(distance);
         return distance; //unit1.position and unit2.position are tile positions, not world positions#
     }
 

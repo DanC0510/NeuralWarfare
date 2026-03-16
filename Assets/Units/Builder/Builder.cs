@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Builder : Unit
 {
-    float buildCharges = 2f;
+    [SerializeField] private float buildCharges = 2f;
     
     public void CreateBuilder(Vector2 startingPosition, Player player)
     {
@@ -28,6 +28,8 @@ public class Builder : Unit
 
     private void removeBuildCharge()
     {
+        if (stamina < 1) { return; }
+        stamina = 0;
         buildCharges--;
         if(buildCharges == 0) { DoDeath(); }
     }
