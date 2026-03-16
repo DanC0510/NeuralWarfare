@@ -26,12 +26,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject settlerUI;
     [SerializeField] private GameObject meleeUI;
     [SerializeField] private GameObject rangedUI;
+    [SerializeField] private GameObject builderUI;
     [SerializeField] private Button moveButton;
     [SerializeField] private Button skipButton;
     [SerializeField] private Button sleepButton;
     [SerializeField] private Button settleCityButton;
     [SerializeField] private Button meleeAttackButton;
     [SerializeField] private Button rangedAttackButton;
+    [SerializeField] private Button buildButton;
     
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
@@ -68,6 +70,10 @@ public class PlayerController : MonoBehaviour
         rangedAttackButton.onClick.AddListener(() =>
         {
             StartCoroutine(SelectTarget());
+        });
+        buildButton.onClick.AddListener(() =>
+        {
+            selectedObject.GetComponent<Builder>().Build();
         });
     }
 
@@ -151,16 +157,25 @@ public class PlayerController : MonoBehaviour
                             settlerUI.SetActive(true);
                             meleeUI.SetActive(false);
                             rangedUI.SetActive(false);
+                            builderUI.SetActive(false);
                             break;
                         case(Unit.UnitType.Melee):
                             meleeUI.SetActive(true);
                             settlerUI.SetActive(false);
                             rangedUI.SetActive(false);
+                            builderUI.SetActive(false);
                             break;
                         case(Unit.UnitType.Ranged):
                             rangedUI.SetActive(true);
                             settlerUI.SetActive(false);
                             meleeUI.SetActive(false);
+                            builderUI.SetActive(false);
+                            break;
+                        case(Unit.UnitType.Builder):
+                            builderUI.SetActive(true);
+                            settlerUI.SetActive(false);
+                            meleeUI.SetActive(false);
+                            rangedUI.SetActive(false);
                             break;
                     }
                 }
@@ -180,6 +195,7 @@ public class PlayerController : MonoBehaviour
         meleeUI.SetActive(false);
         rangedUI.SetActive(false);
         settlerUI.SetActive(false);
+        builderUI.SetActive(false);
     }
 
     IEnumerator SelectTarget()

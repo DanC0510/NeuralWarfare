@@ -45,42 +45,44 @@ public class Tile
         biome = bio;
         RiverTiles = new LinkedList<Tile>();
         resourceOnThisTile = resource;
-        if (resource != null) { hasResources = true; }
-
-        switch (resource.resourceType)
+        if (resource != null)
         {
-            case Resource.ResourceType.Wheat:
-                food += 3f;
-                production += 1.5f;
-                gold += 1f;
-                break;
-            case Resource.ResourceType.Fish:
-                food += 1.5f;
-                production += 0.5f;
-                gold += 1f;
-                break;
-            case Resource.ResourceType.Cows:
-                food += 2f;
-                production += 1.5f;
-                gold += 1.5f;
-                break;
-            case Resource.ResourceType.Horses:
-                food += 0f;
-                production += 2.5f;
-                gold += 2f;
-                break;
-            case Resource.ResourceType.Stone:
-                food += 0f;
-                production += 3f;
-                gold += 1f;
-                break;
-            case Resource.ResourceType.Iron:
-                food += 0f;
-                production += 4f;
-                gold += 2f;
-                break;
+            hasResources = true;
+            switch (resource.resourceType)
+            {
+                case Resource.ResourceType.Wheat:
+                    food += 3f;
+                    production += 1.5f;
+                    gold += 1f;
+                    break;
+                case Resource.ResourceType.Fish:
+                    food += 1.5f;
+                    production += 0.5f;
+                    gold += 1f;
+                    break;
+                case Resource.ResourceType.Cows:
+                    food += 2f;
+                    production += 1.5f;
+                    gold += 1.5f;
+                    break;
+                case Resource.ResourceType.Horses:
+                    food += 0f;
+                    production += 2.5f;
+                    gold += 2f;
+                    break;
+                case Resource.ResourceType.Stone:
+                    food += 0f;
+                    production += 3f;
+                    gold += 1f;
+                    break;
+                case Resource.ResourceType.Iron:
+                    food += 0f;
+                    production += 4f;
+                    gold += 2f;
+                    break;
+            }
         }
-        
+
         switch (biome)
         {
             case TileBiome.Deep_Water:
