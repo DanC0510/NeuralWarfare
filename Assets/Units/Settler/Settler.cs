@@ -14,7 +14,12 @@ public class Settler : Unit
         }
         else
         {
-            position = Helpers.GetTileAtWorldPos(new Vector2(Random.Range(80, 460), Random.Range(80, 290))).Position;  // Random position if no cities exist
+            Tile spawnTile = Helpers.GetTileAtWorldPos(new Vector2(Random.Range(80, 460), Random.Range(80, 290)));
+            while (spawnTile.Biome == Tile.TileBiome.Deep_Water || spawnTile.Biome == Tile.TileBiome.Water)
+            {
+                spawnTile = Helpers.GetTileAtWorldPos(new Vector2(Random.Range(80, 460), Random.Range(80, 290)));
+            }
+            position = spawnTile.Position;  // Random position if no cities exist
             Vector3 temp = Helpers.TileToWorldPos(position);
             owningPlayer.transform.position = new Vector3(temp.x, 10f, temp.z);
         }
