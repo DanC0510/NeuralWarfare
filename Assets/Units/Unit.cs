@@ -9,6 +9,7 @@ public class Unit : MonoBehaviour
         Ranged,
         Melee,
         Settler,
+        Builder,
     }
     public enum TurnAction
     {
@@ -17,6 +18,7 @@ public class Unit : MonoBehaviour
         Skip,
         Sleep,
         Attack,
+        Build,
     }
     
     [SerializeField] protected UnitType unitType;
