@@ -1,7 +1,7 @@
 [System.Serializable]
 public class Resource
 {
-    private ResourceType resourceType;
+    public ResourceType resourceType;
     public enum ResourceType
     {
         Wheat = 0,

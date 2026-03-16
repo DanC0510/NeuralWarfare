@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class Builder : Unit
 {
+    float buildCharges = 2f;
+    
     public void CreateBuilder(Vector2 startingPosition, Player player)
     {
         owningPlayer = player;
@@ -14,5 +16,19 @@ public class Builder : Unit
         stamina = maxStamina = 3f;
         position = startingPosition;
         transform.position = Helpers.TileToWorldPos(position);
+    }
+
+    public void Build()
+    {
+        Tile currentTile = Helpers.GetTileAtTilePos(position);
+        if (!currentTile.HasResources) { return; }
+        currentTile.Build();
+        removeBuildCharge();
+    }
+
+    private void removeBuildCharge()
+    {
+        buildCharges--;
+        if(buildCharges == 0) { DoDeath(); }
     }
 }

@@ -107,37 +107,38 @@ public class WorldGenerator : MonoBehaviour
                         int tileIndex = y * width + x;
                         colourMap[tileIndex] = regions[i].color;
                         // Resource Generation
-                        List<Resource> resources = new List<Resource>();
+                        Resource resource = null;
                         if (Helpers.mod(Random.Range(0, 100), resourceFrequency) == 0)
                         {
                             int ranNum = Random.Range(0, 100);
                             if (ranNum < 40 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.Sand)
                             {
-                                resources.Add(new Resource(Resource.ResourceType.Wheat));
+                                resource = new Resource(Resource.ResourceType.Wheat);
                             }
                             else if (ranNum < 40 && (regions[i].biome == Tile.TileBiome.Deep_Water || regions[i].biome == Tile.TileBiome.Water))
                             {
-                                resources.Add(new Resource(Resource.ResourceType.Fish));
+                                resource = new Resource(Resource.ResourceType.Fish);
                             }
                             else if (ranNum < 55)
                             {
-                                resources.Add(new Resource(Resource.ResourceType.Cows));
+                                resource = new Resource(Resource.ResourceType.Cows);
                             }
                             else if (ranNum < 60)
                             {
-                                resources.Add(new Resource(Resource.ResourceType.Horses));
+                                resource = new Resource(Resource.ResourceType.Horses);
                             }
                             else if (ranNum < 95)
                             {
-                                resources.Add(new Resource(Resource.ResourceType.Stone));
+                                resource = new Resource(Resource.ResourceType.Stone);
                             }
                             else
                             {
-                                resources.Add(new Resource(Resource.ResourceType.Iron));
+                                resource = new Resource(Resource.ResourceType.Iron);
                             }
+                            
                         }
                         
-                        Tile currentTile = new Tile( new Vector2(x , y), regions[i].biome, resources);
+                        Tile currentTile = new Tile( new Vector2(x , y), regions[i].biome, resource);
                         tiles[tileIndex] = currentTile;
                         if (Random.Range(0, riverFrequency) == 0)
                         {

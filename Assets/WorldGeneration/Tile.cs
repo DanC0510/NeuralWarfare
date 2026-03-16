@@ -12,8 +12,14 @@ public class Tile
     private Tile[] neighbourTiles;
     [SerializeField] private bool isStartingRiver;
     [SerializeField] private Tile riverStart;
-    [SerializeField] private List<Resource> resourcesOnThisTile;
+    [SerializeField] private Resource resourceOnThisTile;
+    [SerializeField] private bool hasResources;
     [SerializeField] private float movementCost = 1f;
+    [Header("Tile Attributes")]
+    [SerializeField] private float food;
+    [SerializeField] private float production;
+    [SerializeField] private float gold;
+    
     public enum TileBiome
     {
         Water = 0,
@@ -33,13 +39,48 @@ public class Tile
     public Tile[] NeighbourTiles { get; set; } = new Tile[6];
     public float MovementCost { get => movementCost; }
     
-    public Tile(Vector2 pos, TileBiome bio, List<Resource> resources)
+    public Tile(Vector2 pos, TileBiome bio, Resource resource)
     {
         position = pos;
         biome = bio;
         RiverTiles = new LinkedList<Tile>();
-        resourcesOnThisTile = resources;
+        resourceOnThisTile = resource;
+        if (resource != null) { hasResources = true; }
 
+        switch (resource.resourceType)
+        {
+            case Resource.ResourceType.Wheat:
+                food += 3f;
+                production += 1.5f;
+                gold += 1f;
+                break;
+            case Resource.ResourceType.Fish:
+                food += 1.5f;
+                production += 0.5f;
+                gold += 1f;
+                break;
+            case Resource.ResourceType.Cows:
+                food += 2f;
+                production += 1.5f;
+                gold += 1.5f;
+                break;
+            case Resource.ResourceType.Horses:
+                food += 0f;
+                production += 2.5f;
+                gold += 2f;
+                break;
+            case Resource.ResourceType.Stone:
+                food += 0f;
+                production += 3f;
+                gold += 1f;
+                break;
+            case Resource.ResourceType.Iron:
+                food += 0f;
+                production += 4f;
+                gold += 2f;
+                break;
+        }
+        
         switch (biome)
         {
             case TileBiome.Deep_Water:
@@ -73,17 +114,46 @@ public class Tile
     
     public void AddResource(Resource resource)
     {
-        resourcesOnThisTile.Add(resource);
+        resourceOnThisTile = resource;
     }
 
-    public void RemoveResource(Resource resource)
+    public void RemoveResource()
     {
-        resourcesOnThisTile.Remove(resource);
+        resourceOnThisTile = null;
     }
+
+    public Resource ResourceOnThisTile { get => resourceOnThisTile; /*set => resourcesOnThisTile = value; */ }
+    
+    public bool HasResources { get => hasResources; set =>  hasResources = value; }
 
     public bool IsStartingRiver { get => isStartingRiver; set => isStartingRiver = value; } 
     public LinkedList<Tile> RiverTiles { get => riverTiles; set => riverTiles = value; }
     public Tile RiverStart { get => riverStart; set => riverStart = value; }
     public bool HasRiver() { return hasRiverAdjecent; }
+    
+    public void Build()
+    {
+        switch (resourceOnThisTile.resourceType)
+        {
+            case Resource.ResourceType.Wheat:
+                food += 2f;
+                break;
+            case Resource.ResourceType.Fish:
+                food += 2f;
+                break;
+            case Resource.ResourceType.Cows:
+                food += 2f;
+                break;
+            case Resource.ResourceType.Horses:
+                production += 2f;
+                break;
+            case Resource.ResourceType.Stone:
+                production += 2f;
+                break;
+            case Resource.ResourceType.Iron:
+                production += 2f;
+                break;
+        }
+    }
 
 }
