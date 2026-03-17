@@ -31,7 +31,7 @@ public class Settler : Unit
 
     public void PlaceCity()
     {
-        if (owningPlayer.Capital.OwningPlayer != owningPlayer)
+        if (owningPlayer.Capital == null)
         {
             GameObject city = Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
             city.GetComponent<City>().CreateCity(position, owningPlayer, 8);

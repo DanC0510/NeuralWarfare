@@ -126,11 +126,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Settler
   unitType: 2
-  unitPrefab: {fileID: 0}
+  turnAction: 0
   position: {x: 0, y: 0}
   owningPlayer: {fileID: 0}
   health: 0
+  maxHealth: 0
   attackDamage: 0
   moveSpeed: 0
+  stamina: 0
+  maxStamina: 0
   attackRange: 0
   canDamage: 0
+  currentTile:
+    hasRiverAdjecent: 0
+    position: {x: 0, y: 0}
+    biome: 0
+    isStartingRiver: 0
+    resourceOnThisTile:
+      resourceType: 0
+    hasResources: 0
+    movementCost: 0
+    food: 0
+    production: 0
+    gold: 0
+  moveQueue: []
+  turnActions: 
+  cityPrefab: {fileID: 8656029209106326201, guid: 985f97dabe3c53148b2b49515cc35c18, type: 3}
