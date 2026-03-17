@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TurnController : MonoBehaviour
@@ -7,20 +8,33 @@ public class TurnController : MonoBehaviour
 
     public delegate void NextTurn();
     public event NextTurn OnNextTurn;
-    
-    [SerializeField] private bool nextTurn;
+
+    public List<Unit> allUnits;
     private void Awake()
     {
         _instance = this;
     }
-    
-    void Update()
+
+    public void RegisterUnit(Unit unit)
     {
-        if (nextTurn)
+        if(!allUnits.Contains(unit)) { allUnits.Add(unit);}
+    }
+    public void UnregisterUnit(Unit unit)
+    {
+        if(allUnits.Contains(unit)) { allUnits.Remove(unit);}
+    }
+    
+    public void InvokeNextTurn()
+    {
+        foreach(Unit unit in allUnits)
         {
-            nextTurn = false;
-            OnNextTurn.Invoke();
+            if (unit.TurnActions.Count == 0)
+            {
+                //move cam to unit without turn action
+                return; 
+            }
         }
+        OnNextTurn.Invoke();
     }
     
 }

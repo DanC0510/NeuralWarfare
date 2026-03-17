@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: -1214391808262693882}
   m_Layer: 0
   m_Name: City
-  m_TagString: Untagged
+  m_TagString: InteractableCity
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -127,6 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1ba9748b2cd18a488665dd879a1137f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::City
+  action: 0
   position: {x: 0, y: 0}
   owningPlayer: {fileID: 0}
   population: 0

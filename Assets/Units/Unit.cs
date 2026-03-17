@@ -36,6 +36,11 @@ public class Unit : MonoBehaviour
     [SerializeField] protected Tile currentTile;
     [SerializeField] protected List<Tile> moveQueue;
     [SerializeField] protected List<TurnAction> turnActions;
+    public List<TurnAction> TurnActions { get { return turnActions; } }
+    public Vector2 Position { get { return position; } }
+    public UnitType Type { get { return unitType; } }
+    public Player OwningPlayer { get { return OwningPlayer; } }
+    
     public void TakeDamage(float damage)
     {
         health -= damage;
@@ -48,6 +53,7 @@ public class Unit : MonoBehaviour
     protected void Start()
     {
         TurnController.Instance.OnNextTurn += nextTurn;
+        TurnController.Instance.RegisterUnit(this);
     }
 
     protected void nextTurn()
@@ -84,19 +90,6 @@ public class Unit : MonoBehaviour
             turnActions.Insert(0, TurnAction.Attack);
         }
     }
-    
-    public Vector2 Position
-    {
-        get { return position; }
-    }
-    public UnitType Type
-    {
-        get { return unitType; }
-    }
-    public Player OwningPlayer
-    {
-        get { return OwningPlayer; }
-    }
 
     public float DistanceTo(Unit unit1, Unit unit2)
     {
@@ -107,6 +100,7 @@ public class Unit : MonoBehaviour
     public void DoDeath()
     {
         TurnController.Instance.OnNextTurn -= nextTurn;
+        TurnController.Instance.UnregisterUnit(this);
         //play death anim here
         Destroy(this.gameObject);
     }

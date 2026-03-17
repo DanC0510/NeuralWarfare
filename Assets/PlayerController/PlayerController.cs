@@ -21,8 +21,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float groundPlaneY;
     [SerializeField] private GameObject selectedObject;
 
-    [Header("UI Actions")] 
-    [SerializeField] private GameObject genericUI;
+    [Header("Unit UI Actions")] 
+    [SerializeField] private GameObject genericUnitUI;
     [SerializeField] private GameObject settlerUI;
     [SerializeField] private GameObject meleeUI;
     [SerializeField] private GameObject rangedUI;
@@ -35,9 +35,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Button rangedAttackButton;
     [SerializeField] private Button buildButton;
     
+    [Header("City UI Actions")]
+    [SerializeField] private GameObject genericCityUI;
+    [SerializeField] private Button produceButton;
+
+    [Header("Generic UI Actions")] 
+    [SerializeField] private GameObject genericUI;
+    [SerializeField] private Button endTurnButton;
+    
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
-
     [SerializeField] private bool selectingTarget;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -74,6 +81,10 @@ public class PlayerController : MonoBehaviour
         buildButton.onClick.AddListener(() =>
         {
             selectedObject.GetComponent<Builder>().Build();
+        });
+        endTurnButton.onClick.AddListener(() =>
+        {
+            TurnController.Instance.InvokeNextTurn();
         });
     }
 
@@ -145,12 +156,12 @@ public class PlayerController : MonoBehaviour
             Ray ray = playerCamera.ScreenPointToRay(mousePos);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
             {
-                if (hit.collider.CompareTag("Interactable"))
+                if (hit.collider.CompareTag("InteractableUnit"))
                 {
                     selectedObject = hit.collider.gameObject;
                     Unit unit = selectedObject.GetComponent<Unit>();
                     
-                    genericUI.SetActive(true);
+                    genericUnitUI.SetActive(true);
                     switch(unit.Type)
                     {
                         case(Unit.UnitType.Settler):
@@ -179,6 +190,14 @@ public class PlayerController : MonoBehaviour
                             break;
                     }
                 }
+
+                if (hit.collider.CompareTag("InteractableCity"))
+                {
+                    selectedObject = hit.collider.gameObject;
+                    City city = selectedObject.GetComponent<City>();
+                    
+                    genericCityUI.SetActive(true);
+                }
             }
             else 
             {
@@ -191,7 +210,8 @@ public class PlayerController : MonoBehaviour
     void ResetUI()
     {
         selectedObject = null;
-        genericUI.SetActive(false);
+        genericUnitUI.SetActive(false);
+        genericCityUI.SetActive(false);
         meleeUI.SetActive(false);
         rangedUI.SetActive(false);
         settlerUI.SetActive(false);

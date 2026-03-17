@@ -1007,9 +1007,9 @@ MonoBehaviour:
   moveTo: {x: 0, y: 0, z: 0}
   screenCorners:
   - {x: 40, y: 40}
-  - {x: 920, y: 40}
-  - {x: 40, y: 580}
-  - {x: 920, y: 580}
+  - {x: 460, y: 40}
+  - {x: 40, y: 290}
+  - {x: 460, y: 290}
   doMove: 0
   doRotate: 0
   groundPlaneY: 0
@@ -2597,7 +2597,7 @@ Transform:
   m_GameObject: {fileID: 1185798327}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 343, y: 151, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
