@@ -31,17 +31,18 @@ public class Settler : Unit
 
     public void PlaceCity()
     {
+        Vector2 pos = Helpers.TileToWorldPos(position);
         if (owningPlayer.Capital == null)
         {
-            GameObject city = Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
-            city.GetComponent<City>().CreateCity(position, owningPlayer, 8);
+            GameObject city = Instantiate(cityPrefab, new Vector3(pos.x, 0f, pos.y), Quaternion.identity);
+            city.GetComponent<City>().CreateCity(position, owningPlayer, 3);
             owningPlayer.Capital = city.GetComponent<City>();
             owningPlayer.Cities.Add(city.GetComponent<City>());
         }
         else
         {
-            GameObject city = Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
-            city.GetComponent<City>().CreateCity(position, owningPlayer, 6);
+            GameObject city = Instantiate(cityPrefab, new Vector3(pos.x, 0f, pos.y), Quaternion.identity);
+            city.GetComponent<City>().CreateCity(position, owningPlayer, 2);
             owningPlayer.Cities.Add(city.GetComponent<City>());
         }
         DoDeath();

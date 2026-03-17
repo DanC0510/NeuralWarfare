@@ -14,8 +14,9 @@ public class City : MonoBehaviour
     [SerializeField] private float cityHealth;
     [SerializeField] private float maxHealth;
     [SerializeField] private HashSet<Tile> tilesOwned;
+    public HashSet<Tile> TilesOwned => tilesOwned;
 
-    public void CreateCity(Vector2 startingPosition, Player player, float diameterOwned)
+    public void CreateCity(Vector2 startingPosition, Player player, float radiusOwned)
     {
         position = startingPosition;
         owningPlayer = player;
@@ -26,11 +27,10 @@ public class City : MonoBehaviour
         //Giving city control of tiles
         tilesOwned = new HashSet<Tile>();
         tilesOwned.Add(Helpers.GetTileAtTilePos(position));
-        float r = diameterOwned / 2;
-        r = Mathf.RoundToInt(r);
-        for (int i = 0; i < r; i++)
+        for (int i = 0; i < radiusOwned; i++)
         {
-            foreach (Tile tile in tilesOwned)
+            HashSet<Tile> temp = new HashSet<Tile>(tilesOwned);
+            foreach (Tile tile in temp)
             {
                 for(int j = 0; j < tile.NeighbourTiles.Length; j++)
                 {

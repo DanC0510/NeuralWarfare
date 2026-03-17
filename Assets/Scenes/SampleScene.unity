@@ -781,15 +781,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   cities: []
-  capital:
-    position: {x: 0, y: 0}
-    owningPlayer: {fileID: 0}
-    population: 0
-    productionRate: 0
-    productionProgress: 0
-    cityPrefab: {fileID: 0}
-    cityHealth: 0
-    maxHealth: 0
+  capital: {fileID: 0}
   settlerPrefab: {fileID: 3903185367480678098, guid: fa7e35f71056ebf4186b024694a4ad89, type: 3}
   meleePrefab: {fileID: 6440523078510410403, guid: f7b92ecd9907cab4b9fa740bef52cbb3, type: 3}
   archerPrefab: {fileID: 584887197847065732, guid: 185232cf3ad9d514f9c49390df6e9907, type: 3}
