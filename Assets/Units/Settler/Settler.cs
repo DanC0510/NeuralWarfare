@@ -33,17 +33,16 @@ public class Settler : Unit
     {
         if (owningPlayer.Capital.OwningPlayer != owningPlayer)
         {
-            owningPlayer.Capital = new City(position, owningPlayer);
-            owningPlayer.Cities.Add(owningPlayer.Capital);
+            GameObject city = Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
+            city.GetComponent<City>().CreateCity(position, owningPlayer, 6);
+            owningPlayer.Capital = city.GetComponent<City>();
+            owningPlayer.Cities.Add(city.GetComponent<City>());
         }
         else
         {
-            owningPlayer.Cities.Add(new City(position, owningPlayer));
-        }
-
-        if (cityPrefab != null)
-        {
-            Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
+            GameObject city = Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
+            city.GetComponent<City>().CreateCity(position, owningPlayer, 5);
+            owningPlayer.Cities.Add(city.GetComponent<City>());
         }
         DoDeath();
     }

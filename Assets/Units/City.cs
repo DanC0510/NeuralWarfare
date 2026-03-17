@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class City
+public class City : MonoBehaviour
 {
     [SerializeField] private Vector2 position;
     [SerializeField] private Player owningPlayer;
@@ -12,8 +13,9 @@ public class City
     [SerializeField] private GameObject cityPrefab;
     [SerializeField] private float cityHealth;
     [SerializeField] private float maxHealth;
+    [SerializeField] private List<Tile> tilesOwned;
 
-    public City(Vector2 startingPosition, Player player)
+    public void CreateCity(Vector2 startingPosition, Player player, float radiusOwned)
     {
         position = startingPosition;
         owningPlayer = player;
