@@ -20,11 +20,11 @@ public class Player : MonoBehaviour
         GameObject startingMelee = Instantiate(meleePrefab, Vector3.zero, Quaternion.identity);
         startingMelee.GetComponent<Melee>().CreateMelee(startingSettler.GetComponent<Settler>().Position + new Vector2(1, 0), this);
 
-        GameObject testingArcher = Instantiate(archerPrefab, Vector3.zero, Quaternion.identity);
+        /*GameObject testingArcher = Instantiate(archerPrefab, Vector3.zero, Quaternion.identity);
         testingArcher.GetComponent<Archer>().CreateArcher(startingSettler.GetComponent<Settler>().Position + new Vector2(-1, 0), this);
         
         GameObject testingBuilder = Instantiate(builderPrefab, Vector3.zero, Quaternion.identity);
         testingBuilder.GetComponent<Builder>().CreateBuilder(startingSettler.GetComponent<Settler>().Position + new Vector2(0, 1), this);
-
+        */
     }
 }
