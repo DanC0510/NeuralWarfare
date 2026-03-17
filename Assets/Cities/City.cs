@@ -42,7 +42,12 @@ public class City : MonoBehaviour
                 }
             }
         }
-
+        
+        CityBorderMeshRenderer border = GetComponent<CityBorderMeshRenderer>();
+        if (border != null)
+        {
+            border.Rebuild();
+        }
     }
     
     public Player OwningPlayer
@@ -69,6 +74,12 @@ public class City : MonoBehaviour
     {
         owningPlayer = playerSource;
         cityHealth = maxHealth / 10; //set to 1/10th after takeover
+        
+        CityBorderMeshRenderer border = GetComponent<CityBorderMeshRenderer>();
+        if (border != null)
+        {
+            border.Rebuild();
+        }
     }
 
     public void ProduceUnit()
