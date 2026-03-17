@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
     [Header("City UI Actions")]
     [SerializeField] private GameObject genericCityUI;
     [SerializeField] private Button produceButton;
+    [SerializeField] private TMP_Dropdown productionDropdown;
 
     [Header("Generic UI Actions")] 
     [SerializeField] private GameObject genericUI;
@@ -81,6 +83,11 @@ public class PlayerController : MonoBehaviour
         buildButton.onClick.AddListener(() =>
         {
             selectedObject.GetComponent<Builder>().Build();
+        });
+        produceButton.onClick.AddListener(() =>
+        {
+            selectedObject.GetComponent<City>().StartProduction(productionDropdown.value);
+            ResetUI();
         });
         endTurnButton.onClick.AddListener(() =>
         {
@@ -193,7 +200,7 @@ public class PlayerController : MonoBehaviour
 
                 if (hit.collider.CompareTag("InteractableCity"))
                 {
-                    selectedObject = hit.collider.gameObject;
+                    selectedObject = hit.collider.transform.parent.gameObject;
                     City city = selectedObject.GetComponent<City>();
                     
                     genericCityUI.SetActive(true);
@@ -228,7 +235,7 @@ public class PlayerController : MonoBehaviour
             Ray ray = playerCamera.ScreenPointToRay(playerInputs.Move);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
             {
-                if (hit.collider.CompareTag("Interactable") && hit.collider.gameObject != this.gameObject && playerInputs.Interact)
+                if (playerInputs.Interact && hit.collider.CompareTag("Interactable") && hit.collider.gameObject != this.gameObject)
                 {
                     selectedTarget = hit.collider.gameObject.GetComponent<Unit>();
                 }

@@ -36,11 +36,14 @@ public class Unit : MonoBehaviour
     [SerializeField] protected Tile currentTile;
     [SerializeField] protected List<Tile> moveQueue;
     [SerializeField] protected List<TurnAction> turnActions;
+    [SerializeField] protected float productionCost;
     public List<TurnAction> TurnActions { get { return turnActions; } }
     public Vector2 Position { get { return position; } }
     public UnitType Type { get { return unitType; } }
-    public Player OwningPlayer { get { return OwningPlayer; } }
-    
+    public Player OwningPlayer { get { return owningPlayer; } }
+
+    public float ProductionCost { get { return productionCost; } }
+
     public void TakeDamage(float damage)
     {
         health -= damage;

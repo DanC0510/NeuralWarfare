@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 9054776259599671910}
   m_Layer: 0
   m_Name: Settler
-  m_TagString: Interactable
+  m_TagString: InteractableUnit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -151,4 +151,5 @@ MonoBehaviour:
     gold: 0
   moveQueue: []
   turnActions: 
+  productionCost: 10
   cityPrefab: {fileID: 8656029209106326201, guid: 985f97dabe3c53148b2b49515cc35c18, type: 3}

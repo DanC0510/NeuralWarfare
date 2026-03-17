@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6443368609222054816}
   m_Layer: 0
   m_Name: Archer
-  m_TagString: Interactable
+  m_TagString: InteractableUnit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -139,5 +139,18 @@ MonoBehaviour:
   maxStamina: 0
   attackRange: 0
   canDamage: 0
+  currentTile:
+    hasRiverAdjecent: 0
+    position: {x: 0, y: 0}
+    biome: 0
+    isStartingRiver: 0
+    resourceOnThisTile:
+      resourceType: 0
+    hasResources: 0
+    movementCost: 0
+    food: 0
+    production: 0
+    gold: 0
   moveQueue: []
   turnActions: 
+  productionCost: 7
