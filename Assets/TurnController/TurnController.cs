@@ -10,9 +10,20 @@ public class TurnController : MonoBehaviour
     public event NextTurn OnNextTurn;
 
     public List<Unit> allUnits;
+    public List<City> allCities;
     private void Awake()
     {
         _instance = this;
+    }
+
+    public void RegisterCity(City city)
+    {
+        if (!allCities.Contains(city)) { allCities.Add(city); }
+    }
+    
+    public void UnregisterCity(City city)
+    {
+        if (allCities.Contains(city)) { allCities.Remove(city); }
     }
 
     public void RegisterUnit(Unit unit)
@@ -30,8 +41,17 @@ public class TurnController : MonoBehaviour
         {
             if (unit.TurnActions.Count == 0)
             {
-                //move cam to unit without turn action
+                StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
                 return; 
+            }
+        }
+
+        foreach (City city in allCities)
+        {
+            if(city.ActionQueue.Count == 0)
+            {
+                StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
+                return;
             }
         }
         OnNextTurn.Invoke();

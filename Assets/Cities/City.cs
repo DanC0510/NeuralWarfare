@@ -27,6 +27,8 @@ public class City : MonoBehaviour
     [SerializeField] private GameObject[] productionItems;
     [SerializeField] private GameObject productionPrefab;
     public HashSet<Tile> TilesOwned => tilesOwned;
+    public List<CityAction> ActionQueue => actionQueue;
+    public Vector2 Position => position;
 
     public void CreateCity(Vector2 startingPosition, Player player, float radiusOwned)
     {
@@ -66,10 +68,12 @@ public class City : MonoBehaviour
     void Start()
     {
         TurnController.Instance.OnNextTurn += nextTurn;
+        TurnController.Instance.RegisterCity(this);
     }
 
     void nextTurn()
     {
+        if (actionQueue.Count == 0) { return; }
         action = actionQueue[0];
         switch (action)
         {
@@ -123,6 +127,13 @@ public class City : MonoBehaviour
         {
             border.Rebuild();
         }
+    }
+
+    void RazeCity()
+    {
+        TurnController.Instance.OnNextTurn -= nextTurn;
+        TurnController.Instance.UnregisterCity(this);
+        Destroy(gameObject);
     }
 
     public void StartProduction(int index)

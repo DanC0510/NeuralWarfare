@@ -289,7 +289,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    IEnumerator MoveCam(Vector3 moveTowards)
+    public IEnumerator MoveCam(Vector3 moveTowards)
     {
         doMove = true;
         while (Vector3.Distance(transform.position, moveTowards) > 0.1f)
