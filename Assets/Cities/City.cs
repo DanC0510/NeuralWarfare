@@ -38,6 +38,7 @@ public class City : MonoBehaviour
         population = 1;
         productionRate = 1f;
         productionProgress = 0f;
+        cityHealth = maxHealth = 25f;
         
         //Giving city control of tiles
         tilesOwned = new HashSet<Tile>();
