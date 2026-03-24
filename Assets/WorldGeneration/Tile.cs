@@ -53,6 +53,39 @@ public class Tile
     {
         position = pos;
         biome = bio;
+        switch (biome)
+        {
+            case TileBiome.Deep_Water:
+                food = 0f;
+                production = 0f;
+                gold = 0f;
+                break;
+            case TileBiome.Water:
+                food = 0f;
+                production = 0f;
+                gold = 0f;
+                break;
+            case TileBiome.Sand:
+                food = 0f;
+                production = 1f;
+                gold = 1f;
+                break;
+            case TileBiome.Grass:
+                food = 1.5f;
+                production = 1.5f;
+                gold = 0.5f;
+                break;
+            case TileBiome.Snow:
+                food = 0.5f;
+                production = 0.5f;
+                gold = 1.5f;
+                break;
+            case TileBiome.River:
+                food = 2f;
+                production = 2f;
+                gold = 0.5f;
+                break;
+        }
         RiverTiles = new LinkedList<Tile>();
         resourceOnThisTile = resource;
         if (resource != null)
