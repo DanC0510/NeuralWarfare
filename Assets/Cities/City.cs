@@ -17,7 +17,7 @@ public class City : MonoBehaviour
     [SerializeField] private List<CityAction> actionQueue = new List<CityAction>();
     [SerializeField] private Vector2 position;
     [SerializeField] private Player owningPlayer;
-    [SerializeField] private int population;
+    [SerializeField] private float population;
     [SerializeField] private float productionRate;
     [SerializeField] private float productionProgress;
     [SerializeField] private GameObject cityPrefab;
@@ -74,6 +74,33 @@ public class City : MonoBehaviour
 
     void nextTurn()
     {
+        //calculate best tiles for use
+        List<Tuple<float, float, Tile>> bestTiles = new List<Tuple<float, float, Tile>>(); 
+        foreach (Tile tile in tilesOwned)
+        {
+            bestTiles.Add(new Tuple<float, float, Tile>(tile.Production, tile.Food, tile));
+            bestTiles.Sort((a, b) => (b.Item1 + b.Item2).CompareTo(a.Item1 + a.Item2));
+        }
+        
+        for(int i = 0; i < population; i++)
+        {
+            bestTiles[i].Item3.IsWorked = true;
+        }
+        
+        //calculate new production food and resource values
+        float pr = 0; float fd = 0;
+        
+        foreach (Tile tile in tilesOwned)
+        {
+            if(!tile.IsWorked) { continue; }
+            pr += tile.Production;
+            fd += tile.Food;
+        }
+        
+        productionRate = pr;
+        population += (fd * 1.2f) / 20f;
+        
+        //execute action queue
         if (actionQueue.Count == 0) { return; }
         action = actionQueue[0];
         switch (action)

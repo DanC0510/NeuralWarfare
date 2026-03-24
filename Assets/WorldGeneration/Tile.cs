@@ -19,6 +19,7 @@ public class Tile
     [SerializeField] private float food;
     [SerializeField] private float production;
     [SerializeField] private float gold;
+    [SerializeField] private bool isWorked;
     
     public enum TileBiome
     {
@@ -35,9 +36,18 @@ public class Tile
     
     public Vector2 Position { get { return position; } }
     public TileBiome Biome { get { return biome; } set { biome = value; } }
-
     public Tile[] NeighbourTiles { get; set; } = new Tile[6];
     public float MovementCost { get => movementCost; }
+    public Resource ResourceOnThisTile { get => resourceOnThisTile; /*set => resourcesOnThisTile = value; */ }
+    public bool HasResources { get => hasResources; set =>  hasResources = value; }
+    public bool IsStartingRiver { get => isStartingRiver; set => isStartingRiver = value; } 
+    public LinkedList<Tile> RiverTiles { get => riverTiles; set => riverTiles = value; }
+    public Tile RiverStart { get => riverStart; set => riverStart = value; }
+    public bool HasRiver() { return hasRiverAdjecent; }
+    public float Food { get => food; set => food = value; }
+    public float Production { get => production;  }
+    public float Gold { get => gold; }
+    public bool IsWorked { get => isWorked; set => isWorked = value; }
     
     public Tile(Vector2 pos, TileBiome bio, Resource resource)
     {
@@ -123,15 +133,7 @@ public class Tile
     {
         resourceOnThisTile = null;
     }
-
-    public Resource ResourceOnThisTile { get => resourceOnThisTile; /*set => resourcesOnThisTile = value; */ }
     
-    public bool HasResources { get => hasResources; set =>  hasResources = value; }
-
-    public bool IsStartingRiver { get => isStartingRiver; set => isStartingRiver = value; } 
-    public LinkedList<Tile> RiverTiles { get => riverTiles; set => riverTiles = value; }
-    public Tile RiverStart { get => riverStart; set => riverStart = value; }
-    public bool HasRiver() { return hasRiverAdjecent; }
     
     public void Build()
     {
