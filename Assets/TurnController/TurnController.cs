@@ -41,6 +41,7 @@ public class TurnController : MonoBehaviour
         {
             if (unit.TurnActions.Count == 0)
             {
+                unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
                 StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
                 return; 
             }
@@ -50,6 +51,7 @@ public class TurnController : MonoBehaviour
         {
             if(city.ActionQueue.Count == 0)
             {
+                city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(city.Position).x, 0, Helpers.TileToWorldPos(city.Position).z - 10);
                 StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
                 return;
             }

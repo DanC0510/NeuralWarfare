@@ -21,8 +21,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool doRotate;
     [SerializeField] private float groundPlaneY;
     [SerializeField] private GameObject selectedObject;
+    public Vector3 MoveTo { get => moveTo; set => moveTo = value; }
+    public float CamHeight { get => camHeight; }
 
-    [Header("Unit UI Actions")] 
+    [Header("Unit UI Actions")]
     [SerializeField] private GameObject genericUnitUI;
     [SerializeField] private GameObject settlerUI;
     [SerializeField] private GameObject meleeUI;
