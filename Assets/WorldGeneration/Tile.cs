@@ -15,6 +15,7 @@ public class Tile
     [SerializeField] private Resource resourceOnThisTile;
     [SerializeField] private bool hasResources;
     [SerializeField] private float movementCost = 1f;
+    [SerializeField] private bool isOccupied;
     [Header("Tile Attributes")]
     [SerializeField] private float food;
     [SerializeField] private float production;
@@ -48,7 +49,8 @@ public class Tile
     public float Production { get => production;  }
     public float Gold { get => gold; }
     public bool IsWorked { get => isWorked; set => isWorked = value; }
-    
+    public bool IsOccupied { get => isOccupied; set => isOccupied = value; }
+
     public Tile(Vector2 pos, TileBiome bio, Resource resource)
     {
         position = pos;

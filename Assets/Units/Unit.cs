@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
@@ -110,11 +111,24 @@ public class Unit : MonoBehaviour
 
     void Move()
     {
+        Helpers.GetTileAtTilePos(position).IsOccupied = false;
         if (turnAction != TurnAction.Move) { turnActions.Clear(); }
         if (moveQueue.Count > 0)
         {
-            position = moveQueue[0].Position; 
-            StartCoroutine(DoMove(moveQueue[0].Position));
+            Tile next = moveQueue[0];
+            if (next.IsOccupied)
+            {
+                //repath if next tile is occupied
+                Tile last = moveQueue.Last();
+                moveQueue.Clear();
+                Vector2 worldPos = new Vector2(Helpers.TileToWorldPos(position).x, Helpers.TileToWorldPos(position).z);
+                Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(last.Position).x, Helpers.TileToWorldPos(last.Position).z);
+                moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
+            }
+            
+            position = next.Position; 
+            StartCoroutine(DoMove(next.Position));
+            next.IsOccupied = true;
             moveQueue.RemoveAt(0);
             turnActions.Insert(0, TurnAction.Move);
         }  
@@ -126,6 +140,7 @@ public class Unit : MonoBehaviour
         Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(newPosition).x, Helpers.TileToWorldPos(newPosition).z);
         
         moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
+        if (moveQueue.Count > 0 && moveQueue[0].Position == position) { moveQueue.RemoveAt(0); }
         Move();
     }
 

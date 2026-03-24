@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.TerrainTools;
 using UnityEngine;
 
 public class PathfindingGraph : MonoBehaviour
@@ -115,6 +116,7 @@ public class PathfindingGraph : MonoBehaviour
             foreach(Tile neighbour in current.NeighbourTiles)
             {
                 if (neighbour == null || closedSet.Contains(neighbour)) { continue; }
+                if (neighbour.IsOccupied && neighbour != target) { continue; }
 
                 float tentativeG = gCost[current] + GetMoveCost(neighbour);
 
