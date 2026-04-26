@@ -163,17 +163,20 @@ public class Tile
     {
         resourceOnThisTile = resource;
         hasResources = true;
+        ResourceIconManager.Instance.RefreshTileIcon(this);
     }
 
     public void RemoveResource()
     {
         resourceOnThisTile = null;
         hasResources = false;
+        ResourceIconManager.Instance.RefreshTileIcon(this);
     }
     
     
     public void Build()
     {
+        if (resourceOnThisTile == null) return; // Guard against null
         switch (resourceOnThisTile.resourceType)
         {
             case Resource.ResourceType.Wheat:
@@ -195,6 +198,8 @@ public class Tile
                 production += 2f;
                 break;
         }
+        
+        RemoveResource();
+        ResourceIconManager.Instance.RefreshTileIcon(this);
     }
-
 }

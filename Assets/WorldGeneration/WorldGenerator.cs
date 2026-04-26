@@ -54,6 +54,7 @@ public class WorldGenerator : MonoBehaviour
         CreateChunks();
         PathfindingGraph.Instance.Init(tiles, actualWidth, actualHeight);
         PathfindingGraph.Instance.BuildGraph();
+        ResourceIconManager.Instance.InitializeResourceIcons();
     }
     
     public void RefreshChunks()
