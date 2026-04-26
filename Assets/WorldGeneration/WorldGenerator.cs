@@ -315,7 +315,7 @@ public class WorldGenerator : MonoBehaviour
 
         if (!File.Exists(path))
         {
-            File.Create(path);
+            File.Create(path).Dispose();
         }
 
         TileArrayWrapper tileArray = new TileArrayWrapper
