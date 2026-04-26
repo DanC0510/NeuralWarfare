@@ -162,11 +162,13 @@ public class Tile
     public void AddResource(Resource resource)
     {
         resourceOnThisTile = resource;
+        hasResources = true;
     }
 
     public void RemoveResource()
     {
         resourceOnThisTile = null;
+        hasResources = false;
     }
     
     
