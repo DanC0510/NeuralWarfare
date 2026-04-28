@@ -17,6 +17,9 @@ public class District : MonoBehaviour
     public void CreateDistrict(Vector2 startingPosition, DistrictType type, City city)
     {
         tile = Helpers.GetTileAtTilePos(startingPosition);
+        tile.IsOccupied = true;
+        tile.RemoveResource();
+        
         district = type;
         owningCity = city;
         switch (type)
@@ -30,7 +33,5 @@ public class District : MonoBehaviour
                 tile.Gold += 1f;
                 break;
         }
-
-        tile.IsOccupied = true;
     }
 }

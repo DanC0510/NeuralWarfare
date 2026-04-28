@@ -37,6 +37,7 @@ public class City : MonoBehaviour
     public void CreateCity(Vector2 startingPosition, Player player, float radiusOwned)
     {
         position = startingPosition;
+        Helpers.GetTileAtTilePos(position).RemoveResource();
         transform.GetChild(0).position = new Vector3(Helpers.TileToWorldPos(position).x, 0.5f, Helpers.TileToWorldPos(position).z);
         owningPlayer = player;
         population = 1;

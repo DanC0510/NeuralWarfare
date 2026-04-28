@@ -2491,7 +2491,7 @@ MonoBehaviour:
   - {fileID: -1557552056, guid: cdfc488a3e642f741a112fc085768054, type: 3}
   - {fileID: 624701602, guid: cdfc488a3e642f741a112fc085768054, type: 3}
   - {fileID: -1677937167, guid: cdfc488a3e642f741a112fc085768054, type: 3}
-  iconYOffset: 0.01
+  iconYOffset: -0.49
   iconScale: 0.3
   billboardIcons: 0
 --- !u!4 &806339428
