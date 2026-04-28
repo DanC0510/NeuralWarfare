@@ -16,10 +16,12 @@ public class Tile
     [SerializeField] private bool hasResources;
     [SerializeField] private float movementCost = 1f;
     [SerializeField] private bool isOccupied;
+    [SerializeField] private District districtOnThisTile;
     [Header("Tile Attributes")]
     [SerializeField] private float food;
     [SerializeField] private float production;
     [SerializeField] private float gold;
+    [SerializeField] private float science;
     [SerializeField] private bool isWorked;
     
     public enum TileBiome
@@ -46,10 +48,12 @@ public class Tile
     public Tile RiverStart { get => riverStart; set => riverStart = value; }
     public bool HasRiver() { return hasRiverAdjecent; }
     public float Food { get => food; set => food = value; }
-    public float Production { get => production;  }
-    public float Gold { get => gold; }
+    public float Production { get => production; set => production = value;  }
+    public float Gold { get => gold; set => gold = value; }
+    public float Science { get => science; set => science = value; }
     public bool IsWorked { get => isWorked; set => isWorked = value; }
     public bool IsOccupied { get => isOccupied; set => isOccupied = value; }
+    public District DistrictOnThisTile { get => districtOnThisTile; set => districtOnThisTile = value; }
 
     public Tile(Vector2 pos, TileBiome bio, Resource resource)
     {

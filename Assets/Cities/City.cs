@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
@@ -9,6 +8,7 @@ public class City : MonoBehaviour
     public enum CityAction
     {
         Produce,
+        ProduceDistrict,
         FortifyCity,
         CloseGates,
     }
@@ -23,9 +23,13 @@ public class City : MonoBehaviour
     [SerializeField] private GameObject cityPrefab;
     [SerializeField] private float cityHealth;
     [SerializeField] private float maxHealth;
-    [SerializeField] private HashSet<Tile> tilesOwned;
     [SerializeField] private GameObject[] productionItems;
     [SerializeField] private GameObject productionPrefab;
+    private bool hasCampus;
+    private bool hasEncampment;
+    private HashSet<Tile> tilesOwned;
+    List<Tuple<float, float, Tile>> bestTiles = new List<Tuple<float, float, Tile>>();
+    private HashSet<District> districtsInCity = new HashSet<District>();
     public HashSet<Tile> TilesOwned => tilesOwned;
     public List<CityAction> ActionQueue => actionQueue;
     public Vector2 Position => position;
@@ -74,8 +78,7 @@ public class City : MonoBehaviour
 
     void nextTurn()
     {
-        //calculate best tiles for use
-        List<Tuple<float, float, Tile>> bestTiles = new List<Tuple<float, float, Tile>>(); 
+        //calculate best tiles for use, capped at population
         foreach (Tile tile in tilesOwned)
         {
             bestTiles.Add(new Tuple<float, float, Tile>(tile.Production, tile.Food, tile));
@@ -87,7 +90,7 @@ public class City : MonoBehaviour
             bestTiles[i].Item3.IsWorked = true;
         }
         
-        //calculate new production food and resource values
+        //calculate new production food and resource values each turn
         float pr = 0; float fd = 0;
         
         foreach (Tile tile in tilesOwned)
@@ -107,6 +110,9 @@ public class City : MonoBehaviour
         {
             case CityAction.Produce:
                 ProduceUnit();
+                break;
+            case CityAction.ProduceDistrict:
+                ProduceDistrict();
                 break;
             case CityAction.FortifyCity:
                 actionQueue.Clear();
@@ -168,7 +174,14 @@ public class City : MonoBehaviour
     {
         Debug.Log(index);
         productionPrefab = productionItems[index];
-        actionQueue.Add(CityAction.Produce);
+        if (productionPrefab.CompareTag("InteractableUnit"))
+        {
+            actionQueue.Add(CityAction.Produce);
+        }
+        else if (productionPrefab.CompareTag("District"))
+        {
+            actionQueue.Add(CityAction.ProduceDistrict);
+        }
     }
 
     void ProduceUnit()
@@ -195,6 +208,41 @@ public class City : MonoBehaviour
                 case Unit.UnitType.Builder:
                     newUnit.GetComponent<Builder>().CreateBuilder(GetSpawnPosition(), owningPlayer);
                     break;
+            }
+        }
+    }
+
+    void ProduceDistrict()
+    {
+        productionProgress += productionRate;
+        actionQueue.Add(CityAction.ProduceDistrict);
+        
+        if (productionProgress >= productionPrefab.GetComponent<District>().ProductionCost)
+        {
+            Vector2 spawnPos = GetSpawnPosition();
+            for (int i = 0; i < population; i++)
+            {
+                Tile tile = bestTiles[i].Item3;
+                if (tile.IsOccupied || tile.DistrictOnThisTile)
+                {
+                    continue;
+                }
+                spawnPos = tile.Position;
+            }
+            
+            
+            GameObject newDistrict = Instantiate(productionPrefab, Helpers.TileToWorldPos(spawnPos), Quaternion.identity);
+            productionProgress = 0f; // Reset progress after producing a unit
+            actionQueue.Clear();
+
+            switch (newDistrict.GetComponent<District>().district)
+            {
+               case District.DistrictType.Campus:
+                   newDistrict.GetComponent<District>().CreateDistrict(spawnPos, District.DistrictType.Campus, this);
+                   break;
+               case District.DistrictType.Encampment:
+                   newDistrict.GetComponent<District>().CreateDistrict(spawnPos, District.DistrictType.Encampment, this);
+                   break;
             }
         }
     }

@@ -6,6 +6,8 @@ TagManager:
   tags:
   - InteractableUnit
   - InteractableCity
+  - Interactable
+  - District
   layers:
   - Default
   - TransparentFX
