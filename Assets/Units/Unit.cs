@@ -67,8 +67,9 @@ public class Unit : MonoBehaviour
     protected void nextTurn()
     {
         if (turnActions.Count == 0) { return; }
-        turnAction = turnActions.Count > 0 ? turnActions[0] : TurnAction.No_Action; // Default to Skip if no actions queued
+        turnAction = turnActions[0]; // Default to Skip if no actions queued
         if (turnAction != TurnAction.Sleep) { turnActions.RemoveAt(0); }
+        stamina = maxStamina;
         switch (turnAction)
         {
             case TurnAction.Move:
@@ -84,11 +85,9 @@ public class Unit : MonoBehaviour
                 TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Attack:
-                stamina = 0;
                 TurnController.Instance.FinishTurnEvent(this);
                 break;
         }
-        stamina = maxStamina;
         currentTile = Helpers.GetTileAtTilePos(position);
     }
     
@@ -100,6 +99,8 @@ public class Unit : MonoBehaviour
             target.TakeDamage(attackDamage * (health / maxHealth));
             turnActions.Insert(0, TurnAction.Attack);
         }
+
+        stamina = 0;
         TurnController.Instance.FinishTurnEvent(this);
     }
 
@@ -119,12 +120,15 @@ public class Unit : MonoBehaviour
 
     void Move()
     {
-        Helpers.GetTileAtTilePos(position).IsOccupied = false;
-        if (turnAction != TurnAction.Move) { turnActions.Clear(); }
+        if (moveQueue.Count == 0)
+        {
+            TurnController.Instance.FinishTurnEvent(this);
+            return;
+        }
+        currentTile.IsOccupied = false;
         if (moveQueue.Count > 0)
         {
-            Tile next = moveQueue[0];
-            if (next.IsOccupied)
+            if (moveQueue[0].IsOccupied)
             {
                 //repath if next tile is occupied
                 Tile last = moveQueue.Last();
@@ -133,13 +137,14 @@ public class Unit : MonoBehaviour
                 Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(last.Position).x, Helpers.TileToWorldPos(last.Position).z);
                 moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
             }
-            
-            position = next.Position; 
-            if(stamina - moveQueue[0].MovementCost < 0)
+
+            Tile next = moveQueue[0];
+            position = next.Position;
+            if(stamina - next.MovementCost < 0)
             {
+                Debug.Log("Exiting here!");
                 //not enough stamina to move, skip turn instead
-                turnActions.Clear();
-                turnActions.Insert(0, TurnAction.Skip);
+                TurnController.Instance.FinishTurnEvent(this);
                 return;
             }
             StartCoroutine(DoMove(next.Position));
@@ -156,7 +161,7 @@ public class Unit : MonoBehaviour
         
         moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
         if (moveQueue.Count > 0 && moveQueue[0].Position == position) { moveQueue.RemoveAt(0); }
-        Move();
+        turnActions.Add(TurnAction.Move);
     }
 
     public IEnumerator DoMove(Vector2 tilePos)
@@ -172,9 +177,15 @@ public class Unit : MonoBehaviour
         // Snap to exact position
         transform.position = targetPosition;
         stamina -= Helpers.GetTileAtTilePos(tilePos).MovementCost;
-        
-        // Finish Turn Event
-        TurnController.Instance.FinishTurnEvent(this);
+
+        if (moveQueue.Count > 0 && stamina >= moveQueue[0].MovementCost)
+        {
+            Move(); // Continue moving without finishing turn
+        }
+        else
+        {
+            TurnController.Instance.FinishTurnEvent(this); // End turn when no stamina or no more moves
+        }
     }
 
     public void Sleep()

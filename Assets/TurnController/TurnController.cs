@@ -91,6 +91,7 @@ public class TurnController : MonoBehaviour
 
         foreach (Player player in allPlayers)
         {
+            if(player.GetComponent<Player>().Capital == null) { continue; }
             player.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(player.Capital.Position).x, 0, Helpers.TileToWorldPos(player.Capital.Position).z - 10);
             StartCoroutine(player.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(player.Capital.Position)));
         }
