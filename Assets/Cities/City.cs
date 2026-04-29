@@ -73,7 +73,7 @@ public class City : MonoBehaviour
     void Start()
     {
         TurnController.Instance.OnNextTurn += nextTurn;
-        TurnController.Instance.RegisterCity(this);
+        TurnController.Instance.Register(this);
         actionQueue = new List<CityAction>();
         bestTiles = new List<Tuple<float, float, Tile>>();
     }
@@ -168,7 +168,7 @@ public class City : MonoBehaviour
     void RazeCity()
     {
         TurnController.Instance.OnNextTurn -= nextTurn;
-        TurnController.Instance.UnregisterCity(this);
+        TurnController.Instance.Unregister(this);
         Destroy(gameObject);
     }
 

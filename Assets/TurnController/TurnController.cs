@@ -13,13 +13,13 @@ public class TurnController : MonoBehaviour
     public event NextTurn OnNextTurn;
 
     public List<Player> allPlayers;
-    public List<Unit> allUnits;
-    public List<City> allCities;
+    public List<object> unitsAndCities;
     public List<object> takingTurn; //allows me to put any object i want into this list so i dont need individual lists for cities and units
     private void Awake()
     {
         _instance = this;
         takingTurn = new List<object>();
+        unitsAndCities = new List<object>();
     }
 
     public void RegisterPlayer(Player player)
@@ -32,23 +32,14 @@ public class TurnController : MonoBehaviour
         if (allPlayers.Contains(player)) { allPlayers.Remove(player); }
     }
 
-    public void RegisterCity(City city)
+    public void Register<T>(T obj)
     {
-        if (!allCities.Contains(city)) { allCities.Add(city); }
+        if (!unitsAndCities.Contains(obj)) { unitsAndCities.Add(obj); }
     }
     
-    public void UnregisterCity(City city)
+    public void Unregister<T>(T obj)
     {
-        if (allCities.Contains(city)) { allCities.Remove(city); }
-    }
-
-    public void RegisterUnit(Unit unit)
-    {
-        if(!allUnits.Contains(unit)) { allUnits.Add(unit);}
-    }
-    public void UnregisterUnit(Unit unit)
-    {
-        if(allUnits.Contains(unit)) { allUnits.Remove(unit);}
+        if (unitsAndCities.Contains(obj)) { unitsAndCities.Remove(obj); }
     }
 
     public void FinishTurnEvent<T>(T finishEvent)
@@ -62,34 +53,39 @@ public class TurnController : MonoBehaviour
     public void InvokeNextTurn()
     {
         takingTurn.Clear();
-        foreach(Unit unit in allUnits)
+        foreach (object obj in unitsAndCities)
         {
-            if (unit.Action == Unit.TurnAction.Move)
+            if (obj.GetType().BaseType == typeof(Unit)) //Weirdly .BaseType just goes 1 layer lower, not to the actual base type which in this case would be MonoBehaviour
             {
-                if (unit.MoveQueue.Count == 0)
+                Unit unit = (Unit)obj;
+                if (unit.Action == Unit.TurnAction.Move)
                 {
-                    unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
-                    StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
-                    return;
+                    if (unit.MoveQueue.Count == 0)
+                    {
+                        unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
+                        StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
+                        return;
+                    }
+                }
+
+                if (unit.TurnActions.Count > 0)
+                {
+                    takingTurn.Add(unit);
                 }
             }
-            if (unit.TurnActions.Count > 0)
+            else if (obj.GetType() == typeof(City)) //doesn't need .BaseType as they are put in as just a city
             {
-                takingTurn.Add(unit);
-            }
-        }
-
-        foreach (City city in allCities)
-        {
-            if (city.ActionQueue.Count == 0)
-            {
-                city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(city.Position).x, 0, Helpers.TileToWorldPos(city.Position).z - 10);
-                StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
-                return;
-            }
-            if(city.ActionQueue.Count > 0)
-            {
-                takingTurn.Add(city);
+                City city = (City)obj;
+                if (city.ActionQueue.Count == 0)
+                {
+                    city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(city.Position).x, 0, Helpers.TileToWorldPos(city.Position).z - 10);
+                    StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
+                    return;
+                }
+                if(city.ActionQueue.Count > 0)
+                {
+                    takingTurn.Add(city);
+                }
             }
         }
 

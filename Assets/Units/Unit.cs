@@ -61,7 +61,7 @@ public class Unit : MonoBehaviour
     protected void Start()
     {
         TurnController.Instance.OnNextTurn += nextTurn;
-        TurnController.Instance.RegisterUnit(this);
+        TurnController.Instance.Register(this);
     }
 
     protected void nextTurn()
@@ -112,7 +112,7 @@ public class Unit : MonoBehaviour
     public void DoDeath()
     {
         TurnController.Instance.OnNextTurn -= nextTurn;
-        TurnController.Instance.UnregisterUnit(this);
+        TurnController.Instance.Unregister(this);
         //play death anim here
         Destroy(this.gameObject);
     }
