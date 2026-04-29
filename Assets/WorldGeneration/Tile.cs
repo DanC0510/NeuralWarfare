@@ -15,10 +15,14 @@ public class Tile
     [SerializeField] private Resource resourceOnThisTile;
     [SerializeField] private bool hasResources;
     [SerializeField] private float movementCost = 1f;
+    [SerializeField] private bool isOccupied;
+    [SerializeField] private District districtOnThisTile;
     [Header("Tile Attributes")]
     [SerializeField] private float food;
     [SerializeField] private float production;
     [SerializeField] private float gold;
+    [SerializeField] private float science;
+    [SerializeField] private bool isWorked;
     
     public enum TileBiome
     {
@@ -35,14 +39,59 @@ public class Tile
     
     public Vector2 Position { get { return position; } }
     public TileBiome Biome { get { return biome; } set { biome = value; } }
-
     public Tile[] NeighbourTiles { get; set; } = new Tile[6];
     public float MovementCost { get => movementCost; }
-    
+    public Resource ResourceOnThisTile { get => resourceOnThisTile; /*set => resourcesOnThisTile = value; */ }
+    public bool HasResources { get => hasResources; set =>  hasResources = value; }
+    public bool IsStartingRiver { get => isStartingRiver; set => isStartingRiver = value; } 
+    public LinkedList<Tile> RiverTiles { get => riverTiles; set => riverTiles = value; }
+    public Tile RiverStart { get => riverStart; set => riverStart = value; }
+    public bool HasRiver() { return hasRiverAdjecent; }
+    public float Food { get => food; set => food = value; }
+    public float Production { get => production; set => production = value;  }
+    public float Gold { get => gold; set => gold = value; }
+    public float Science { get => science; set => science = value; }
+    public bool IsWorked { get => isWorked; set => isWorked = value; }
+    public bool IsOccupied { get => isOccupied; set => isOccupied = value; }
+    public District DistrictOnThisTile { get => districtOnThisTile; set => districtOnThisTile = value; }
+
     public Tile(Vector2 pos, TileBiome bio, Resource resource)
     {
         position = pos;
         biome = bio;
+        switch (biome)
+        {
+            case TileBiome.Deep_Water:
+                food = 0f;
+                production = 0f;
+                gold = 0f;
+                break;
+            case TileBiome.Water:
+                food = 0f;
+                production = 0f;
+                gold = 0f;
+                break;
+            case TileBiome.Sand:
+                food = 0f;
+                production = 1f;
+                gold = 1f;
+                break;
+            case TileBiome.Grass:
+                food = 1.5f;
+                production = 1.5f;
+                gold = 0.5f;
+                break;
+            case TileBiome.Snow:
+                food = 0.5f;
+                production = 0.5f;
+                gold = 1.5f;
+                break;
+            case TileBiome.River:
+                food = 2f;
+                production = 2f;
+                gold = 0.5f;
+                break;
+        }
         RiverTiles = new LinkedList<Tile>();
         resourceOnThisTile = resource;
         if (resource != null)
@@ -117,24 +166,21 @@ public class Tile
     public void AddResource(Resource resource)
     {
         resourceOnThisTile = resource;
+        hasResources = true;
+        ResourceIconManager.Instance.RefreshTileIcon(this);
     }
 
     public void RemoveResource()
     {
         resourceOnThisTile = null;
+        hasResources = false;
+        ResourceIconManager.Instance.RefreshTileIcon(this);
     }
-
-    public Resource ResourceOnThisTile { get => resourceOnThisTile; /*set => resourcesOnThisTile = value; */ }
     
-    public bool HasResources { get => hasResources; set =>  hasResources = value; }
-
-    public bool IsStartingRiver { get => isStartingRiver; set => isStartingRiver = value; } 
-    public LinkedList<Tile> RiverTiles { get => riverTiles; set => riverTiles = value; }
-    public Tile RiverStart { get => riverStart; set => riverStart = value; }
-    public bool HasRiver() { return hasRiverAdjecent; }
     
     public void Build()
     {
+        if (resourceOnThisTile == null) return; // Guard against null
         switch (resourceOnThisTile.resourceType)
         {
             case Resource.ResourceType.Wheat:
@@ -156,6 +202,8 @@ public class Tile
                 production += 2f;
                 break;
         }
+        
+        RemoveResource();
+        ResourceIconManager.Instance.RefreshTileIcon(this);
     }
-
 }

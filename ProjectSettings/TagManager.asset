@@ -4,7 +4,10 @@
 TagManager:
   serializedVersion: 3
   tags:
+  - InteractableUnit
+  - InteractableCity
   - Interactable
+  - District
   layers:
   - Default
   - TransparentFX

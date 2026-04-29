@@ -8,7 +8,7 @@ public class Settler : Unit
         owningPlayer = player;
         unitType = UnitType.Settler;
         health = maxHealth = 1;
-        if (startingCityIndex != 0)
+        if (startingCityIndex != -1)
         {
             position = owningPlayer.Cities[startingCityIndex].GetSpawnPosition();
         }
@@ -31,19 +31,19 @@ public class Settler : Unit
 
     public void PlaceCity()
     {
-        if (owningPlayer.Capital.OwningPlayer != owningPlayer)
+        Vector2 pos = Helpers.TileToWorldPos(position);
+        if (owningPlayer.Capital == null)
         {
-            owningPlayer.Capital = new City(position, owningPlayer);
-            owningPlayer.Cities.Add(owningPlayer.Capital);
+            GameObject city = Instantiate(cityPrefab, new Vector3(pos.x, 0f, pos.y), Quaternion.identity);
+            city.GetComponent<City>().CreateCity(position, owningPlayer, 3);
+            owningPlayer.Capital = city.GetComponent<City>();
+            owningPlayer.Cities.Add(city.GetComponent<City>());
         }
         else
         {
-            owningPlayer.Cities.Add(new City(position, owningPlayer));
-        }
-
-        if (cityPrefab != null)
-        {
-            Instantiate(cityPrefab, Helpers.TileToWorldPos(position), Quaternion.identity);
+            GameObject city = Instantiate(cityPrefab, new Vector3(pos.x, 0f, pos.y), Quaternion.identity);
+            city.GetComponent<City>().CreateCity(position, owningPlayer, 2);
+            owningPlayer.Cities.Add(city.GetComponent<City>());
         }
         DoDeath();
     }
