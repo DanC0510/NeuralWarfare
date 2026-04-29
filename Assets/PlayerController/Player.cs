@@ -14,10 +14,16 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        TurnController.Instance.RegisterPlayer(this);
         GameObject startingSettler = Instantiate(settlerPrefab, Vector3.zero, Quaternion.identity);
         startingSettler.GetComponent<Settler>().CreateSettler(-1, this);
         
         GameObject startingMelee = Instantiate(meleePrefab, Vector3.zero, Quaternion.identity);
         startingMelee.GetComponent<Melee>().CreateMelee(startingSettler.GetComponent<Settler>().Position + new Vector2(1, 0), this);
+    }
+
+    void Die()
+    {
+        TurnController.Instance.UnregisterPlayer(this);
     }
 }

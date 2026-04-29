@@ -1252,6 +1252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03685cfff33baf44f92a15be2a796a3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnController
+  nextTurnButton: {fileID: 2007401694}
   allUnits: []
   allCities: []
 --- !u!4 &353548633

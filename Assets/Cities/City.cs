@@ -129,6 +129,8 @@ public class City : MonoBehaviour
 
         if (cityHealth >= maxHealth){ cityHealth = maxHealth; }
         if(action != CityAction.FortifyCity || action != CityAction.CloseGates) { actionQueue.RemoveAt(0); }
+        //Finish Turn Event
+        TurnController.Instance.FinishTurnEvent(this);
     }
     
     public Player OwningPlayer
@@ -240,7 +242,6 @@ public class City : MonoBehaviour
                 }
                 spawnPos = tile.Position;
             }
-            
             
             GameObject newDistrict = Instantiate(productionPrefab, Helpers.TileToWorldPos(spawnPos), Quaternion.identity);
             productionProgress = 0f; // Reset progress after producing a unit

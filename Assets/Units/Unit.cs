@@ -39,6 +39,10 @@ public class Unit : MonoBehaviour
     [SerializeField] protected List<TurnAction> turnActions;
     [SerializeField] protected float productionCost;
     public List<TurnAction> TurnActions { get { return turnActions; } }
+    public TurnAction Action { get { return turnAction; } }
+
+    public List<Tile> MoveQueue { get { return moveQueue; } }
+
     public Vector2 Position { get { return position; } }
     public UnitType Type { get { return unitType; } }
     public Player OwningPlayer { get { return owningPlayer; } }
@@ -74,11 +78,14 @@ public class Unit : MonoBehaviour
                 moveQueue.Clear();
                 turnActions.Clear();
                 turnAction = TurnAction.No_Action;
+                TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Sleep:
+                TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Attack:
                 stamina = 0;
+                TurnController.Instance.FinishTurnEvent(this);
                 break;
         }
         stamina = maxStamina;
@@ -93,6 +100,7 @@ public class Unit : MonoBehaviour
             target.TakeDamage(attackDamage * (health / maxHealth));
             turnActions.Insert(0, TurnAction.Attack);
         }
+        TurnController.Instance.FinishTurnEvent(this);
     }
 
     public float DistanceTo(Unit unit1, Unit unit2)
@@ -157,12 +165,9 @@ public class Unit : MonoBehaviour
         // Snap to exact position
         transform.position = targetPosition;
         stamina -= Helpers.GetTileAtTilePos(tilePos).MovementCost;
-        if(moveQueue.Count != 0 && stamina - moveQueue[0].MovementCost >= 0)
-        {
-            StartCoroutine(DoMove(moveQueue[0].Position));
-            stamina -= moveQueue[0].MovementCost;
-            moveQueue.RemoveAt(0);
-        }
+        
+        // Finish Turn Event
+        TurnController.Instance.FinishTurnEvent(this);
     }
 
     public void Sleep()
