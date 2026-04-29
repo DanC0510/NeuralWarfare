@@ -1234,7 +1234,7 @@ GameObject:
   - component: {fileID: 353548633}
   - component: {fileID: 353548632}
   m_Layer: 0
-  m_Name: Turn Controller
+  m_Name: TurnController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1253,8 +1253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TurnController
   nextTurnButton: {fileID: 2007401694}
-  allUnits: []
-  allCities: []
+  allPlayers: []
 --- !u!4 &353548633
 Transform:
   m_ObjectHideFlags: 0
