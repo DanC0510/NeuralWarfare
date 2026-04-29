@@ -135,6 +135,13 @@ public class Unit : MonoBehaviour
             }
             
             position = next.Position; 
+            if(stamina - moveQueue[0].MovementCost < 0)
+            {
+                //not enough stamina to move, skip turn instead
+                turnActions.Clear();
+                turnActions.Insert(0, TurnAction.Skip);
+                return;
+            }
             StartCoroutine(DoMove(next.Position));
             next.IsOccupied = true;
             moveQueue.RemoveAt(0);
