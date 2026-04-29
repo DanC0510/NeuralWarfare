@@ -112,19 +112,19 @@ public class WorldGenerator : MonoBehaviour
                         if (Helpers.mod(Random.Range(0, 100), resourceFrequency) == 0)
                         {
                             int ranNum = Random.Range(0, 100);
-                            if (ranNum < 40 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.Sand && regions[i].biome != Tile.TileBiome.Snow)
+                            if (ranNum < 40 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.Sand && regions[i].biome != Tile.TileBiome.Snow && regions[i].biome != Tile.TileBiome.River)
                             {
                                 resource = new Resource(Resource.ResourceType.Wheat);
                             }
-                            else if (ranNum < 40 && regions[i].biome == Tile.TileBiome.Deep_Water)
+                            else if (ranNum < 40 && regions[i].biome == Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.River)
                             {
                                 resource = new Resource(Resource.ResourceType.Fish);
                             }
-                            else if (ranNum < 55 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.Sand && regions[i].biome != Tile.TileBiome.Snow)
+                            else if (ranNum < 55 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.Sand && regions[i].biome != Tile.TileBiome.Snow && regions[i].biome != Tile.TileBiome.River)
                             {
                                 resource = new Resource(Resource.ResourceType.Cows);
                             }
-                            else if (ranNum < 60 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water)
+                            else if (ranNum < 60 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.River)
                             {
                                 resource = new Resource(Resource.ResourceType.Horses);
                             }
@@ -132,7 +132,7 @@ public class WorldGenerator : MonoBehaviour
                             {
                                 resource = new Resource(Resource.ResourceType.Stone);
                             }
-                            else if (ranNum > 95 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.Sand && regions[i].biome != Tile.TileBiome.Grass)
+                            else if (ranNum > 95 && regions[i].biome != Tile.TileBiome.Deep_Water && regions[i].biome != Tile.TileBiome.Water && regions[i].biome != Tile.TileBiome.Sand && regions[i].biome != Tile.TileBiome.Grass && regions[i].biome != Tile.TileBiome.River)
                             {
                                 resource = new Resource(Resource.ResourceType.Iron);
                             }
