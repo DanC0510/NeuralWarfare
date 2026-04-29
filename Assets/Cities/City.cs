@@ -14,7 +14,7 @@ public class City : MonoBehaviour
     }
 
     [SerializeField] private CityAction action; 
-    [SerializeField] private List<CityAction> actionQueue = new List<CityAction>();
+    [SerializeField] private List<CityAction> actionQueue;
     [SerializeField] private Vector2 position;
     [SerializeField] private Player owningPlayer;
     [SerializeField] private float population;
@@ -28,8 +28,7 @@ public class City : MonoBehaviour
     private bool hasCampus;
     private bool hasEncampment;
     private HashSet<Tile> tilesOwned;
-    List<Tuple<float, float, Tile>> bestTiles = new List<Tuple<float, float, Tile>>();
-    private HashSet<District> districtsInCity = new HashSet<District>();
+    List<Tuple<float, float, Tile>> bestTiles;
     public HashSet<Tile> TilesOwned => tilesOwned;
     public List<CityAction> ActionQueue => actionQueue;
     public Vector2 Position => position;
@@ -75,6 +74,8 @@ public class City : MonoBehaviour
     {
         TurnController.Instance.OnNextTurn += nextTurn;
         TurnController.Instance.RegisterCity(this);
+        actionQueue = new List<CityAction>();
+        bestTiles = new List<Tuple<float, float, Tile>>();
     }
 
     void nextTurn()
@@ -116,12 +117,10 @@ public class City : MonoBehaviour
                 ProduceDistrict();
                 break;
             case CityAction.FortifyCity:
-                actionQueue.Clear();
                 actionQueue.Add(CityAction.FortifyCity);
                 cityHealth += 5;
                 break;
             case CityAction.CloseGates:
-                actionQueue.Clear();
                 actionQueue.Add(CityAction.CloseGates);
                 cityHealth += 10;
                 productionRate -= 2f;
@@ -171,9 +170,20 @@ public class City : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void FortifyCity()
+    {
+        if(actionQueue != null && actionQueue.Count != 0 && actionQueue[0] != CityAction.FortifyCity) { actionQueue.Clear(); }
+        actionQueue.Add(CityAction.FortifyCity);
+    }
+    public void CloseCity()
+    {
+        if(actionQueue != null && actionQueue.Count != 0 && actionQueue[0] != CityAction.CloseGates) { actionQueue.Clear(); }
+        actionQueue.Add(CityAction.CloseGates);
+    }
+
     public void StartProduction(int index)
     {
-        Debug.Log(index);
+        if(actionQueue != null && actionQueue.Count != 0 && (actionQueue[0] != CityAction.Produce || actionQueue[0] != CityAction.ProduceDistrict)) { actionQueue.Clear(); }
         productionPrefab = productionItems[index];
         if (productionPrefab.CompareTag("InteractableUnit"))
         {

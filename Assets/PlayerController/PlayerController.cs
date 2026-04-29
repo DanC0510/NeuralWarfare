@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
     [Header("City UI Actions")]
     [SerializeField] private GameObject genericCityUI;
     [SerializeField] private Button produceButton;
+    [SerializeField] private Button fortifyCityButton;
+    [SerializeField] private Button closeCityButton;
     [SerializeField] private TMP_Dropdown productionDropdown;
 
     [Header("Generic UI Actions")] 
@@ -89,6 +91,16 @@ public class PlayerController : MonoBehaviour
         produceButton.onClick.AddListener(() =>
         {
             selectedObject.GetComponent<City>().StartProduction(productionDropdown.value);
+            ResetUI();
+        });
+        fortifyCityButton.onClick.AddListener(() =>
+        {
+            selectedObject.GetComponent<City>().FortifyCity();
+            ResetUI();
+        });
+        closeCityButton.onClick.AddListener(() =>
+        {
+            selectedObject.GetComponent<City>().CloseCity();
             ResetUI();
         });
         endTurnButton.onClick.AddListener(() =>
