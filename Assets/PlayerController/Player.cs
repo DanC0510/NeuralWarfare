@@ -13,13 +13,16 @@ public class Player : MonoBehaviour
     [SerializeField] private float production;
     [SerializeField] private float science;
     [SerializeField] private float population;
+    [SerializeField] private int playerIndex; //0 for player, 1 for AI
+    [SerializeField] private Player opponent;
     public float Gold { get { return gold; } }
     public float Production { get { return production; } }
     public float Science { get { return science; } }
     public float Population { get { return population; } }
-    
-    public List<City> Cities { get { return cities; } set { cities = value; } } 
+    public List<City> Cities { get { return cities; } } 
     public City Capital { get { return capital; } set { capital = value; } }
+    public int PlayerIndex { get { return playerIndex; } }
+    public Player Opponent { get { return opponent; } }
 
     void Start()
     {
@@ -51,5 +54,6 @@ public class Player : MonoBehaviour
     void Die()
     {
         TurnController.Instance.UnregisterPlayer(this);
+        SeriesController.Instance.RecordGameResult(playerIndex == 1);
     }
 }

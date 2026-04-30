@@ -40,12 +40,14 @@ public class Unit : MonoBehaviour
     [SerializeField] protected float productionCost;
     public List<TurnAction> TurnActions { get { return turnActions; } }
     public TurnAction Action { get { return turnAction; } }
-
     public Vector2 Position { get { return position; } }
     public UnitType Type { get { return unitType; } }
     public Player OwningPlayer { get { return owningPlayer; } }
-
+    public float Health { get { return health; } }
+    public float MaxHealth { get { return maxHealth; } }
+    public float AttackRange { get { return attackRange; } }
     public float ProductionCost { get { return productionCost; } }
+    public UnitType GetUnitType { get { return unitType; } }
 
     public void TakeDamage(float damage)
     {
@@ -53,6 +55,14 @@ public class Unit : MonoBehaviour
         if (health <= 0)
         {
             DoDeath();
+            if (owningPlayer.PlayerIndex == 0) //if player unit dies, then reward AI
+            {
+                owningPlayer.Opponent.GetComponent<AIController>().OnUnitDestroyed();
+            } 
+            else if(owningPlayer.PlayerIndex == 1) //if AI unit dies, punish AI
+            {
+                owningPlayer.Opponent.GetComponent<AIController>().OnUnitLost();
+            }//the call is made here so i can implement destroying later down the line and just recycle the DoDeath function.
         }
     }
 
@@ -80,7 +90,7 @@ public class Unit : MonoBehaviour
                 TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Sleep:
-                turnActions.Add(TurnAction.Sleep);
+                Sleep();
                 TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Attack:
@@ -141,7 +151,6 @@ public class Unit : MonoBehaviour
             position = next.Position;
             if(stamina - next.MovementCost < 0)
             {
-                Debug.Log("Exiting here!");
                 //not enough stamina to move, skip turn instead
                 TurnController.Instance.FinishTurnEvent(this);
                 return;
@@ -190,7 +199,6 @@ public class Unit : MonoBehaviour
 
     public void Sleep()
     {
-        if (turnAction != TurnAction.Sleep) { turnActions.Clear(); }
         moveQueue.Clear();
         turnActions.Clear();
         turnActions.Insert(0, TurnAction.Sleep);

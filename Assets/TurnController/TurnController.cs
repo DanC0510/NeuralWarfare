@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 public class TurnController : MonoBehaviour
@@ -11,6 +12,9 @@ public class TurnController : MonoBehaviour
     [SerializeField] private Button nextTurnButton;
     public delegate void NextTurn();
     public event NextTurn OnNextTurn;
+
+    public delegate void AIInferenceControl();
+    public event AIInferenceControl OnAIInferenceControl;
 
     public List<Player> allPlayers;
     public List<object> unitsAndCities;
@@ -49,8 +53,16 @@ public class TurnController : MonoBehaviour
             takingTurn.Remove(finishEvent);
         }
     }
+
+    public IEnumerator CallNextTurn(float time)
+    {
+        nextTurnButton.interactable = false;
+        OnAIInferenceControl.Invoke();
+        yield return new WaitForSeconds(time);
+        InvokeNextTurn();
+    }
     
-    public void InvokeNextTurn()
+    void InvokeNextTurn()
     {
         takingTurn.Clear();
         foreach (object obj in unitsAndCities)
@@ -60,8 +72,11 @@ public class TurnController : MonoBehaviour
                 Unit unit = (Unit)obj;
                 if (unit.TurnActions.Count == 0)
                 {
-                    unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
-                    StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
+                    if (unit.OwningPlayer.PlayerIndex == 0)
+                    {
+                        unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
+                        StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
+                    }
                     return;
                 }
                 takingTurn.Add(unit);
@@ -71,8 +86,11 @@ public class TurnController : MonoBehaviour
                 City city = (City)obj;
                 if (city.ActionQueue.Count == 0)
                 {
-                    city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(city.Position).x, 0, Helpers.TileToWorldPos(city.Position).z - 10);
-                    StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
+                    if (city.OwningPlayer.PlayerIndex == 0)
+                    {
+                        city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(city.Position).x, 0, Helpers.TileToWorldPos(city.Position).z - 10);
+                        StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
+                    }
                     return;
                 }
                 takingTurn.Add(city);
@@ -81,7 +99,7 @@ public class TurnController : MonoBehaviour
 
         foreach (Player player in allPlayers)
         {
-            if(player.GetComponent<Player>().Capital == null) { continue; }
+            if(player.GetComponent<Player>().Capital == null || player.PlayerIndex != 0) { continue; }
             player.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(player.Capital.Position).x, 0, Helpers.TileToWorldPos(player.Capital.Position).z - 10);
             StartCoroutine(player.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(player.Capital.Position)));
         }
@@ -91,7 +109,6 @@ public class TurnController : MonoBehaviour
 
     IEnumerator WaitForTurnFinish()
     {
-        nextTurnButton.interactable = false;
         yield return new WaitUntil(() => takingTurn.Count == 0);
         nextTurnButton.interactable = true;
         

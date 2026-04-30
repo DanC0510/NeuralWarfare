@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour
         });
         endTurnButton.onClick.AddListener(() =>
         {
-            TurnController.Instance.InvokeNextTurn();
+            StartCoroutine(TurnController.Instance.CallNextTurn(5f));
         });
     }
 
