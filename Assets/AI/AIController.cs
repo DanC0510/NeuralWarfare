@@ -282,4 +282,26 @@ public class AIController : Agent
         }
         return enemies;
     }
+    
+    private List<City> GetOwnedCities()
+    {
+        List<City> cities = new List<City>();
+        foreach (object obj in TurnController.Instance.unitsAndCities)
+        {
+            if (obj is City city && city.OwningPlayer == aiPlayer)
+                cities.Add(city);
+        }
+        return cities;
+    }
+    
+    private List<City> GetEnemyCities()
+    {
+        List<City> cities = new List<City>();
+        foreach (object obj in TurnController.Instance.unitsAndCities)
+        {
+            if (obj is City city && city.OwningPlayer != aiPlayer)
+                cities.Add(city);
+        }
+        return cities;
+    }
 }
