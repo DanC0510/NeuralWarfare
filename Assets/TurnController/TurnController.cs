@@ -58,20 +58,13 @@ public class TurnController : MonoBehaviour
             if (obj.GetType().BaseType == typeof(Unit)) //Weirdly .BaseType just goes 1 layer lower, not to the actual base type which in this case would be MonoBehaviour
             {
                 Unit unit = (Unit)obj;
-                if (unit.Action == Unit.TurnAction.Move)
+                if (unit.TurnActions.Count == 0)
                 {
-                    if (unit.MoveQueue.Count == 0)
-                    {
-                        unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
-                        StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
-                        return;
-                    }
+                    unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
+                    StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
+                    return;
                 }
-
-                if (unit.TurnActions.Count > 0)
-                {
-                    takingTurn.Add(unit);
-                }
+                takingTurn.Add(unit);
             }
             else if (obj.GetType() == typeof(City)) //doesn't need .BaseType as they are put in as just a city
             {
@@ -82,10 +75,7 @@ public class TurnController : MonoBehaviour
                     StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
                     return;
                 }
-                if(city.ActionQueue.Count > 0)
-                {
-                    takingTurn.Add(city);
-                }
+                takingTurn.Add(city);
             }
         }
 

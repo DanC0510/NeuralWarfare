@@ -41,8 +41,6 @@ public class Unit : MonoBehaviour
     public List<TurnAction> TurnActions { get { return turnActions; } }
     public TurnAction Action { get { return turnAction; } }
 
-    public List<Tile> MoveQueue { get { return moveQueue; } }
-
     public Vector2 Position { get { return position; } }
     public UnitType Type { get { return unitType; } }
     public Player OwningPlayer { get { return owningPlayer; } }
@@ -68,7 +66,7 @@ public class Unit : MonoBehaviour
     {
         if (turnActions.Count == 0) { return; }
         turnAction = turnActions[0]; // Default to Skip if no actions queued
-        if (turnAction != TurnAction.Sleep) { turnActions.RemoveAt(0); }
+        turnActions.RemoveAt(0);
         stamina = maxStamina;
         switch (turnAction)
         {
@@ -82,6 +80,7 @@ public class Unit : MonoBehaviour
                 TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Sleep:
+                turnActions.Add(TurnAction.Sleep);
                 TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Attack:
@@ -161,6 +160,7 @@ public class Unit : MonoBehaviour
         
         moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
         if (moveQueue.Count > 0 && moveQueue[0].Position == position) { moveQueue.RemoveAt(0); }
+        if (turnAction != TurnAction.Move) { turnActions.Clear(); }
         turnActions.Add(TurnAction.Move);
     }
 
@@ -190,6 +190,7 @@ public class Unit : MonoBehaviour
 
     public void Sleep()
     {
+        if (turnAction != TurnAction.Sleep) { turnActions.Clear(); }
         moveQueue.Clear();
         turnActions.Clear();
         turnActions.Insert(0, TurnAction.Sleep);
