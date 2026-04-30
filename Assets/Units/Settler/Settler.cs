@@ -27,6 +27,7 @@ public class Settler : Unit
         moveSpeed = 2.0f;
         transform.position = Helpers.TileToWorldPos(position);
         stamina = maxStamina = 2f;
+        Helpers.GetTileAtTilePos(position).IsOccupied = true;
     }
 
     public void PlaceCity()

@@ -14,5 +14,6 @@ public class Archer : Unit
         stamina = maxStamina = 2f;
         position = startingPosition;
         transform.position = Helpers.TileToWorldPos(position);
+        Helpers.GetTileAtTilePos(position).IsOccupied = true;
     }
 }
