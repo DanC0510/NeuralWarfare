@@ -62,8 +62,8 @@ public class AIController : Agent
         sensor.AddObservation(aiPlayer.Science / 1000f);
         sensor.AddObservation(aiPlayer.Population / 100f);
     
-        var ownedUnits = GetOwnedUnits();
-        var enemies = GetEnemyUnits();
+        List<Unit> ownedUnits = GetOwnedUnits();
+        List<Unit> enemies = GetEnemyUnits();
     
         // Observe counts
         sensor.AddObservation(ownedUnits.Count / 10f); // Normalize to max 10
@@ -74,8 +74,8 @@ public class AIController : Agent
         {
             if (i < ownedUnits.Count)
             {
-                var unit = ownedUnits[i];
-                var capital = aiPlayer.Capital;
+                Unit unit = ownedUnits[i];
+                City capital = aiPlayer.Capital;
                 if (capital != null)
                 {
                     Vector2 relativePos = unit.Position - capital.Position;
@@ -97,7 +97,7 @@ public class AIController : Agent
         {
             if (i < enemies.Count)
             {
-                var enemy = enemies[i];
+                Unit enemy = enemies[i];
                 if (aiPlayer.Capital != null)
                 {
                     Vector2 relativePos = enemy.Position - aiPlayer.Capital.Position;
@@ -145,6 +145,8 @@ public class AIController : Agent
             AddReward(-0.01f); // Small penalty for having no units
             return;
         }
+
+        List<City> ownedCities = GetOwnedCities();
 
         int action = discreteActions[0];
         foreach (Unit selectedUnit in ownedUnits)
@@ -261,8 +263,8 @@ public class AIController : Agent
     
     private List<Unit> GetOwnedUnits()
     {
-        var units = new List<Unit>();
-        foreach (var obj in TurnController.Instance.unitsAndCities)
+        List<Unit> units = new List<Unit>();
+        foreach (object obj in TurnController.Instance.unitsAndCities)
         {
             if (obj is Unit unit && unit.OwningPlayer == aiPlayer)
                 units.Add(unit);
@@ -272,8 +274,8 @@ public class AIController : Agent
     
     private List<Unit> GetEnemyUnits()
     {
-        var enemies = new List<Unit>();
-        foreach (var obj in TurnController.Instance.unitsAndCities)
+        List<Unit> enemies = new List<Unit>();
+        foreach (object obj in TurnController.Instance.unitsAndCities)
         {
             if (obj is Unit unit && unit.OwningPlayer != aiPlayer)
                 enemies.Add(unit);
