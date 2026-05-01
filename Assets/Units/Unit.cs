@@ -131,6 +131,8 @@ public class Unit : MonoBehaviour
     {
         if (moveQueue.Count == 0)
         {
+            turnActions.Clear();
+            turnAction = TurnAction.No_Action;
             TurnController.Instance.FinishTurnEvent(this);
             return;
         }
