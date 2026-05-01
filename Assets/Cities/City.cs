@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -28,6 +29,7 @@ public class City : MonoBehaviour
     [SerializeField] private GameObject[] productionItems;
     [SerializeField] private GameObject productionPrefab;
     [SerializeField] private int numOfDistrictsInProductionItems;
+    [SerializeField] private List<District> districts;
     private bool hasCampus;
     private bool hasEncampment;
     private HashSet<Tile> tilesOwned;
@@ -152,7 +154,24 @@ public class City : MonoBehaviour
     public Vector2 GetSpawnPosition()
     {
         // Return a position near the city centre for spawning units
-        return position + new Vector2(1, 0);
+        if (hasEncampment)
+        {
+            foreach(District district in districts)
+            {
+                if (district.district == District.DistrictType.Encampment && district.tile.IsOccupied == false)
+                {
+                    return district.tile.Position;
+                }
+            }
+        }
+        foreach(Tile tile in bestTiles.Select(t => t.Item3))
+        {
+            if (!tile.IsOccupied && !tile.DistrictOnThisTile)
+            {
+                return tile.Position;
+            }
+        }
+        return new Vector2(position.x + 0, position.y + 1);
     }
     
     public void TakeDamage(float damage, Unit unitSource)
@@ -278,11 +297,14 @@ public class City : MonoBehaviour
             {
                case District.DistrictType.Campus:
                    newDistrict.GetComponent<District>().CreateDistrict(spawnPos, District.DistrictType.Campus, this);
+                   hasCampus = true;
                    break;
                case District.DistrictType.Encampment:
                    newDistrict.GetComponent<District>().CreateDistrict(spawnPos, District.DistrictType.Encampment, this);
+                   hasEncampment = true;
                    break;
             }
+            districts.Add(newDistrict.GetComponent<District>());
         }
     }
 }
