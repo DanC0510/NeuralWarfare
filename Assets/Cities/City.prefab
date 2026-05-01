@@ -134,6 +134,8 @@ MonoBehaviour:
   owningPlayer: {fileID: 0}
   population: 0
   productionRate: 0
+  gold: 0
+  science: 0
   productionProgress: 0
   cityPrefab: {fileID: 0}
   cityHealth: 0
@@ -146,6 +148,7 @@ MonoBehaviour:
   - {fileID: 6737547040179540222, guid: cb96a9f84e8a05940816e5386196c299, type: 3}
   - {fileID: 6737547040179540222, guid: 25d6700899c4e914a8a1e51de7141eeb, type: 3}
   productionPrefab: {fileID: 0}
+  numOfDistrictsInProductionItems: 2
 --- !u!114 &-1214391808262693882
 MonoBehaviour:
   m_ObjectHideFlags: 0

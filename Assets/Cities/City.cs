@@ -27,6 +27,7 @@ public class City : MonoBehaviour
     [SerializeField] private float maxHealth;
     [SerializeField] private GameObject[] productionItems;
     [SerializeField] private GameObject productionPrefab;
+    [SerializeField] private int numOfDistrictsInProductionItems;
     private bool hasCampus;
     private bool hasEncampment;
     private HashSet<Tile> tilesOwned;
@@ -196,15 +197,33 @@ public class City : MonoBehaviour
     public void StartProduction(int index)
     {
         if(actionQueue != null && actionQueue.Count != 0 && (actionQueue[0] != CityAction.Produce || actionQueue[0] != CityAction.ProduceDistrict)) { actionQueue.Clear(); }
-        productionPrefab = productionItems[index];
-        if (productionPrefab.CompareTag("InteractableUnit"))
+        int numUnits = productionItems.Length - numOfDistrictsInProductionItems;
+        
+        if (index >= 0 && index < numUnits)
         {
-            actionQueue.Add(CityAction.Produce);
+            QueueUnit(index);
         }
-        else if (productionPrefab.CompareTag("District"))
+        else if (index >= numUnits && index < productionItems.Length)
         {
-            actionQueue.Add(CityAction.ProduceDistrict);
+            int districtIndex = index - numUnits;
+            QueueDistrict(districtIndex);
         }
+    }
+
+    public void QueueUnit(int index)
+    {
+        int numUnits = productionItems.Length - numOfDistrictsInProductionItems;
+        int safeIndex = Helpers.mod(index, numUnits);
+        productionPrefab = productionItems[safeIndex];
+        actionQueue.Add(CityAction.Produce);
+    }
+
+    public void QueueDistrict(int index)
+    {
+        int districtStartIndex = productionItems.Length - numOfDistrictsInProductionItems; 
+        int safeIndex = Helpers.mod(index, numOfDistrictsInProductionItems);
+        productionPrefab = productionItems[districtStartIndex + safeIndex];
+        actionQueue.Add(CityAction.ProduceDistrict);
     }
 
     void ProduceUnit()
@@ -215,7 +234,6 @@ public class City : MonoBehaviour
         {
             GameObject newUnit = Instantiate(productionPrefab, Helpers.TileToWorldPos(GetSpawnPosition()), Quaternion.identity);
             productionProgress = 0f; // Reset progress after producing a unit
-            actionQueue.Clear();
 
             switch (newUnit.GetComponent<Unit>().Type)
             {
@@ -255,7 +273,6 @@ public class City : MonoBehaviour
             
             GameObject newDistrict = Instantiate(productionPrefab, Helpers.TileToWorldPos(spawnPos), Quaternion.identity);
             productionProgress = 0f; // Reset progress after producing a unit
-            actionQueue.Clear();
 
             switch (newDistrict.GetComponent<District>().district)
             {

@@ -1308,12 +1308,12 @@ MonoBehaviour:
     NumStackedVectorObservations: 1
     m_ActionSpec:
       m_NumContinuousActions: 2
-      BranchSizes: 04000000
+      BranchSizes: 08000000
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: daa26984ea6a02846be6470d42aac593, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: be2a0f28a8d2e1542a78f12816db2660, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: AIPlayer
@@ -3994,7 +3994,7 @@ MonoBehaviour:
   science: 0
   population: 0
   playerIndex: 1
-  opponent: {fileID: 0}
+  opponent: {fileID: 335677430}
 --- !u!114 &1090892287
 MonoBehaviour:
   m_ObjectHideFlags: 0
