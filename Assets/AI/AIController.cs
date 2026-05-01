@@ -17,9 +17,10 @@ public class AIController : Agent
     
     public override void Initialize()
     {
-        // Initialize AI player reference
         if (aiPlayer == null)
+        {
             aiPlayer = GetComponent<Player>();
+        }
     }
 
     void Start()
@@ -29,14 +30,14 @@ public class AIController : Agent
 
     private void OnDestroy()
     {
-        // Unsubscribe to avoid errors
         if (TurnController.Instance != null)
+        {
             TurnController.Instance.OnAIInferenceControl -= OnAITurn;
+        }
     }
     
     private void OnAITurn()
     {
-        // Only request decision when it's this AI's turn
         shouldDecide = true;
     }
     
@@ -57,19 +58,16 @@ public class AIController : Agent
             return;
         }
         
-        // Base observations
         sensor.AddObservation(aiPlayer.Gold / 1000f);
         sensor.AddObservation(aiPlayer.Science / 1000f);
         sensor.AddObservation(aiPlayer.Population / 100f);
     
         List<Unit> ownedUnits = GetOwnedUnits();
         List<Unit> enemies = GetEnemyUnits();
-    
-        // Observe counts
-        sensor.AddObservation(ownedUnits.Count / 10f); // Normalize to max 10
+        
+        sensor.AddObservation(ownedUnits.Count / 10f);
         sensor.AddObservation(enemies.Count / 10f);
-    
-        // Pad units to max 20
+        
         for (int i = 0; i < 20; i++)
         {
             if (i < ownedUnits.Count)
@@ -86,13 +84,12 @@ public class AIController : Agent
             }
             else
             {
-                sensor.AddObservation(0f); // Padding
+                sensor.AddObservation(0f);
                 sensor.AddObservation(0f);
                 sensor.AddObservation(0f);
             }
         }
-    
-        // Pad enemies to max 20
+        
         for (int i = 0; i < 20; i++)
         {
             if (i < enemies.Count)
@@ -107,7 +104,7 @@ public class AIController : Agent
             }
             else
             {
-                sensor.AddObservation(0f); // Padding
+                sensor.AddObservation(0f);
                 sensor.AddObservation(0f);
             }
         }
@@ -121,14 +118,6 @@ public class AIController : Agent
         
         float startTime = Time.realtimeSinceStartup;
         ActionSegment<int> discreteActions = actions.DiscreteActions;
-        
-        // Action space:
-        // 0: Move unit (with sub-actions for direction)
-        // 1: Attack
-        // 2: Build/Settle (if applicable)
-        // 3: Skip turn
-        // 4: Sleep
-        
 
         ExecuteAction(discreteActions);
         shouldDecide = false;
@@ -143,18 +132,27 @@ public class AIController : Agent
         if (ownedUnits.Count == 0)
         {
             AddReward(-0.01f); // Small penalty for having no units
-            return;
         }
 
         List<City> ownedCities = GetOwnedCities();
-
-        int action = discreteActions[0];
+        if (ownedCities.Count == 0)
+        {
+            AddReward(-0.15f); // "Big" penalty for having no cities
+        }
+        
+        int actionIndex = 0;
         foreach (Unit selectedUnit in ownedUnits)
         {
+            int action = discreteActions[Helpers.mod(actionIndex, discreteActions.Length)];
             if (Random.value < explorationRate)
             {
                 // Random action (early games seem unpredictable)
                 action = Random.Range(0, 5);
+                
+                if ((selectedUnit.GetUnitType != Unit.UnitType.Settler && selectedUnit.GetUnitType != Unit.UnitType.Builder) && action == 4)
+                {
+                    action = Random.Range(0, 4); //re roll if the unit cannot do Build or Settle
+                }
             }
 
             switch (action)
@@ -182,12 +180,57 @@ public class AIController : Agent
                         Builder builder = (Builder)selectedUnit;
                         builder.Build();
                     }
-                    else
-                    {
-                        action = Random.Range(0, 4); // If not a builder or settler, choose a different action
-                    }
                     break;
             }
+
+            actionIndex++;
+        }
+        foreach (City city in ownedCities)
+        {
+            int action = discreteActions[Helpers.mod(actionIndex, discreteActions.Length)];
+
+            if (Random.value < explorationRate)
+            {
+                action = Random.Range(0, 8);
+            }
+        
+            switch (action)
+            {
+                case 0: // Produce Ranged unit
+                    city.StartProduction(0);
+                    AddReward(0.05f);
+                    break;
+                case 1: // Produce Melee unit
+                    city.StartProduction(1);
+                    AddReward(0.05f);
+                    break;
+                case 2: // Produce Settler unit
+                    city.StartProduction(2);
+                    AddReward(0.05f);
+                    break;
+                case 3: // Produce Builder unit
+                    city.StartProduction(3);
+                    AddReward(0.05f);
+                    break;
+                case 4: // Produce Campus district
+                    city.StartProduction(4);
+                    AddReward(0.08f);
+                    break;
+                case 5: // Produce Encampment district
+                    city.StartProduction(5);
+                    AddReward(0.08f);
+                    break;
+                case 6: // Fortify City
+                    city.FortifyCity();
+                    AddReward(-0.03f);
+                    break;
+                case 7: // Close City Gates
+                    city.CloseCity();
+                    AddReward(-0.03f);
+                    break;
+            }
+
+            actionIndex++;
         }
     }
     
