@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float population;
     [SerializeField] private int playerIndex; //0 for player, 1 for AI
     [SerializeField] private Player opponent;
+    [SerializeField] private bool isAI;
     public float Gold { get { return gold; } }
     public float Production { get { return production; } }
     public float Science { get { return science; } }
@@ -23,6 +24,7 @@ public class Player : MonoBehaviour
     public City Capital { get { return capital; } set { capital = value; } }
     public int PlayerIndex { get { return playerIndex; } }
     public Player Opponent { get { return opponent; } }
+    public bool  IsAI { get { return isAI; } }
 
     void Start()
     {
@@ -32,8 +34,8 @@ public class Player : MonoBehaviour
         GameObject startingSettler = Instantiate(settlerPrefab, Vector3.zero, Quaternion.identity);
         startingSettler.GetComponent<Settler>().CreateSettler(-1, this);
         
-        GameObject startingMelee = Instantiate(meleePrefab, Vector3.zero, Quaternion.identity);
-        startingMelee.GetComponent<Melee>().CreateMelee(startingSettler.GetComponent<Settler>().Position + new Vector2(1, 0), this);
+        //GameObject startingMelee = Instantiate(meleePrefab, Vector3.zero, Quaternion.identity);
+        //startingMelee.GetComponent<Melee>().CreateMelee(startingSettler.GetComponent<Settler>().Position + new Vector2(1, 0), this);
     }
 
     void NextTurn()

@@ -13,7 +13,7 @@ public class AIController : Agent
     
     private int episodeRewards = 0;
     private float explorationRate = 1f; // Start at 100% exploration
-    private bool shouldDecide;
+    [SerializeField] private bool shouldDecide;
     
     public override void Initialize()
     {
@@ -232,6 +232,7 @@ public class AIController : Agent
 
             actionIndex++;
         }
+        TurnController.Instance.SetPlayerReady(aiPlayer.PlayerIndex, true);
     }
     
     private void MoveUnitTowardEnemy(Unit unit)

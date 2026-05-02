@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
@@ -12,28 +13,36 @@ public class TurnController : MonoBehaviour
     [SerializeField] private Button nextTurnButton;
     public delegate void NextTurn();
     public event NextTurn OnNextTurn;
-
+    public int turnNumber;
     public delegate void AIInferenceControl();
     public event AIInferenceControl OnAIInferenceControl;
 
+    public List<bool> playersReady;
     public List<Player> allPlayers;
     public List<object> unitsAndCities;
     public List<object> takingTurn; //allows me to put any object i want into this list so i dont need individual lists for cities and units
     private void Awake()
     {
         _instance = this;
+        playersReady = new List<bool>();
+        allPlayers = new List<Player>();
         takingTurn = new List<object>();
         unitsAndCities = new List<object>();
     }
 
+    private void Start()
+    {
+        StartCoroutine(CallNextTurn());
+    }
+
     public void RegisterPlayer(Player player)
     {
-        if (!allPlayers.Contains(player)) { allPlayers.Add(player); }
+        if (!allPlayers.Contains(player)) { allPlayers.Add(player); playersReady.Add(false); }
     }
 
     public void UnregisterPlayer(Player player)
     {
-        if (allPlayers.Contains(player)) { allPlayers.Remove(player); }
+        if (allPlayers.Contains(player)) { allPlayers.Remove(player); playersReady.RemoveAt(player.PlayerIndex); }
     }
 
     public void Register<T>(T obj)
@@ -54,11 +63,16 @@ public class TurnController : MonoBehaviour
         }
     }
 
-    public IEnumerator CallNextTurn(float time)
+    public void SetPlayerReady(int playerIndex, bool isReady)
     {
-        nextTurnButton.interactable = false;
+        playersReady[playerIndex] = isReady;
+    }
+
+    public IEnumerator CallNextTurn()
+    {
+        yield return new WaitForEndOfFrame();
         OnAIInferenceControl.Invoke();
-        yield return new WaitForSeconds(time);
+        yield return new WaitUntil(() => playersReady.Count >= 2 && playersReady.TrueForAll(x => x));
         InvokeNextTurn();
     }
     
@@ -72,12 +86,12 @@ public class TurnController : MonoBehaviour
                 Unit unit = (Unit)obj;
                 if (unit.TurnActions.Count == 0)
                 {
-                    if (unit.OwningPlayer.PlayerIndex == 0)
+                    if (!unit.OwningPlayer.IsAI)
                     {
                         unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
                         StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
                     }
-                    nextTurnButton.interactable = true;
+                    ResetTurn();
                     return;
                 }
                 takingTurn.Add(unit);
@@ -87,12 +101,12 @@ public class TurnController : MonoBehaviour
                 City city = (City)obj;
                 if (city.ActionQueue.Count == 0)
                 {
-                    if (city.OwningPlayer.PlayerIndex == 0)
+                    if (!city.OwningPlayer.IsAI)
                     {
                         city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(city.Position).x, 0, Helpers.TileToWorldPos(city.Position).z - 10);
                         StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
                     }
-                    nextTurnButton.interactable = true;
+                    ResetTurn();
                     return;
                 }
                 takingTurn.Add(city);
@@ -101,7 +115,7 @@ public class TurnController : MonoBehaviour
 
         foreach (Player player in allPlayers)
         {
-            if(player.GetComponent<Player>().Capital == null || player.PlayerIndex != 0) { continue; }
+            if(player.Capital == null || player.IsAI) { continue; }
             player.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(player.Capital.Position).x, 0, Helpers.TileToWorldPos(player.Capital.Position).z - 10);
             StartCoroutine(player.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(player.Capital.Position)));
         }
@@ -113,7 +127,22 @@ public class TurnController : MonoBehaviour
     {
         yield return new WaitUntil(() => takingTurn.Count == 0);
         nextTurnButton.interactable = true;
-        
+        for (int i = 0; i < playersReady.Count; i++)
+        {
+            SetPlayerReady(i, false);
+        }
+        turnNumber++;
+        StartCoroutine(CallNextTurn());
+    }
+
+    void ResetTurn()
+    {        
+        nextTurnButton.interactable = true;
+        for (int i = 0; i < playersReady.Count; i++)
+        {
+            SetPlayerReady(i, false);
+        }
+        StartCoroutine(CallNextTurn());
     }
     
 }

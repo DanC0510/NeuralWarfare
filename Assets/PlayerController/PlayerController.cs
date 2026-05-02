@@ -52,9 +52,13 @@ public class PlayerController : MonoBehaviour
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
     [SerializeField] private bool selectingTarget;
+
+    [Header("Player Settings")]
+    [SerializeField] private Player player;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        player = GetComponent<Player>();
         playerCamera = GetComponent<Camera>();
         playerInputs = GetComponent<PlayerInputs>();
         
@@ -105,7 +109,9 @@ public class PlayerController : MonoBehaviour
         });
         endTurnButton.onClick.AddListener(() =>
         {
-            StartCoroutine(TurnController.Instance.CallNextTurn(5f));
+            endTurnButton.interactable = false;
+            TurnController.Instance.SetPlayerReady(player.PlayerIndex, true);
+            //StartCoroutine(TurnController.Instance.CallNextTurn());
         });
     }
 
