@@ -10,7 +10,7 @@ public class AIController : Agent
 {
     [SerializeField] private Player aiPlayer;
     [SerializeField] private int seriesGameNumber = 1; // Track which game in the series (1-7)
-    
+    [SerializeField] private bool isTraining;
     private int episodeRewards = 0;
     private float explorationRate = 1f; // Start at 100% exploration
     [SerializeField] private bool shouldDecide;
@@ -45,7 +45,10 @@ public class AIController : Agent
     {
         episodeRewards = 0;
         // Adjust exploration rate based on series progress
-        explorationRate = Mathf.Lerp(1f, 0f, (seriesGameNumber - 1) / 6f); // 1 => 0 across 7 games
+        if(!isTraining)
+        {
+            explorationRate = Mathf.Lerp(1f, 0f, (seriesGameNumber - 1) / 6f); // 1 => 0 across 7 games
+        }
         shouldDecide = false;
     }
     

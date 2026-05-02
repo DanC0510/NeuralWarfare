@@ -1018,7 +1018,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!81 &330585544
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1188,7 +1188,7 @@ MonoBehaviour:
   endTurnButton: {fileID: 2007401694}
   playerInputs: {fileID: 0}
   selectingTarget: 0
-  player: {fileID: 0}
+  player: {fileID: 330585551}
 --- !u!114 &330585550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1274,7 +1274,7 @@ MonoBehaviour:
   science: 0
   population: 0
   playerIndex: 1
-  opponent: {fileID: 1090892286}
+  opponent: {fileID: 330585551}
   isAI: 1
 --- !u!114 &335677431
 MonoBehaviour:
@@ -1294,6 +1294,7 @@ MonoBehaviour:
   MaxStep: 0
   aiPlayer: {fileID: 335677430}
   seriesGameNumber: 1
+  isTraining: 0
   shouldDecide: 0
 --- !u!114 &335677432
 MonoBehaviour:
@@ -1317,7 +1318,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 1031c397f0f230c4ba75aef241f664f8, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: AIPlayer
@@ -2033,8 +2034,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldGenerator
   scaleFactor: 0.5
-  width: 1024
-  height: 768
+  width: 512
+  height: 384
   seed: 0
   offset: {x: 0, y: 0}
   scale: 75
@@ -3976,7 +3977,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1090892286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4019,7 +4020,8 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   aiPlayer: {fileID: 1090892286}
-  seriesGameNumber: 1
+  seriesGameNumber: 7
+  isTraining: 1
   shouldDecide: 0
 --- !u!114 &1090892288
 MonoBehaviour:

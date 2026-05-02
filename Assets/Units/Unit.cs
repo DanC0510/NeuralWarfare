@@ -146,7 +146,14 @@ public class Unit : MonoBehaviour
                 moveQueue.Clear();
                 Vector2 worldPos = new Vector2(Helpers.TileToWorldPos(position).x, Helpers.TileToWorldPos(position).z);
                 Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(last.Position).x, Helpers.TileToWorldPos(last.Position).z);
-                moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
+                List<Tile> path = PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos);
+                if (path == null)
+                {
+                    // Can't find path, skip turn
+                    TurnController.Instance.FinishTurnEvent(this);
+                    return;
+                }
+                moveQueue = new List<Tile>(path);
             }
 
             Tile next = moveQueue[0];
