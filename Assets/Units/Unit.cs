@@ -155,7 +155,13 @@ public class Unit : MonoBehaviour
                 }
                 moveQueue = new List<Tile>(path);
             }
-
+            
+            if (moveQueue.Count == 0) //if moveQueue is still empty after trying to repath
+            {
+                TurnController.Instance.FinishTurnEvent(this);
+                return;
+            }
+            
             Tile next = moveQueue[0];
             position = next.Position;
             if(stamina - next.MovementCost < 0)
@@ -177,6 +183,12 @@ public class Unit : MonoBehaviour
         Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(newPosition).x, Helpers.TileToWorldPos(newPosition).z);
         
         moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
+        if(moveQueue == null || moveQueue.Count == 0)
+        {
+            // No path found
+            TurnController.Instance.FinishTurnEvent(this);
+            return;
+        }
         if (moveQueue.Count > 0 && moveQueue[0].Position == position) { moveQueue.RemoveAt(0); }
         if (turnAction != TurnAction.Move) { turnActions.Clear(); }
         turnActions.Add(TurnAction.Move);

@@ -112,21 +112,15 @@ public class AIController : Agent
             }
         }
     }
-    
-    private float lastInferenceTime = 0f;
     public override void OnActionReceived(ActionBuffers actions)
     {
         if (!shouldDecide)
             return;
         
-        float startTime = Time.realtimeSinceStartup;
         ActionSegment<int> discreteActions = actions.DiscreteActions;
 
         ExecuteAction(discreteActions);
         shouldDecide = false;
-        
-        lastInferenceTime = (Time.realtimeSinceStartup - startTime) * 1000f;
-        Debug.Log($"Inference time: {lastInferenceTime:F2}ms");
     }
     
     private void ExecuteAction(ActionSegment<int> discreteActions)
