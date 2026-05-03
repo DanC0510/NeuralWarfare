@@ -201,7 +201,11 @@ public class Unit : MonoBehaviour
             }
             StartCoroutine(DoMove(next.Position));
             next.IsOccupied = true;
-            moveQueue.RemoveAt(0);
+            if (moveQueue.Count > 0 || moveQueue != null)
+            {
+                moveQueue.RemoveAt(0);
+            }
+
             turnActions.Insert(0, TurnAction.Move);
         }  
     }
