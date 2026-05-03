@@ -201,7 +201,7 @@ public class Unit : MonoBehaviour
             }
             StartCoroutine(DoMove(next.Position));
             next.IsOccupied = true;
-            if (moveQueue.Count > 0 || moveQueue != null)
+            if (moveQueue.Count > 0)
             {
                 moveQueue.RemoveAt(0);
             }
