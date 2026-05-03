@@ -48,6 +48,7 @@ public class PlayerController : MonoBehaviour
     [Header("Generic UI Actions")] 
     [SerializeField] private GameObject genericUI;
     [SerializeField] private Button endTurnButton;
+    [SerializeField] private TMP_Text turnNumberText;
     
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
@@ -118,6 +119,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        turnNumberText.text = "Turn " + TurnController.Instance.turnNumber;
         if (playerInputs.ClickMove)
         {
             mousePos = playerInputs.Move;
