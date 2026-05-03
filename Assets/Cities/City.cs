@@ -8,6 +8,7 @@ public class City : MonoBehaviour
 {
     public enum CityAction
     {
+        No_Action,
         Produce,
         ProduceDistrict,
         FortifyCity,
@@ -252,7 +253,6 @@ public class City : MonoBehaviour
         if (productionProgress >= productionPrefab.GetComponent<Unit>().ProductionCost)
         {
             GameObject newUnit = Instantiate(productionPrefab, Helpers.TileToWorldPos(GetSpawnPosition()), Quaternion.identity);
-            productionProgress = 0f; // Reset progress after producing a unit
 
             switch (newUnit.GetComponent<Unit>().Type)
             {
@@ -269,6 +269,10 @@ public class City : MonoBehaviour
                     newUnit.GetComponent<Builder>().CreateBuilder(GetSpawnPosition(), owningPlayer);
                     break;
             }
+            productionProgress = 0f; // Reset progress after producing a unit
+            actionQueue.Clear();
+            actionQueue.Insert(0, CityAction.No_Action);
+            productionPrefab = null;
         }
     }
 
@@ -291,7 +295,6 @@ public class City : MonoBehaviour
             }
             
             GameObject newDistrict = Instantiate(productionPrefab, Helpers.TileToWorldPos(spawnPos), Quaternion.identity);
-            productionProgress = 0f; // Reset progress after producing a unit
 
             switch (newDistrict.GetComponent<District>().district)
             {
@@ -305,6 +308,10 @@ public class City : MonoBehaviour
                    break;
             }
             districts.Add(newDistrict.GetComponent<District>());
+            productionProgress = 0f; // Reset progress after producing a unit
+            actionQueue.Clear();
+            actionQueue.Insert(0, CityAction.No_Action);
+            productionPrefab = null;
         }
     }
 }
