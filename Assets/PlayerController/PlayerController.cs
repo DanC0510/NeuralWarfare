@@ -189,6 +189,7 @@ public class PlayerController : MonoBehaviour
                 {
                     selectedObject = hit.collider.gameObject;
                     Unit unit = selectedObject.GetComponent<Unit>();
+                    if(unit.OwningPlayer != player) { return; } //can't select units that aren't yours
                     
                     genericUnitUI.SetActive(true);
                     switch(unit.Type)
@@ -224,7 +225,7 @@ public class PlayerController : MonoBehaviour
                 {
                     selectedObject = hit.collider.transform.parent.gameObject;
                     City city = selectedObject.GetComponent<City>();
-                    
+                    if(city.OwningPlayer != player) { return; } //can't select city that isn't yours
                     genericCityUI.SetActive(true);
                 }
             }
