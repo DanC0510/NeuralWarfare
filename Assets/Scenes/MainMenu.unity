@@ -372,7 +372,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Neural Convergence
+  m_text: Neural Conquest
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e7d8ff5582929ea4398f546ca9ee410b, type: 2}
   m_sharedMaterial: {fileID: 4547314914917877207, guid: e7d8ff5582929ea4398f546ca9ee410b, type: 2}
@@ -1348,7 +1348,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: -190}
-  m_SizeDelta: {x: 1000, y: 110}
+  m_SizeDelta: {x: 846.3, y: 110}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2094047590
 MonoBehaviour:

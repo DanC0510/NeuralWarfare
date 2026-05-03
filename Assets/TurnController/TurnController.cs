@@ -70,9 +70,9 @@ public class TurnController : MonoBehaviour
 
     public IEnumerator CallNextTurn()
     {
-        yield return new WaitUntil(() => playersReady.Count >= 2);
+        yield return new WaitUntil(() => playersReady[0]);
         OnAIInferenceControl.Invoke();
-        yield return new WaitUntil(() => playersReady.TrueForAll(x => x));
+        yield return new WaitUntil(() => playersReady[1]);
         InvokeNextTurn();
     }
     
