@@ -21,7 +21,11 @@ public class Settler : Unit
             }
             position = spawnTile.Position;  // Random position if no cities exist
             Vector3 temp = Helpers.TileToWorldPos(position);
-            owningPlayer.transform.position = new Vector3(temp.x, 10f, temp.z);
+            owningPlayer.transform.position = new Vector3(temp.x, 10f, temp.z - 10f);
+            if (!owningPlayer.IsAI)
+            {
+                owningPlayer.GetComponent<PlayerController>().MoveTo = new Vector3(temp.x, 10f, temp.z - 10f);
+            }
         }
         canDamage = false;
         moveSpeed = 2.0f;
