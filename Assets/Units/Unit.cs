@@ -100,23 +100,52 @@ public class Unit : MonoBehaviour
         currentTile = Helpers.GetTileAtTilePos(position);
     }
     
-    public void Attack(Unit target)
+    public void Attack(object target)
     {
+        Debug.Log("Starting Attack");
         if (turnAction != TurnAction.Attack) { turnActions.Clear(); }
-        if (DistanceTo(this, target) <= attackRange && canDamage)
+        if(target.GetType().BaseType == typeof(Unit))
         {
-            target.TakeDamage(attackDamage * (health / maxHealth));
-            turnActions.Insert(0, TurnAction.Attack);
+            Unit targetUnit = (Unit)target;
+            if (DistanceTo(this, targetUnit) <= attackRange && canDamage)
+            {
+                Debug.Log("Attacking Unit");
+                targetUnit.TakeDamage(attackDamage * (health / maxHealth));
+                turnActions.Insert(0, TurnAction.Attack);
+            }
         }
+        else if(target.GetType() == typeof(City))
+        {
+            City targetCity = (City)target;
+            if (DistanceTo(this, targetCity) <= attackRange && canDamage)
+            {
+                Debug.Log("Attacking City");
+                targetCity.TakeDamage(attackDamage * (health / maxHealth), OwningPlayer);
+                turnActions.Insert(0, TurnAction.Attack);
+            }
+        }
+
 
         stamina = 0;
         TurnController.Instance.FinishTurnEvent(this);
     }
 
-    public float DistanceTo(Unit unit1, Unit unit2)
+    public float DistanceTo(Unit unit, object obj)
     {
-        float distance = PathfindingGraph.Instance.GetPath(unit1.position, unit2.position).Count - 1;
-        return distance; //unit1.position and unit2.position are tile positions, not world positions#
+        float distance = -10;
+        if (obj.GetType().BaseType == typeof(Unit))
+        {
+            Unit targetUnit = (Unit)obj;
+            distance = PathfindingGraph.Instance.GetPath(unit.position, targetUnit.position).Count - 1;
+            
+        }
+        else if(obj.GetType() == typeof(City))
+        {
+            City targetCity = (City)obj;
+            distance = PathfindingGraph.Instance.GetPath(unit.position, targetCity.Position).Count - 1;
+        }
+        return distance;
+        
     }
 
     public void DoDeath()

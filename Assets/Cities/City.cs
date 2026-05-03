@@ -79,6 +79,23 @@ public class City : MonoBehaviour
             border.Rebuild();
         }
     }
+    
+    public void TakeDamage(float damage, Player source)
+    {
+        cityHealth -= damage;
+        if (cityHealth <= 0)
+        {
+            DoTakeover(source);
+            if (owningPlayer.PlayerIndex == 0) //if player unit dies, then reward AI
+            {
+                owningPlayer.Opponent.GetComponent<AIController>().OnUnitDestroyed();
+            } 
+            else if(owningPlayer.PlayerIndex == 1) //if AI unit dies, punish AI
+            {
+                owningPlayer.Opponent.GetComponent<AIController>().OnUnitLost();
+            }//the call is made here so i can implement destroying later down the line and just recycle the DoDeath function.
+        }
+    }
 
     void Start()
     {

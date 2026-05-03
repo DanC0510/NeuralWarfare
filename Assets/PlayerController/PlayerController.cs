@@ -83,11 +83,11 @@ public class PlayerController : MonoBehaviour
         });
         meleeAttackButton.onClick.AddListener(() =>
         {
-            StartCoroutine(SelectTarget());
+            StartCoroutine(SelectTarget(selectedObject.GetComponent<Unit>()));
         });
         rangedAttackButton.onClick.AddListener(() =>
         {
-            StartCoroutine(SelectTarget());
+            StartCoroutine(SelectTarget(selectedObject.GetComponent<Unit>()));
         });
         buildButton.onClick.AddListener(() =>
         {
@@ -294,25 +294,53 @@ public class PlayerController : MonoBehaviour
         builderUI.SetActive(false);
     }
 
-    IEnumerator SelectTarget()
+    IEnumerator SelectTarget(Unit unitSource)
     {
         selectingTarget = true;
-        Unit selectedTarget = null;
+        object selectedTarget = null;
         while (selectedTarget == null)
         {
             yield return null;
             Ray ray = playerCamera.ScreenPointToRay(playerInputs.Move);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
             {
-                if (playerInputs.Interact && hit.collider.CompareTag("Interactable") && hit.collider.gameObject != this.gameObject)
+                if (playerInputs.Interact && (hit.collider.CompareTag("InteractableUnit") || hit.collider.CompareTag("InteractableCity")) && hit.collider.gameObject != this.gameObject)
                 {
-                    selectedTarget = hit.collider.gameObject.GetComponent<Unit>();
+                    if (hit.collider.gameObject.TryGetComponent<Unit>(out Unit unit))
+                    {
+                        if (unit.OwningPlayer == player)
+                        {
+                            break; //can't attack units that are yours
+                        }
+                        selectedTarget = hit.collider.gameObject.GetComponent<Unit>();
+                    }
+                    else if (hit.collider.gameObject.TryGetComponent<City>(out City city))
+                    {
+                        if (city.OwningPlayer == player)
+                        {
+                            break; //can't attack cities that are yours
+                        }
+                        selectedTarget = hit.collider.gameObject.GetComponent<City>();
+                    }
                 }
             }
+
+            if (selectedTarget != null)
+            {
+                
+                if(selectedTarget.GetType().BaseType == typeof(Unit))
+                {
+                    unitSource.Attack((Unit)selectedTarget);
+                }
+                else if(selectedTarget.GetType() == typeof(City))
+                {
+                    unitSource.Attack((City)selectedTarget);
+                }
+            }
+
+            selectingTarget = false;
+            ResetUI();
         }
-        selectedObject.GetComponent<Unit>().Attack(selectedTarget);
-        selectingTarget = false;
-        ResetUI();
     }
 
     IEnumerator SelectTile()
