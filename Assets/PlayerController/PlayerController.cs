@@ -221,7 +221,7 @@ public class PlayerController : MonoBehaviour
                     }
                 }
 
-                if (hit.collider.CompareTag("InteractableCity"))
+                else if (hit.collider.CompareTag("InteractableCity"))
                 {
                     selectedObject = hit.collider.transform.parent.gameObject;
                     City city = selectedObject.GetComponent<City>();
@@ -234,6 +234,52 @@ public class PlayerController : MonoBehaviour
                 ResetUI();
             }
             //bring up UI for selected object here
+        }
+    }
+
+    public void BringUpUI(object obj)
+    {
+        if (obj.GetType().BaseType == typeof(Unit))
+        {
+            Unit unit = (Unit)obj;
+            selectedObject = unit.gameObject;
+            if(unit.OwningPlayer != player) { return; } //can't select units that aren't yours
+                    
+            genericUnitUI.SetActive(true);
+            switch(unit.Type)
+            {
+                case(Unit.UnitType.Settler):
+                    settlerUI.SetActive(true);
+                    meleeUI.SetActive(false);
+                    rangedUI.SetActive(false);
+                    builderUI.SetActive(false);
+                    break;
+                case(Unit.UnitType.Melee):
+                    meleeUI.SetActive(true);
+                    settlerUI.SetActive(false);
+                    rangedUI.SetActive(false);
+                    builderUI.SetActive(false);
+                    break;
+                case(Unit.UnitType.Ranged):
+                    rangedUI.SetActive(true);
+                    settlerUI.SetActive(false);
+                    meleeUI.SetActive(false);
+                    builderUI.SetActive(false);
+                    break;
+                case(Unit.UnitType.Builder):
+                    builderUI.SetActive(true);
+                    settlerUI.SetActive(false);
+                    meleeUI.SetActive(false);
+                    rangedUI.SetActive(false);
+                    break;
+            }
+        }
+        else if (obj.GetType() == typeof(City))
+        {
+            City city = (City)obj;
+            selectedObject = city.gameObject;   
+            if(city.OwningPlayer != player) { return; } //can't select city that isn't yours
+            genericCityUI.SetActive(true);
         }
     }
 

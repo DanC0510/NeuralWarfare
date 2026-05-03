@@ -90,6 +90,7 @@ public class TurnController : MonoBehaviour
                     {
                         unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(unit.Position).x, 0, Helpers.TileToWorldPos(unit.Position).z - 10);
                         StartCoroutine(unit.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(unit.Position)));
+                        unit.OwningPlayer.GetComponent<PlayerController>().BringUpUI(obj);
                     }
                     ResetTurn();
                     return;
@@ -105,6 +106,7 @@ public class TurnController : MonoBehaviour
                     {
                         city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveTo = new Vector3(Helpers.TileToWorldPos(city.Position).x, 0, Helpers.TileToWorldPos(city.Position).z - 10);
                         StartCoroutine(city.OwningPlayer.gameObject.GetComponent<PlayerController>().MoveCam(Helpers.TileToWorldPos(city.Position)));
+                        city.OwningPlayer.GetComponent<PlayerController>().BringUpUI(obj);
                     }
                     ResetTurn();
                     return;
