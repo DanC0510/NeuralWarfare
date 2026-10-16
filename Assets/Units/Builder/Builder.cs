@@ -16,6 +16,7 @@ public class Builder : Unit
         stamina = maxStamina = 3f;
         position = startingPosition;
         transform.position = Helpers.TileToWorldPos(position);
+        Helpers.GetTileAtTilePos(position).IsOccupied = true;
     }
 
     public void Build()

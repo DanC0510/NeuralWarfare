@@ -14,19 +14,24 @@ public class Settler : Unit
         }
         else
         {
-            Tile spawnTile = Helpers.GetTileAtWorldPos(new Vector2(Random.Range(80, 460), Random.Range(80, 290)));
+            Tile spawnTile = Helpers.GetTileAtWorldPos(new Vector2(Random.Range(80, 230), Random.Range(80, 145)));
             while (spawnTile.Biome == Tile.TileBiome.Deep_Water || spawnTile.Biome == Tile.TileBiome.Water)
             {
-                spawnTile = Helpers.GetTileAtWorldPos(new Vector2(Random.Range(80, 460), Random.Range(80, 290)));
+                spawnTile = Helpers.GetTileAtWorldPos(new Vector2(Random.Range(80, 230), Random.Range(80, 145)));
             }
             position = spawnTile.Position;  // Random position if no cities exist
             Vector3 temp = Helpers.TileToWorldPos(position);
-            owningPlayer.transform.position = new Vector3(temp.x, 10f, temp.z);
+            owningPlayer.transform.position = new Vector3(temp.x, 10f, temp.z - 10f);
+            if (!owningPlayer.IsAI)
+            {
+                owningPlayer.GetComponent<PlayerController>().MoveTo = new Vector3(temp.x, 10f, temp.z - 10f);
+            }
         }
         canDamage = false;
         moveSpeed = 2.0f;
         transform.position = Helpers.TileToWorldPos(position);
         stamina = maxStamina = 2f;
+        Helpers.GetTileAtTilePos(position).IsOccupied = true;
     }
 
     public void PlaceCity()

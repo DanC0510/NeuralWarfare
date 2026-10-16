@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [Serializable]
@@ -7,6 +8,7 @@ public class City : MonoBehaviour
 {
     public enum CityAction
     {
+        No_Action,
         Produce,
         ProduceDistrict,
         FortifyCity,
@@ -19,12 +21,16 @@ public class City : MonoBehaviour
     [SerializeField] private Player owningPlayer;
     [SerializeField] private float population;
     [SerializeField] private float productionRate;
+    [SerializeField] private float gold;
+    [SerializeField] private float science;
     [SerializeField] private float productionProgress;
     [SerializeField] private GameObject cityPrefab;
     [SerializeField] private float cityHealth;
     [SerializeField] private float maxHealth;
     [SerializeField] private GameObject[] productionItems;
     [SerializeField] private GameObject productionPrefab;
+    [SerializeField] private int numOfDistrictsInProductionItems;
+    [SerializeField] private List<District> districts;
     private bool hasCampus;
     private bool hasEncampment;
     private HashSet<Tile> tilesOwned;
@@ -32,6 +38,10 @@ public class City : MonoBehaviour
     public HashSet<Tile> TilesOwned => tilesOwned;
     public List<CityAction> ActionQueue => actionQueue;
     public Vector2 Position => position;
+    public float Population { get => population; }
+    public float Production { get => productionRate; }
+    public float Gold { get => gold; }
+    public float Science { get => science; }
 
     public void CreateCity(Vector2 startingPosition, Player player, float radiusOwned)
     {
@@ -69,6 +79,23 @@ public class City : MonoBehaviour
             border.Rebuild();
         }
     }
+    
+    public void TakeDamage(float damage, Player source)
+    {
+        cityHealth -= damage;
+        if (cityHealth <= 0)
+        {
+            DoTakeover(source);
+            if (owningPlayer.PlayerIndex == 0) //if player unit dies, then reward AI
+            {
+                owningPlayer.Opponent.GetComponent<AIController>().OnUnitDestroyed();
+            } 
+            else if(owningPlayer.PlayerIndex == 1) //if AI unit dies, punish AI
+            {
+                owningPlayer.Opponent.GetComponent<AIController>().OnUnitLost();
+            }//the call is made here so i can implement destroying later down the line and just recycle the DoDeath function.
+        }
+    }
 
     void Start()
     {
@@ -93,17 +120,21 @@ public class City : MonoBehaviour
         }
         
         //calculate new production food and resource values each turn
-        float pr = 0; float fd = 0;
+        float pr = 0; float fd = 0; float gd = 0; float sc = 0;
         
         foreach (Tile tile in tilesOwned)
         {
             if(!tile.IsWorked) { continue; }
             pr += tile.Production;
             fd += tile.Food;
+            gd += tile.Gold;
+            sc += tile.Science;
         }
         
         productionRate = pr;
         population += (fd * 1.2f) / 20f;
+        gold += gd;
+        science = sc;
         
         //execute action queue
         if (actionQueue.Count == 0) { return; }
@@ -141,7 +172,24 @@ public class City : MonoBehaviour
     public Vector2 GetSpawnPosition()
     {
         // Return a position near the city centre for spawning units
-        return position + new Vector2(1, 0);
+        if (hasEncampment)
+        {
+            foreach(District district in districts)
+            {
+                if (district.district == District.DistrictType.Encampment && district.tile.IsOccupied == false)
+                {
+                    return district.tile.Position;
+                }
+            }
+        }
+        foreach(Tile tile in bestTiles.Select(t => t.Item3))
+        {
+            if (!tile.IsOccupied && !tile.DistrictOnThisTile)
+            {
+                return tile.Position;
+            }
+        }
+        return new Vector2(position.x + 0, position.y + 1);
     }
     
     public void TakeDamage(float damage, Unit unitSource)
@@ -186,15 +234,33 @@ public class City : MonoBehaviour
     public void StartProduction(int index)
     {
         if(actionQueue != null && actionQueue.Count != 0 && (actionQueue[0] != CityAction.Produce || actionQueue[0] != CityAction.ProduceDistrict)) { actionQueue.Clear(); }
-        productionPrefab = productionItems[index];
-        if (productionPrefab.CompareTag("InteractableUnit"))
+        int numUnits = productionItems.Length - numOfDistrictsInProductionItems;
+        
+        if (index >= 0 && index < numUnits)
         {
-            actionQueue.Add(CityAction.Produce);
+            QueueUnit(index);
         }
-        else if (productionPrefab.CompareTag("District"))
+        else if (index >= numUnits && index < productionItems.Length)
         {
-            actionQueue.Add(CityAction.ProduceDistrict);
+            int districtIndex = index - numUnits;
+            QueueDistrict(districtIndex);
         }
+    }
+
+    public void QueueUnit(int index)
+    {
+        int numUnits = productionItems.Length - numOfDistrictsInProductionItems;
+        int safeIndex = Helpers.mod(index, numUnits);
+        productionPrefab = productionItems[safeIndex];
+        actionQueue.Add(CityAction.Produce);
+    }
+
+    public void QueueDistrict(int index)
+    {
+        int districtStartIndex = productionItems.Length - numOfDistrictsInProductionItems; 
+        int safeIndex = Helpers.mod(index, numOfDistrictsInProductionItems);
+        productionPrefab = productionItems[districtStartIndex + safeIndex];
+        actionQueue.Add(CityAction.ProduceDistrict);
     }
 
     void ProduceUnit()
@@ -204,8 +270,6 @@ public class City : MonoBehaviour
         if (productionProgress >= productionPrefab.GetComponent<Unit>().ProductionCost)
         {
             GameObject newUnit = Instantiate(productionPrefab, Helpers.TileToWorldPos(GetSpawnPosition()), Quaternion.identity);
-            productionProgress = 0f; // Reset progress after producing a unit
-            actionQueue.Clear();
 
             switch (newUnit.GetComponent<Unit>().Type)
             {
@@ -222,6 +286,10 @@ public class City : MonoBehaviour
                     newUnit.GetComponent<Builder>().CreateBuilder(GetSpawnPosition(), owningPlayer);
                     break;
             }
+            productionProgress = 0f; // Reset progress after producing a unit
+            actionQueue.Clear();
+            actionQueue.Insert(0, CityAction.No_Action);
+            productionPrefab = null;
         }
     }
 
@@ -244,18 +312,23 @@ public class City : MonoBehaviour
             }
             
             GameObject newDistrict = Instantiate(productionPrefab, Helpers.TileToWorldPos(spawnPos), Quaternion.identity);
-            productionProgress = 0f; // Reset progress after producing a unit
-            actionQueue.Clear();
 
             switch (newDistrict.GetComponent<District>().district)
             {
                case District.DistrictType.Campus:
                    newDistrict.GetComponent<District>().CreateDistrict(spawnPos, District.DistrictType.Campus, this);
+                   hasCampus = true;
                    break;
                case District.DistrictType.Encampment:
                    newDistrict.GetComponent<District>().CreateDistrict(spawnPos, District.DistrictType.Encampment, this);
+                   hasEncampment = true;
                    break;
             }
+            districts.Add(newDistrict.GetComponent<District>());
+            productionProgress = 0f; // Reset progress after producing a unit
+            actionQueue.Clear();
+            actionQueue.Insert(0, CityAction.No_Action);
+            productionPrefab = null;
         }
     }
 }

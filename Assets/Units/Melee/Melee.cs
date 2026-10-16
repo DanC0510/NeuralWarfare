@@ -14,5 +14,6 @@ public class Melee : Unit
         stamina = maxStamina = 2f;
         position = startingPosition;
         transform.position = Helpers.TileToWorldPos(position);
+        Helpers.GetTileAtTilePos(position).IsOccupied = true;
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 
 public class PathfindingGraph : MonoBehaviour
@@ -142,7 +141,7 @@ public class PathfindingGraph : MonoBehaviour
         return tile.Biome switch
         {
             Tile.TileBiome.Deep_Water => 9999f, //add conditional logic for when deep sea travel is unlocked
-            Tile.TileBiome.Water => 1f, 
+            Tile.TileBiome.Water => 9999f, 
             Tile.TileBiome.Snow => 1.5f,
             Tile.TileBiome.River => 2.25f,
             Tile.TileBiome.Grass => 1f,

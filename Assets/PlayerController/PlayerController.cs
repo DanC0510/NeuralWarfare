@@ -48,13 +48,18 @@ public class PlayerController : MonoBehaviour
     [Header("Generic UI Actions")] 
     [SerializeField] private GameObject genericUI;
     [SerializeField] private Button endTurnButton;
+    [SerializeField] private TMP_Text turnNumberText;
     
     [Header("Input Actions")]
     [SerializeField] private PlayerInputs playerInputs;
     [SerializeField] private bool selectingTarget;
+
+    [Header("Player Settings")]
+    [SerializeField] private Player player;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        player = GetComponent<Player>();
         playerCamera = GetComponent<Camera>();
         playerInputs = GetComponent<PlayerInputs>();
         
@@ -78,11 +83,11 @@ public class PlayerController : MonoBehaviour
         });
         meleeAttackButton.onClick.AddListener(() =>
         {
-            StartCoroutine(SelectTarget());
+            StartCoroutine(SelectTarget(selectedObject.GetComponent<Unit>()));
         });
         rangedAttackButton.onClick.AddListener(() =>
         {
-            StartCoroutine(SelectTarget());
+            StartCoroutine(SelectTarget(selectedObject.GetComponent<Unit>()));
         });
         buildButton.onClick.AddListener(() =>
         {
@@ -105,13 +110,16 @@ public class PlayerController : MonoBehaviour
         });
         endTurnButton.onClick.AddListener(() =>
         {
-            TurnController.Instance.InvokeNextTurn();
+            endTurnButton.interactable = false;
+            TurnController.Instance.SetPlayerReady(player.PlayerIndex, true);
+            //StartCoroutine(TurnController.Instance.CallNextTurn());
         });
     }
 
     // Update is called once per frame
     void Update()
     {
+        turnNumberText.text = "Turn " + TurnController.Instance.turnNumber;
         if (playerInputs.ClickMove)
         {
             mousePos = playerInputs.Move;
@@ -181,6 +189,7 @@ public class PlayerController : MonoBehaviour
                 {
                     selectedObject = hit.collider.gameObject;
                     Unit unit = selectedObject.GetComponent<Unit>();
+                    if(unit.OwningPlayer != player) { ResetUI(); selectedObject = null; unit = null; return; } //can't select units that aren't yours
                     
                     genericUnitUI.SetActive(true);
                     switch(unit.Type)
@@ -212,19 +221,69 @@ public class PlayerController : MonoBehaviour
                     }
                 }
 
-                if (hit.collider.CompareTag("InteractableCity"))
+                else if (hit.collider.CompareTag("InteractableCity"))
                 {
                     selectedObject = hit.collider.transform.parent.gameObject;
                     City city = selectedObject.GetComponent<City>();
-                    
+                    if(city.OwningPlayer != player) { return; } //can't select city that isn't yours
                     genericCityUI.SetActive(true);
                 }
+                else //handles hitting something that isnt interactable
+                {
+                    ResetUI();
+                }
             }
-            else 
+            else //handles hitting nothing
             {
                 ResetUI();
             }
             //bring up UI for selected object here
+        }
+    }
+
+    public void BringUpUI(object obj)
+    {
+        if (obj.GetType().BaseType == typeof(Unit))
+        {
+            Unit unit = (Unit)obj;
+            selectedObject = unit.gameObject;
+            if(unit.OwningPlayer != player) { return; } //can't select units that aren't yours
+                    
+            genericUnitUI.SetActive(true);
+            switch(unit.Type)
+            {
+                case(Unit.UnitType.Settler):
+                    settlerUI.SetActive(true);
+                    meleeUI.SetActive(false);
+                    rangedUI.SetActive(false);
+                    builderUI.SetActive(false);
+                    break;
+                case(Unit.UnitType.Melee):
+                    meleeUI.SetActive(true);
+                    settlerUI.SetActive(false);
+                    rangedUI.SetActive(false);
+                    builderUI.SetActive(false);
+                    break;
+                case(Unit.UnitType.Ranged):
+                    rangedUI.SetActive(true);
+                    settlerUI.SetActive(false);
+                    meleeUI.SetActive(false);
+                    builderUI.SetActive(false);
+                    break;
+                case(Unit.UnitType.Builder):
+                    builderUI.SetActive(true);
+                    settlerUI.SetActive(false);
+                    meleeUI.SetActive(false);
+                    rangedUI.SetActive(false);
+                    break;
+            }
+        }
+        else if (obj.GetType() == typeof(City))
+        {
+            City city = (City)obj;
+            selectedObject = city.gameObject;   
+            if(city.OwningPlayer != player) { return; } //can't select city that isn't yours
+            genericCityUI.SetActive(true);
         }
     }
 
@@ -239,25 +298,53 @@ public class PlayerController : MonoBehaviour
         builderUI.SetActive(false);
     }
 
-    IEnumerator SelectTarget()
+    IEnumerator SelectTarget(Unit unitSource)
     {
         selectingTarget = true;
-        Unit selectedTarget = null;
+        object selectedTarget = null;
         while (selectedTarget == null)
         {
             yield return null;
             Ray ray = playerCamera.ScreenPointToRay(playerInputs.Move);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
             {
-                if (playerInputs.Interact && hit.collider.CompareTag("Interactable") && hit.collider.gameObject != this.gameObject)
+                if (playerInputs.Interact && (hit.collider.CompareTag("InteractableUnit") || hit.collider.CompareTag("InteractableCity")) && hit.collider.gameObject != this.gameObject)
                 {
-                    selectedTarget = hit.collider.gameObject.GetComponent<Unit>();
+                    if (hit.collider.gameObject.TryGetComponent<Unit>(out Unit unit))
+                    {
+                        if (unit.OwningPlayer == player)
+                        {
+                            break; //can't attack units that are yours
+                        }
+                        selectedTarget = hit.collider.gameObject.GetComponent<Unit>();
+                    }
+                    else if (hit.collider.gameObject.TryGetComponent<City>(out City city))
+                    {
+                        if (city.OwningPlayer == player)
+                        {
+                            break; //can't attack cities that are yours
+                        }
+                        selectedTarget = hit.collider.gameObject.GetComponent<City>();
+                    }
                 }
             }
+
+            if (selectedTarget != null)
+            {
+                
+                if(selectedTarget.GetType().BaseType == typeof(Unit))
+                {
+                    unitSource.Attack((Unit)selectedTarget);
+                }
+                else if(selectedTarget.GetType() == typeof(City))
+                {
+                    unitSource.Attack((City)selectedTarget);
+                }
+            }
+
+            selectingTarget = false;
+            ResetUI();
         }
-        selectedObject.GetComponent<Unit>().Attack(selectedTarget);
-        selectingTarget = false;
-        ResetUI();
     }
 
     IEnumerator SelectTile()

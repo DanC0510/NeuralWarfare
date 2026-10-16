@@ -40,14 +40,14 @@ public class Unit : MonoBehaviour
     [SerializeField] protected float productionCost;
     public List<TurnAction> TurnActions { get { return turnActions; } }
     public TurnAction Action { get { return turnAction; } }
-
-    public List<Tile> MoveQueue { get { return moveQueue; } }
-
     public Vector2 Position { get { return position; } }
     public UnitType Type { get { return unitType; } }
     public Player OwningPlayer { get { return owningPlayer; } }
-
+    public float Health { get { return health; } }
+    public float MaxHealth { get { return maxHealth; } }
+    public float AttackRange { get { return attackRange; } }
     public float ProductionCost { get { return productionCost; } }
+    public UnitType GetUnitType { get { return unitType; } }
 
     public void TakeDamage(float damage)
     {
@@ -55,6 +55,14 @@ public class Unit : MonoBehaviour
         if (health <= 0)
         {
             DoDeath();
+            if (owningPlayer.PlayerIndex == 0) //if player unit dies, then reward AI
+            {
+                owningPlayer.Opponent.GetComponent<AIController>().OnUnitDestroyed();
+            } 
+            else if(owningPlayer.PlayerIndex == 1) //if AI unit dies, punish AI
+            {
+                owningPlayer.Opponent.GetComponent<AIController>().OnUnitLost();
+            }//the call is made here so i can implement destroying later down the line and just recycle the DoDeath function.
         }
     }
 
@@ -68,7 +76,7 @@ public class Unit : MonoBehaviour
     {
         if (turnActions.Count == 0) { return; }
         turnAction = turnActions[0]; // Default to Skip if no actions queued
-        if (turnAction != TurnAction.Sleep) { turnActions.RemoveAt(0); }
+        turnActions.RemoveAt(0);
         stamina = maxStamina;
         switch (turnAction)
         {
@@ -82,6 +90,7 @@ public class Unit : MonoBehaviour
                 TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Sleep:
+                Sleep();
                 TurnController.Instance.FinishTurnEvent(this);
                 break;
             case TurnAction.Attack:
@@ -91,23 +100,52 @@ public class Unit : MonoBehaviour
         currentTile = Helpers.GetTileAtTilePos(position);
     }
     
-    public void Attack(Unit target)
+    public void Attack(object target)
     {
+        Debug.Log("Starting Attack");
         if (turnAction != TurnAction.Attack) { turnActions.Clear(); }
-        if (DistanceTo(this, target) <= attackRange && canDamage)
+        if(target.GetType().BaseType == typeof(Unit))
         {
-            target.TakeDamage(attackDamage * (health / maxHealth));
-            turnActions.Insert(0, TurnAction.Attack);
+            Unit targetUnit = (Unit)target;
+            if (DistanceTo(this, targetUnit) <= attackRange && canDamage)
+            {
+                Debug.Log("Attacking Unit");
+                targetUnit.TakeDamage(attackDamage * (health / maxHealth));
+                turnActions.Insert(0, TurnAction.Attack);
+            }
         }
+        else if(target.GetType() == typeof(City))
+        {
+            City targetCity = (City)target;
+            if (DistanceTo(this, targetCity) <= attackRange && canDamage)
+            {
+                Debug.Log("Attacking City");
+                targetCity.TakeDamage(attackDamage * (health / maxHealth), OwningPlayer);
+                turnActions.Insert(0, TurnAction.Attack);
+            }
+        }
+
 
         stamina = 0;
         TurnController.Instance.FinishTurnEvent(this);
     }
 
-    public float DistanceTo(Unit unit1, Unit unit2)
+    public float DistanceTo(Unit unit, object obj)
     {
-        float distance = PathfindingGraph.Instance.GetPath(unit1.position, unit2.position).Count - 1;
-        return distance; //unit1.position and unit2.position are tile positions, not world positions#
+        float distance = -10;
+        if (obj.GetType().BaseType == typeof(Unit))
+        {
+            Unit targetUnit = (Unit)obj;
+            distance = PathfindingGraph.Instance.GetPath(unit.position, targetUnit.position).Count - 1;
+            
+        }
+        else if(obj.GetType() == typeof(City))
+        {
+            City targetCity = (City)obj;
+            distance = PathfindingGraph.Instance.GetPath(unit.position, targetCity.Position).Count - 1;
+        }
+        return distance;
+        
     }
 
     public void DoDeath()
@@ -122,6 +160,8 @@ public class Unit : MonoBehaviour
     {
         if (moveQueue.Count == 0)
         {
+            turnActions.Clear();
+            turnAction = TurnAction.No_Action;
             TurnController.Instance.FinishTurnEvent(this);
             return;
         }
@@ -135,21 +175,37 @@ public class Unit : MonoBehaviour
                 moveQueue.Clear();
                 Vector2 worldPos = new Vector2(Helpers.TileToWorldPos(position).x, Helpers.TileToWorldPos(position).z);
                 Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(last.Position).x, Helpers.TileToWorldPos(last.Position).z);
-                moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
+                List<Tile> path = PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos);
+                if (path == null)
+                {
+                    // Can't find path, skip turn
+                    TurnController.Instance.FinishTurnEvent(this);
+                    return;
+                }
+                moveQueue = new List<Tile>(path);
             }
-
+            
+            if (moveQueue.Count == 0) //if moveQueue is still empty after trying to repath
+            {
+                TurnController.Instance.FinishTurnEvent(this);
+                return;
+            }
+            
             Tile next = moveQueue[0];
             position = next.Position;
             if(stamina - next.MovementCost < 0)
             {
-                Debug.Log("Exiting here!");
                 //not enough stamina to move, skip turn instead
                 TurnController.Instance.FinishTurnEvent(this);
                 return;
             }
             StartCoroutine(DoMove(next.Position));
             next.IsOccupied = true;
-            moveQueue.RemoveAt(0);
+            if (moveQueue.Count > 0)
+            {
+                moveQueue.RemoveAt(0);
+            }
+
             turnActions.Insert(0, TurnAction.Move);
         }  
     }
@@ -160,7 +216,14 @@ public class Unit : MonoBehaviour
         Vector2 targetWorldPos = new Vector2(Helpers.TileToWorldPos(newPosition).x, Helpers.TileToWorldPos(newPosition).z);
         
         moveQueue = new List<Tile>(PathfindingGraph.Instance.GetPath(worldPos, targetWorldPos));
+        if(moveQueue == null || moveQueue.Count == 0)
+        {
+            // No path found
+            TurnController.Instance.FinishTurnEvent(this);
+            return;
+        }
         if (moveQueue.Count > 0 && moveQueue[0].Position == position) { moveQueue.RemoveAt(0); }
+        if (turnAction != TurnAction.Move) { turnActions.Clear(); }
         turnActions.Add(TurnAction.Move);
     }
 
