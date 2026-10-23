@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject meleePrefab;
     [SerializeField] private GameObject archerPrefab;
     [SerializeField] private GameObject builderPrefab;
+    [SerializeField] private PlayerController playerController;
     [SerializeField] private float gold;
     [SerializeField] private float production;
     [SerializeField] private float science;
@@ -16,6 +17,8 @@ public class Player : MonoBehaviour
     [SerializeField] private int playerIndex; //0 for player, 1 for AI
     [SerializeField] private Player opponent;
     [SerializeField] private bool isAI;
+    
+    public PlayerController PlayerController { get { return playerController; } }
     public float Gold { get { return gold; } }
     public float Production { get { return production; } }
     public float Science { get { return science; } }
@@ -28,6 +31,10 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        if (!isAI)
+        {
+            playerController = GetComponent<PlayerController>();
+        }
         TurnController.Instance.RegisterPlayer(this);
         TurnController.Instance.OnNextTurn += NextTurn;
         
