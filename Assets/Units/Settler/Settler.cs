@@ -24,7 +24,7 @@ public class Settler : Unit
             owningPlayer.transform.position = new Vector3(temp.x, 10f, temp.z - 10f);
             if (!owningPlayer.IsAI)
             {
-                owningPlayer.GetComponent<PlayerController>().MoveTo = new Vector3(temp.x, 10f, temp.z - 10f);
+                owningPlayer.PlayerController.MoveTo = new Vector3(temp.x, 10f, temp.z - 10f);
             }
         }
         canDamage = false;
